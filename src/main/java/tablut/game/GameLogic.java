@@ -39,9 +39,31 @@ public class GameLogic {
 
     public static void toCapture(Board board,int toRow, int toCol){}
 
-    public static void whiteWin(Board board){}
+    public static boolean whiteWin(Board board){
+        if(board.playingBoard[1][1]==Board.KING)return true;
+        if(board.playingBoard[1][9]==Board.KING)return true;
+        if(board.playingBoard[9][1]==Board.KING)return true;
+        if(board.playingBoard[9][9]==Board.KING)return true;
+        return false;
+    }
 
-    public static void blackWin(Board board){}
-
-
+    public static boolean blackWin(Board board){
+        for(int i=0;i<11;i++){
+            for(int j=0; j<11;i++){
+             if(board.playingBoard[i][j]==Board.KING){
+               return false;
+                }   
+            } 
+        }
+        return true;
+    }
+        
+    // 1. Wenn sich eine Stellung wiederholt -->ToDo
+    // 2. Wenn ein Spieler keine Züge mehr ausführen kann --> ToDo
+    // 3. Wenn 50 Züge lang keine Figur geschlagen wurde
+    public static boolean isTie(Board board){
+        if(board.countMoves==50)return true;
+    
+        return false;
+    }
 }
