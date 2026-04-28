@@ -84,5 +84,10 @@ public class GameLogic {
         }
         return true; //Wenn keine der Sonderfälle und Feld frei, dann legal
     }
+
+    //Prüft ob das Spiel Vorbei ist
+    public static boolean isGameOver(Board board) {
+        return whiteWin(board) || blackWin(board) || isTie(board);
+    }
 }
 
