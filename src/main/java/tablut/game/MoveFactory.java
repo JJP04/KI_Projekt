@@ -13,15 +13,17 @@ public class MoveFactory {
         List<Move> moves = new ArrayList<>();
         for (int x = 0; x < 11; x++) {
             for (int y = 0; y < 11; y++) {
-                if (isOwnPiece(board, x, y) && !isKing(board, x, y)) {
+                if (isOwnPiece(board, x, y) && !isKing(board, x, y)) { //Ohne König
                     moves.addAll(getMovesFrom(board, false, x, y));
-                } else if (isKing(board, x, y) && !board.playBlackTurn) {
+                } else if (isOwnPiece(board, x, y) && isKing(board, x, y)) { //Mit König
                     moves.addAll(getMovesFrom(board, true, x, y));
                 }
             }
         }
         return moves;
     }
+
+    //Allle Moves für eine Figur (Julian)
 
     private boolean isOwnPiece(Board board, int x, int y) {
         if (board.playingBoard[x][y] == 1 && board.playBlackTurn) {
@@ -35,7 +37,6 @@ public class MoveFactory {
     private boolean isKing(Board board, int x, int y) {
         return board.playingBoard[x][y] == Board.KING;
     }
-
 
     private List<Move> getMovesFrom(Board board, boolean isKing, int x, int y) {
         List<Move> moves = new ArrayList<>();
@@ -61,16 +62,17 @@ public class MoveFactory {
         return moves;
     }
 
+    //In GameLogic rein machen und schaut ob legales feld (Julian)
     private boolean isBorderOrForbidden(boolean isKing, int x, int y) {
         // Ecken
-        if (!isKing && (x == 1 && y == 1) ||
+        if (!isKing && ((x == 1 && y == 1) ||
                 (x == 1 && y == 9) ||
                 (x == 9 && y == 1) ||
-                (x == 9 && y == 9)) {
+                (x == 9 && y == 9))) {
             return false;
         }
         // Thron
-        if (!isKing && x == 5 && y == 5) {
+        if (x == 5 && y == 5) {
             return false;
         }
         //Innerhalb
@@ -79,9 +81,6 @@ public class MoveFactory {
         }
         return false;
     }
-
-//Zug König
-
 
     private boolean isEmpty(Board board, int x, int y) {
         return board.playingBoard[x][y] == board.EMPTY;
