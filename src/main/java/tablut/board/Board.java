@@ -2,6 +2,7 @@ package tablut.board;
 
 import java.util.ArrayList;
 import java.util.List;
+//Erstellt Spielfeld mit Figuren
 
 public class Board {
 
@@ -15,7 +16,6 @@ public class Board {
     public Board() {
         createBorder();
         setUpBoard();
-
     }
 
     //Board inklusive "Rand"
@@ -33,14 +33,11 @@ public class Board {
     public int countMoves = 0;
 
     public void createBorder() {
-
         for (int i = 0; i < 11; i++) {
             playingBoard[0][i] = BORDER;
             playingBoard[10][i] = BORDER;
             playingBoard[i][0] = BORDER;
             playingBoard[i][10] = BORDER;
-
-
         }
     }
 
@@ -73,7 +70,6 @@ public class Board {
     public static boolean isRestricted(int r, int c) {
         return isCorner(r, c) || (r == 5 && c == 5);
     }
-
 
     //Für Print
     private String getFigur(int value) {
@@ -122,80 +118,5 @@ public class Board {
 
         return b;
     }
-
-
-public List<Move> getAllMoves(Board board) {
-    List<Move> moves = new ArrayList<>();
-
-    for (int x = 0; x < 11; x++) {
-        for (int y = 0; y < 11; y++) {
-
-            if (isOwnPiece(board, x, y)) {
-                moves.addAll(getMovesFrom(board,x, y));
-            }
-
-        }
-    }
-
-    return moves;
-}
-
-private boolean isOwnPiece(Board board, int x, int y) {
-    return board.playingBoard[x][y] == 1 && board.playBlackTurn;
-}
-
-private List<Move> getMovesFrom(Board board, int x, int y) {
-    List<Move> moves = new ArrayList<>();
-
-    int[][] dirs = {
-        {-1, 0},
-        {1, 0},
-        {0, -1},
-        {0, 1}
-    };
-
-    for (int[] d : dirs) {
-        int nx = x + d[0];
-        int ny = y + d[1];
-
-        while (isInside(nx, ny)  && !isBorderOrForbidden(nx, ny) && isEmpty(board,nx, ny)) {
-            moves.add(new Move(x, y, nx, ny));
-
-            nx += d[0];
-            ny += d[1];
-        }
-    }
-
-    return moves;
-}
-
-private boolean isInside(int x, int y) {
-    return x >= 0 && x < 11 && y >= 0 && y < 11;
-}
-
-private boolean isBorderOrForbidden(int x, int y) {
-
-    // Ecken
-    if ((x == 1 && y == 1) ||
-        (x == 1 && y == 9) ||
-        (x == 9 && y == 1) ||
-        (x == 9 && y == 9)) {
-        return true;
-    }
-
-    // Thron
-    if (x == 5 && y == 5) {
-        return true;
-    }
-
-    return false;
-}
-
-private boolean isEmpty(Board board, int x, int y) {
-    return board.playingBoard[x][y] == board.EMPTY;
-}
-
-
-
 
 }

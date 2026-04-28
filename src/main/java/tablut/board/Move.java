@@ -1,5 +1,5 @@
 package tablut.board;
-
+//Objekt aus einem Zug
 public class Move {
     public int fromX, fromY;
     public int toX, toY;

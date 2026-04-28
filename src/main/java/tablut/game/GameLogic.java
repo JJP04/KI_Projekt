@@ -23,17 +23,11 @@ public class GameLogic {
         } else if (figure == Board.KING) {
             board.kingPos[0] = toRow;
             board.kingPos[1] = toCol;
-
-
         }
 
-
         //Schalagen Implementieren?
-
         //Zug wechseln
         board.playBlackTurn = !board.playBlackTurn;
-
-
     }
 
 
