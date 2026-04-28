@@ -12,8 +12,8 @@ public class MoveFactory {
     //Liste mit allen Zügen, für jede Figur
     public List<Move> getAllMoves(Board board) {
         List<Move> moves = new ArrayList<>();
-        for (int x = 0; x < 11; x++) {
-            for (int y = 0; y < 11; y++) {
+        for (int x = 1; x < 10; x++) {
+            for (int y = 1; y < 10; y++) {
                 if (isOwnFigur(board, x, y)) {
                     moves.addAll(getFigurMoves(board, x, y));
                 }
@@ -23,6 +23,8 @@ public class MoveFactory {
     }
 
     //Alle Moves für eine Figur
+    //Was ist mit dem König? Er wird gerade durch Thron blockiert?
+    //Prüfung ob eine Figur durch ein Feldurchlaufen kann?
     private List<Move> getFigurMoves(Board board, int x, int y) {
         List<Move> figureMoves = new ArrayList<>();
 

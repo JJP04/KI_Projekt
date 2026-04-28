@@ -10,20 +10,22 @@ public class GameLogic {
 
         int figure = board.playingBoard[fromRow][fromCol];
 
-        board.playingBoard[fromRow][fromRow] = Board.EMPTY;
+        board.playingBoard[fromRow][fromCol] = Board.EMPTY;
         board.playingBoard[toRow][toCol] = figure;
 
         if (figure == Board.BLACK) {
-            board.blackSoldersPos[fromRow][fromRow] = false;
+            board.blackSoldersPos[fromRow][fromCol] = false;
             board.blackSoldersPos[toRow][toCol] = true;
 
         } else if (figure == Board.WHITE) {
-            board.whiteSoldersPos[fromRow][fromRow] = false;
+            board.whiteSoldersPos[fromRow][fromCol] = false;
             board.whiteSoldersPos[toRow][toCol] = true;
         } else if (figure == Board.KING) {
             board.kingPos[0] = toRow;
             board.kingPos[1] = toCol;
         }
+
+        board.countMoves++;
 
         //Schalagen Implementieren!!!
         //Zug wechseln
@@ -43,7 +45,7 @@ public class GameLogic {
 
     public static boolean blackWin(Board board) {
         for (int i = 0; i < 11; i++) {
-            for (int j = 0; j < 11; i++) {
+            for (int j = 0; j < 11; j++) {
                 if (board.playingBoard[i][j] == Board.KING) {
                     return false;
                 }
@@ -56,7 +58,7 @@ public class GameLogic {
     // 2. Wenn ein Spieler keine Züge mehr ausführen kann --> ToDo
     // 3. Wenn 50 Züge lang keine Figur geschlagen wurde
     public static boolean isTie(Board board) { //Berno
-        if (board.countMoves == 50) return true;
+        if (board.countMoves >= 100) return true; //100halbezüge + 50 ganze
 
         return false;
     }
