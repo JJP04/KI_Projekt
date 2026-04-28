@@ -8,81 +8,47 @@ import java.util.List;
 
 //Objekt mit allen Zügen
 public class MoveFactory {
-    //Liste mit allen Zügen
+
+    //Liste mit allen Zügen, für jede Figur
     public List<Move> getAllMoves(Board board) {
         List<Move> moves = new ArrayList<>();
         for (int x = 0; x < 11; x++) {
             for (int y = 0; y < 11; y++) {
-                if (isOwnPiece(board, x, y) && !isKing(board, x, y)) { //Ohne König
-                    moves.addAll(getMovesFrom(board, false, x, y));
-                } else if (isOwnPiece(board, x, y) && isKing(board, x, y)) { //Mit König
-                    moves.addAll(getMovesFrom(board, true, x, y));
+                if (isOwnFigur(board, x, y)) {
+                    moves.addAll(getFigurMoves(board, x, y));
                 }
             }
         }
         return moves;
     }
 
-    //Allle Moves für eine Figur (Julian)
+    //Alle Moves für eine Figur
+    private List<Move> getFigurMoves(Board board, int x, int y) {
+        List<Move> figureMoves = new ArrayList<>();
 
-    private boolean isOwnPiece(Board board, int x, int y) {
-        if (board.playingBoard[x][y] == 1 && board.playBlackTurn) {
-            return true;
-        } else if (board.playingBoard[x][y] == -1 && !board.playBlackTurn) {
-            return true;
-        }
-        return false;
-    }
+        int[][] directions = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
 
-    private boolean isKing(Board board, int x, int y) {
-        return board.playingBoard[x][y] == Board.KING;
-    }
+        for (int[] direction : directions) {
+            int nx = x + direction[0];
+            int ny = y + direction[1];
 
-    private List<Move> getMovesFrom(Board board, boolean isKing, int x, int y) {
-        List<Move> moves = new ArrayList<>();
+            while (GameLogic.isleagalField(board, nx, ny)) {
+                figureMoves.add(new Move(x, y, nx, ny));
 
-        int[][] dirs = {
-                {-1, 0},
-                {1, 0},
-                {0, -1},
-                {0, 1}
-        };
-
-        for (int[] d : dirs) {
-            int nx = x + d[0];
-            int ny = y + d[1];
-
-            while (isBorderOrForbidden(isKing, nx, ny) && isEmpty(board, nx, ny)) {
-                moves.add(new Move(x, y, nx, ny));
-
-                nx += d[0];
-                ny += d[1];
+                nx += direction[0];
+                ny += direction[1];
             }
         }
-        return moves;
+        return figureMoves;
     }
 
-    //In GameLogic rein machen und schaut ob legales feld (Julian)
-    private boolean isBorderOrForbidden(boolean isKing, int x, int y) {
-        // Ecken
-        if (!isKing && ((x == 1 && y == 1) ||
-                (x == 1 && y == 9) ||
-                (x == 9 && y == 1) ||
-                (x == 9 && y == 9))) {
-            return false;
-        }
-        // Thron
-        if (x == 5 && y == 5) {
-            return false;
-        }
-        //Innerhalb
-        if (x >= 0 && x < 11 && y >= 0 && y < 11) {
-            return true;
+    //Überprüfung ob die Figur zum Spieler gehört, der am Zug ist
+    private boolean isOwnFigur(Board board, int x, int y) {
+        if (board.playingBoard[x][y] == 1 && board.playBlackTurn) {
+            return true; //schwarzer Zug
+        } else if ((board.playingBoard[x][y] == -1 || board.playingBoard[x][y] == board.KING) && !board.playBlackTurn) { //weiße Figur oder König
+            return true; //weißer Zug
         }
         return false;
-    }
-
-    private boolean isEmpty(Board board, int x, int y) {
-        return board.playingBoard[x][y] == board.EMPTY;
     }
 }

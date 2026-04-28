@@ -61,7 +61,26 @@ public class GameLogic {
         return false;
     }
 
-    public static void isLegalField() { //Julian
+    //Überprüft, ob das Zielfeld legal ist
+    public static boolean isleagalField(Board board, int x, int y) { //Julian
 
+        //Zielfeld = Ecke
+        if (!(board.playingBoard[x][y] == board.KING) && ((x == 1 && y == 1) || (x == 1 && y == 9) || (x == 9 && y == 1) || (x == 9 && y == 9))) {
+            return false;
+        }
+        //Zielfeld = Thron
+        if (x == 5 && y == 5) {
+            return false;
+        }
+        //Zielfeld = Außerhalb des Spielfelds
+        if (board.playingBoard[x][y] == board.BORDER) {
+            return false;
+        }
+        //Feld ist besetzt
+        if (!(board.playingBoard[x][y] == board.EMPTY)) {
+            return false;
+        }
+        return true; //Wenn keine der Sonderfälle und Feld frei, dann legal
     }
 }
+
