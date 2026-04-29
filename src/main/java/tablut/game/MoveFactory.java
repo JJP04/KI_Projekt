@@ -23,8 +23,6 @@ public class MoveFactory {
     }
 
     //Alle Moves für eine Figur
-    //Was ist mit dem König? Er wird gerade durch Thron blockiert?
-    //Prüfung ob eine Figur durch ein Feldurchlaufen kann?
     private List<Move> getFigurMoves(Board board, int x, int y) {
         List<Move> figureMoves = new ArrayList<>();
 
@@ -34,9 +32,10 @@ public class MoveFactory {
             int nx = x + direction[0];
             int ny = y + direction[1];
 
-            while (GameLogic.isleagalField(board, nx, ny)) {
-                figureMoves.add(new Move(x, y, nx, ny));
-
+            while (GameLogic.islegalField(board, nx, ny)) {
+                if(!GameLogic.isKingTower(nx,ny)){
+                    figureMoves.add(new Move(x, y, nx, ny));
+                }
                 nx += direction[0];
                 ny += direction[1];
             }

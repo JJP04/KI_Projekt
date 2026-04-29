@@ -64,14 +64,10 @@ public class GameLogic {
     }
 
     //Überprüft, ob das Zielfeld legal ist
-    public static boolean isleagalField(Board board, int x, int y) { //Julian
+    public static boolean islegalField(Board board, int x, int y) { //Julian
 
         //Zielfeld = Ecke
         if (!(board.playingBoard[x][y] == board.KING) && ((x == 1 && y == 1) || (x == 1 && y == 9) || (x == 9 && y == 1) || (x == 9 && y == 9))) {
-            return false;
-        }
-        //Zielfeld = Thron
-        if (x == 5 && y == 5) {
             return false;
         }
         //Zielfeld = Außerhalb des Spielfelds
@@ -89,5 +85,12 @@ public class GameLogic {
     public static boolean isGameOver(Board board) {
         return whiteWin(board) || blackWin(board) || isTie(board);
     }
+
+    //Prüft ob das Feld der Thron ist
+    public static boolean isKingTower(int x, int y){
+        return (x == 5 && y == 5);
+    }
+
 }
+
 
