@@ -8,7 +8,24 @@ public class GameLogic {
     //Prüfung ob Legal soll in MoveFactory passieren
     public static void moveFigure(Board board, int fromRow, int fromCol, int toRow, int toCol) {
 
+        if (!islegalField(board, toRow, toCol)) {
+            //Print Später weg Jetzt für Debugging
+            System.out.println("Illegaler Zug");
+            return;
+        }
+
+
+
+
+
         int figure = board.playingBoard[fromRow][fromCol];
+
+
+        if (figure == Board.EMPTY || figure == Board.BORDER) {
+            System.out.println("Keine Figur auf Feld");
+            return;
+        }
+
 
         board.playingBoard[fromRow][fromCol] = Board.EMPTY;
         board.playingBoard[toRow][toCol] = figure;
