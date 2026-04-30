@@ -43,6 +43,8 @@ public class MoveFactory {
         return figureMoves;
     }
 
+
+
     //Überprüfung ob die Figur zum Spieler gehört, der am Zug ist
     private boolean isOwnFigur(Board board, int x, int y) {
         if (board.playingBoard[x][y] == 1 && board.playBlackTurn) {

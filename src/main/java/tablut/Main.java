@@ -50,8 +50,6 @@ public class Main {
             case 4 -> menschVsMensch();
             default -> System.out.println("Ungültige Wahl!");
         }
-
-
     }
 
 
@@ -76,20 +74,13 @@ public class Main {
                 break;
             }
 
-
             GameLogic.moveFigure(board, move.fromX, move.fromY, move.toX, move.toY);
             System.out.println(farbe + " Zug: " + move.fromX + "," + move.fromY + "---> " + move.toX + "," + move.toY);
 
             board.printBoard();
-
-
         }
-
-
         System.out.println("Das Spiel ist vorbei!");
         gameEnd(board);
-
-
     }
 
     public static void menschVsKi() {
@@ -116,7 +107,6 @@ public class Main {
 
                 GameLogic.moveFigure(board, fromRow, fromCol, toRow, toCol);
             } else {
-
 
                 Move move = SearchMoves.makeRandomMove(board);
 
