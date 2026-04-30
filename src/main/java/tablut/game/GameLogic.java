@@ -72,9 +72,8 @@ public class GameLogic {
                     if(board.playingBoard[field2[0]][field2[1]] == board.playingBoard[5][5] && board.playingBoard[x][y] == board.KING){
                         int countBlack = 0;
                         int counterWhite = 1;
-                        int[][] directions = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
-                        for (int[] direction : directions) {
-                            int[] field = moveXFields(x, y, direction, 1);
+                        for (int[] direction1 : directions) {
+                            int[] field = moveXFields(x, y, direction1, 1);
                             if (board.playingBoard[field[0]][field[1]] == board.BLACK) {
                                 countBlack++;
                             }
@@ -153,7 +152,7 @@ public class GameLogic {
         return false;
     }
 
-    //Wenn nirgendwo mehr ein König ist?
+    //Wenn nirgendwo mehr ein König ist? Ja
     public static boolean blackWin(Board board) {
         for (int i = 0; i < 11; i++) {
             for (int j = 0; j < 11; j++) {
@@ -165,12 +164,15 @@ public class GameLogic {
         return true;
     }
 
-    // 1. Wenn sich eine Stellung wiederholt -->ToDo
-// 2. Wenn ein Spieler keine Züge mehr ausführen kann --> ToDo
-// 3. Wenn 50 Züge lang keine Figur geschlagen wurde
-    public static boolean isTie(Board board) { //Berno
+        // 1. Wenn sich eine Stellung wiederholt -->ToDo
+        // 2. Wenn ein Spieler keine Züge mehr ausführen kann
+        // 3. Wenn 50 Züge lang keine Figur geschlagen wurde
+    public static boolean isTie(Board board) { 
+        MoveFactory factory = new MoveFactory();
+        factory.getAllMoves(board);
+        //Berno
         if (board.countMoves >= 100) return true; //100halbezüge + 50 ganze
-
+        if (factory.getAllMoves(board).isEmpty())return true;
         return false;
     }
 
