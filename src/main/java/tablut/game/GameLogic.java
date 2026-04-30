@@ -15,9 +15,6 @@ public class GameLogic {
         }
 
 
-
-
-
         int figure = board.playingBoard[fromRow][fromCol];
 
 
