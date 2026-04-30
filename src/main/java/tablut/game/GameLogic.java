@@ -7,6 +7,10 @@ public class GameLogic {
 
     public static int[][] directions = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
 
+    public static int[][] corners = {{1, 1}, {1, 9}, {9, 1}, {9, 9}}; //Ecke als Sonderfeld
+
+    public static int[][] throneNeighbor = {{4, 5}, {6, 5}, {5, 4}, {5, 6}}; //Thron angrenzende Felder als Sonderfelder
+
     //Führt den Zug durch
     public static void moveFigure(Board board, int fromRow, int fromCol, int toRow, int toCol) {
 
@@ -69,7 +73,7 @@ public class GameLogic {
                 //nächstes Feld ist weiß oder schwarz
                 if (board.playingBoard[field1[0]][field1[1]] == opponentFigure) {
                     //2 Felder weiter ist ownFigure, BOARDER, Throne oder CORNER --> schlagen
-                    if (board.playingBoard[field2[0]][field2[1]] == ownFigure2 || board.playingBoard[field2[0]][field2[1]] == Board.BORDER || board.playingBoard[field2[0]][field2[1]] == board.playingBoard[5][5] || board.playingBoard[field2[0]][field2[1]] == Board.CORNER) {  //ECKE IMPEMENTIEREN
+                    if (board.playingBoard[field2[0]][field2[1]] == ownFigure2 || board.playingBoard[field2[0]][field2[1]] == Board.BORDER || board.playingBoard[field2[0]][field2[1]] == board.playingBoard[5][5] || isCorner(field2[0], field2[1])) {
                         board.playingBoard[field1[0]][field1[1]] = Board.EMPTY;
                     }
                 }
@@ -86,7 +90,7 @@ public class GameLogic {
             if (board.playingBoard[field2[0]][field2[1]] == board.playingBoard[5][5] && board.playingBoard[5][5] == board.KING) {
                 int countBlack = 0;
                 int counterWhite = 0;
-                for (int[] t : thronFields()) {
+                for (int[] t : throneNeighbor) {
                     if (board.playingBoard[t[0]][t[1]] == board.BLACK) {
                         countBlack++;
                     }
@@ -185,14 +189,13 @@ public class GameLogic {
         return true; //Wenn keine der Sonderfälle und Feld frei, dann legal
     }
 
-
-    //Gibt alle Eckfelder zurück (eventuell noch benötigt)
-    public static int[][] cornerFields() {
-        return new int[][]{{1, 1}, {1, 9}, {9, 1}, {9, 9}};
-    }
-
-    public static int[][] thronFields() {
-        return new int[][]{{4, 5}, {6, 5}, {5, 4}, {5, 6}};
+    public static boolean isCorner(int x, int y) {
+        for (int[] corner : corners) {
+            if (corner[0] == x && corner[1] == y) {
+                return true;
+            }
+        }
+        return false;
     }
 
 }
