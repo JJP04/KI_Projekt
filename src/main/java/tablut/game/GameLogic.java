@@ -51,7 +51,7 @@ public class GameLogic {
             basicCapture(board, x, y, 1, 1, -1); //Ob Bauer schlagen wird basic
             basicCapture(board, x, y, 1, 1, -2); //Ob König geschlagen wird basic
             basicThroneCapture(board, x, y); //Ob Thron geschlagen wird Sonderfall
-            toCaputreKing(board, x, y); //Ob König geschlagen wird Sonderfall
+            toCaputureKing(board, x, y); //Ob König geschlagen wird Sonderfall
             //WEIß:
         } else {
             if (board.playingBoard[x][y] == board.KING) {
@@ -109,7 +109,8 @@ public class GameLogic {
     }
 
     //Methode für schlagen des Königs:
-    public static void toCaputreKing(Board board, int x, int y) {
+    // Wird der König in allen anderen Fällen auch normal geschalen 
+    public static void toCaputureKing(Board board, int x, int y) {
         //1. Thron durch 4 schwarze besetzt
         if (board.playingBoard[5][5] == board.KING && board.playingBoard[4][5] == board.BLACK && board.playingBoard[6][5] == board.BLACK && board.playingBoard[5][4] == board.BLACK && board.playingBoard[5][6] == board.BLACK) {
             board.playingBoard[5][5] = Board.EMPTY;

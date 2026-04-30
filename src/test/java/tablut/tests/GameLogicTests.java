@@ -227,4 +227,200 @@ void testNoCaptureIfKingNotOnThrone() {
     assertEquals(Board.BLACK, b.playingBoard[x][y]);
 }
 
+@Test
+void testBasicCaptureNormal() {
+    Board b = emptyBoard();
+
+    b.playingBoard[5][8] = Board.BLACK;
+
+    b.playingBoard[5][7] = Board.WHITE;
+    b.playingBoard[5][6] = Board.BLACK;
+
+    GameLogic.basicCapture(b, 5, 8, Board.BLACK, Board.BLACK, Board.WHITE);
+
+    assertEquals(Board.EMPTY, b.playingBoard[5][7]);
+}
+
+@Test
+void testNoCaptureWithoutSecondPiece() {
+    Board b = emptyBoard();
+
+    b.playingBoard[5][5] = Board.BLACK;
+    b.playingBoard[5][6] = Board.WHITE;
+    // kein zweiter BLACK dahinter
+
+    GameLogic.basicCapture(b, 5, 5, Board.BLACK, Board.BLACK, Board.WHITE);
+
+    assertEquals(Board.WHITE, b.playingBoard[5][6]);
+}
+
+// @Test
+// void testCaptureAgainstBorder() {
+//     Board b = emptyBoard();
+
+//     b.playingBoard[1][5] = Board.BLACK;
+//     b.playingBoard[1][6] = Board.WHITE;
+//     // dahinter ist BORDER (Rand)
+
+//     GameLogic.basicCapture(b, 1, 5, Board.BLACK, Board.BLACK, Board.WHITE);
+
+//     assertEquals(Board.EMPTY, b.playingBoard[1][6]);
+// }
+
+@Test
+void testMultipleDirectionCapture() {
+    Board b = emptyBoard();
+
+    // Zentrum
+    b.playingBoard[5][5] = Board.BLACK;
+
+    // Gegner oben/unten
+    b.playingBoard[4][5] = Board.WHITE;
+    b.playingBoard[6][5] = Board.WHITE;
+
+    // eigene Figuren
+    b.playingBoard[3][5] = Board.BLACK;
+    b.playingBoard[7][5] = Board.BLACK;
+
+    GameLogic.basicCapture(b, 5, 5, Board.BLACK, Board.BLACK, Board.WHITE);
+
+    assertEquals(Board.EMPTY, b.playingBoard[4][5]);
+    assertEquals(Board.EMPTY, b.playingBoard[6][5]);
+}
+
+@Test
+void testCaptureAgainstThrone() {
+    Board b = emptyBoard();
+
+    b.playingBoard[5][7] = Board.BLACK;
+    b.playingBoard[5][5] = Board.EMPTY; // Thron bleibt „leer“
+    b.playingBoard[5][6] = Board.WHITE;
+
+    GameLogic.basicCapture(b, 5, 7, Board.BLACK, Board.BLACK, Board.WHITE);
+
+    assertEquals(Board.EMPTY, b.playingBoard[5][6]);
+}
+
+@Test
+void testKingCapturedOnThroneWithFourBlack() {
+    Board b = emptyBoard();
+
+    b.playingBoard[5][5] = Board.KING;
+
+    b.playingBoard[4][5] = Board.BLACK;
+    b.playingBoard[6][5] = Board.BLACK;
+    b.playingBoard[5][4] = Board.BLACK;
+    b.playingBoard[5][6] = Board.BLACK;
+
+    GameLogic.toCaputureKing(b, 5, 5);
+
+    assertEquals(Board.EMPTY, b.playingBoard[5][5]);
+}
+
+
+@Test
+void testKingNotCapturedOnThroneWithThreeBlack() {
+    Board b = emptyBoard();
+
+    b.playingBoard[5][5] = Board.KING;
+
+    b.playingBoard[4][5] = Board.BLACK;
+    b.playingBoard[6][5] = Board.BLACK;
+    b.playingBoard[5][4] = Board.BLACK;
+    // rechts fehlt
+
+    GameLogic.toCaputureKing(b, 5, 5);
+
+    assertEquals(Board.KING, b.playingBoard[5][5]);
+}
+
+@Test
+void testKingCapturedAdjacentToThrone() {
+    Board b = emptyBoard();
+
+    // König neben Thron
+    b.playingBoard[4][5] = Board.KING;
+
+    // 3 schwarze um ihn herum
+    b.playingBoard[3][5] = Board.BLACK;
+    b.playingBoard[4][4] = Board.BLACK;
+    b.playingBoard[4][6] = Board.BLACK;
+
+    GameLogic.toCaputureKing(b, 4, 5);
+
+    assertEquals(Board.EMPTY, b.playingBoard[4][5]);
+}
+
+@Test
+void testKingNotCapturedAdjacentTooFewBlack() {
+    Board b = emptyBoard();
+
+    b.playingBoard[4][5] = Board.KING;
+
+    b.playingBoard[3][5] = Board.BLACK;
+    b.playingBoard[4][4] = Board.BLACK;
+    // einer fehlt
+
+    GameLogic.toCaputureKing(b, 4, 5);
+
+    assertEquals(Board.KING, b.playingBoard[4][5]);
+}
+
+// @Test
+// void testKingNotNearThroneNoSpecialCapture() {
+//     Board b = emptyBoard();
+
+//     b.playingBoard[7][7] = Board.KING;
+
+//     b.playingBoard[6][7] = Board.BLACK;
+//     b.playingBoard[8][7] = Board.BLACK;
+//     b.playingBoard[7][6] = Board.BLACK;
+//     b.playingBoard[7][8] = Board.BLACK;
+
+//     GameLogic.toCaputureKing(b, 7, 7);
+
+//     assertEquals(Board.KING, b.playingBoard[7][7]);
+// }
+
+@Test
+void testCornerIsIllegal() {
+    Board b = emptyBoard();
+    boolean result = GameLogic.islegalField(b, 1, 1);
+    assertFalse(result);
+}
+
+// @Test
+// void testCornerAllowedForKing() {
+//     Board b = emptyBoard();
+//     b.playingBoard[1][1] = Board.KING;
+//     boolean result = GameLogic.islegalField(b, 1, 1);
+//     assertTrue(result);
+// }
+
+@Test
+void testBorderIsIllegal() {
+    Board b = emptyBoard();
+    boolean result = GameLogic.islegalField(b, 0, 5); // Border
+    assertFalse(result);
+}
+@Test
+void testOccupiedFieldIsIllegal() {
+    Board b = emptyBoard();
+
+    b.playingBoard[4][4] = Board.BLACK;
+
+    boolean result = GameLogic.islegalField(b, 4, 4);
+
+    assertFalse(result);
+}
+
+@Test
+void testEmptyFieldIsLegal() {
+    Board b = emptyBoard();
+
+    boolean result = GameLogic.islegalField(b, 4, 4);
+
+    assertTrue(result);
+}
+
 }

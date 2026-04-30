@@ -1,7 +1,11 @@
 package tablut;
 
+import java.util.List;
+
 import tablut.board.Board;
+import tablut.board.Move;
 import tablut.game.GameLogic;
+import tablut.game.MoveFactory;
 import tablut.game.Perft;
 
 public class TestMain {
@@ -10,18 +14,32 @@ public class TestMain {
     public static void main(String[] args) {
         Board b = new Board();
 
-    b.playingBoard[5][5] = Board.KING;
+           for (int i = 0; i < 11; i++) {
+            for (int j = 0; j < 11; j++) {
+                if (i == 0 || i == 10 || j == 0 || j == 10) {
+                    b.playingBoard[i][j] = Board.BORDER;
+                } else {
+                    b.playingBoard[i][j] = Board.EMPTY;
+                }
+            }
+        }
 
-    b.playingBoard[4][5] = Board.BLACK;
-    b.playingBoard[5][4] = Board.BLACK;
-    b.playingBoard[6][5] = Board.BLACK;
-    b.playingBoard[5][6] = Board.WHITE;
-    b.playingBoard[5][7] = Board.BLACK;
 
-    int x = 5;
-    int y = 7;
+    b.playingBoard[8][2] = Board.KING;
 
-    GameLogic.basicThroneCapture(b, x, y);
+    b.playingBoard[7][4] = Board.BLACK;
+    
+         
+
+       MoveFactory m = new MoveFactory();
+       List<Move> moves = m.getAllMoves(b);
+       System.out.println(moves.size());
+
+       for (Move move : moves) {
+           System.out.println(
+                   "(" + move.fromX + "," + move.fromY + ") -> (" + move.toX + "," + move.toY + ")"
+           );
+        }
     }
 
 
