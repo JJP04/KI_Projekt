@@ -12,11 +12,9 @@ public class Board {
     public static final int BLACK = 1;
     public static final int WHITE = -1;
     public static final int KING = -2;
-    public static final int CORNER = 50;
 
     public Board() {
         createBorder();
-        createCorner();
         setUpBoard();
     }
 
@@ -41,13 +39,6 @@ public class Board {
             playingBoard[i][0] = BORDER;
             playingBoard[i][10] = BORDER;
         }
-    }
-
-    public void createCorner() {
-        playingBoard[1][1] = CORNER;
-        playingBoard[1][9] = CORNER;
-        playingBoard[9][1] = CORNER;
-        playingBoard[9][9] = CORNER;
     }
 
     public void setUpBoard() {

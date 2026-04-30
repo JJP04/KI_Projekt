@@ -33,7 +33,7 @@ public class MoveFactory {
             int ny = y + direction[1];
 
             while (GameLogic.islegalField(board, nx, ny)) {
-                if(!GameLogic.isKingTower(nx,ny)){
+                if (!GameLogic.isKingTower(nx, ny)) {
                     figureMoves.add(new Move(x, y, nx, ny));
                 }
                 nx += direction[0];
@@ -42,8 +42,6 @@ public class MoveFactory {
         }
         return figureMoves;
     }
-
-
 
     //Überprüfung ob die Figur zum Spieler gehört, der am Zug ist
     private boolean isOwnFigur(Board board, int x, int y) {
