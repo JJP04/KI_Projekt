@@ -28,10 +28,10 @@ void kingIsOnThrone() {
         board.setUpBoard();
 
         // Ecken dürfen nicht besetzt sein
-        assertEquals(Board.EMPTY, board.playingBoard[1][1]);
-        assertEquals(Board.EMPTY, board.playingBoard[1][9]);
-        assertEquals(Board.EMPTY, board.playingBoard[9][1]);
-        assertEquals(Board.EMPTY, board.playingBoard[9][9]);
+        assertEquals(Board.CORNER, board.playingBoard[1][1]);
+        assertEquals(Board.CORNER, board.playingBoard[1][9]);
+        assertEquals(Board.CORNER, board.playingBoard[9][1]);
+        assertEquals(Board.CORNER, board.playingBoard[9][9]);
     }
   
     @Test

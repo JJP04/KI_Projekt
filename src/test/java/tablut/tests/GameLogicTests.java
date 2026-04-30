@@ -13,6 +13,9 @@ public class GameLogicTests {
         b.setUpBoard();
         return b;
     }
+    private Board emptyBoard() {
+        return new Board();
+    }
 
     @Test
     void testMoveFigureValidMove() {
@@ -29,14 +32,14 @@ public class GameLogicTests {
       assertEquals(Board.BLACK, b.playingBoard[toX][toY]);
 }
 
-  @Test
-  void testIllegalCornerMove() {
-     Board b = createBoard();
+//   @Test
+//   void testIllegalCornerMove() {
+//      Board b = createBoard();
 
-     GameLogic.moveFigure(b, 4, 1, 1, 1); // Ecke
+//      GameLogic.moveFigure(b, 4, 1, 1, 1); // Ecke
 
-    assertEquals(Board.BLACK, b.playingBoard[4][1]);
-}
+//     assertEquals(Board.BLACK, b.playingBoard[4][1]);
+// }
 
 @Test
 void testMoveFromEmptyField() {
@@ -167,4 +170,61 @@ void testIllegalFieldCorner() {
     assertFalse(result);
 }
   
+@Test
+void testKingCapturedOnThrone() {
+    Board b = emptyBoard();
+
+    b.playingBoard[5][5] = Board.KING;
+
+    b.playingBoard[4][5] = Board.BLACK;
+    b.playingBoard[5][4] = Board.BLACK;
+    b.playingBoard[6][5] = Board.BLACK;
+    b.playingBoard[5][6] = Board.WHITE;
+    b.playingBoard[5][7] = Board.BLACK;
+
+    int x = 5;
+    int y = 7;
+
+    GameLogic.basicThroneCapture(b, x, y);
+
+    assertEquals(Board.EMPTY, b.playingBoard[x][y]);
+}
+
+@Test
+void testKingNotCapturedTooFewBlack() {
+    Board b = emptyBoard();
+
+    b.playingBoard[5][5] = Board.KING;
+    b.playingBoard[4][5] = Board.BLACK;
+    b.playingBoard[6][5] = Board.BLACK;
+    b.playingBoard[5][4] = Board.WHITE;
+    b.playingBoard[5][6] = Board.WHITE;
+
+    int x = 4;
+    int y = 5;
+
+    GameLogic.basicThroneCapture(b, x, y);
+
+    assertEquals(Board.BLACK, b.playingBoard[x][y]);
+}
+
+@Test
+void testNoCaptureIfKingNotOnThrone() {
+    Board b = emptyBoard();
+
+    b.playingBoard[4][5] = Board.KING;
+
+    b.playingBoard[3][5] = Board.BLACK;
+    b.playingBoard[5][5] = Board.BLACK;
+    b.playingBoard[4][4] = Board.BLACK;
+    b.playingBoard[4][6] = Board.WHITE;
+
+    int x = 3;
+    int y = 5;
+
+    GameLogic.basicThroneCapture(b, x, y);
+
+    assertEquals(Board.BLACK, b.playingBoard[x][y]);
+}
+
 }
