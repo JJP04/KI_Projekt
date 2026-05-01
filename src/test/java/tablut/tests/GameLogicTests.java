@@ -2,9 +2,13 @@ package tablut.tests;
 
 import org.junit.jupiter.api.Test;
 import tablut.board.Board;
+import tablut.board.Move;
 import tablut.game.GameLogic;
+import tablut.game.MoveFactory;
 
 import static org.junit.jupiter.api.Assertions.*;
+
+import java.util.List;
 
 public class GameLogicTests {
 
@@ -437,5 +441,38 @@ public class GameLogicTests {
 
         assertTrue(result);
     }
+    @Test
+    void testWhiteMoveOverThrone() {
+        Board b = emptyBoard();
+        b.playingBoard[3][5] = Board.BLACK;
+
+        GameLogic.moveFigure(b, 3, 5, 7, 5);
+
+        assertEquals(Board.EMPTY, b.playingBoard[3][5]);
+        assertEquals(Board.BLACK, b.playingBoard[7][5]);
+    }
+   @Test
+void testWhiteMoveOverThroneMoveFactory() {
+    Board b = emptyBoard();
+
+    b.playingBoard[5][3] = Board.WHITE;
+
+    b.playBlackTurn = false;
+
+    MoveFactory m = new MoveFactory();
+    List<Move> moves = m.getAllMoves(b);
+
+    // Prüfen ob Move nach (7,3) existiert
+    boolean found = false;
+
+    for (Move move : moves) {
+        if (move.toX == 7 && move.toY == 3) {
+            found = true;
+            break;
+        }
+    }
+
+    assertTrue(found);
+}
 
 }

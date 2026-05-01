@@ -35,7 +35,7 @@ public class GameLogic {
         }
         board.countMoves++;
 
-        //Schalagen Methode aufrufen
+        //Schlagen Methode aufrufen
         toCapture(board, toRow, toCol);
 
         //Zug wechseln
