@@ -73,7 +73,7 @@ public class GameLogic {
                 //nächstes Feld ist weiß oder schwarz
                 if (board.playingBoard[field1[0]][field1[1]] == opponentFigure) {
                     //2 Felder weiter ist ownFigure, BOARDER, Throne oder CORNER --> schlagen
-                    if (board.playingBoard[field2[0]][field2[1]] == ownFigure2 || board.playingBoard[field2[0]][field2[1]] == Board.BORDER || board.playingBoard[field2[0]][field2[1]] == board.playingBoard[5][5] || isCorner(field2[0], field2[1])) {
+                    if (board.playingBoard[field2[0]][field2[1]] == ownFigure2 || board.playingBoard[field2[0]][field2[1]] == board.playingBoard[5][5] || isCorner(field2[0], field2[1])) {
                         board.playingBoard[field1[0]][field1[1]] = Board.EMPTY;
                     }
                 }
@@ -201,7 +201,6 @@ public class GameLogic {
         }
         return false;
     }
-
 }
 
 
