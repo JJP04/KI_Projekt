@@ -12,7 +12,6 @@ public class Perft {
 
     public static long perft(Board b, int depth) {
 
-
         if (depth == 0) return 1;
         if (GameLogic.isGameOver(b)) {
             return 0;
@@ -28,6 +27,4 @@ public class Perft {
         }
         return nodes;
     }
-
-
 }

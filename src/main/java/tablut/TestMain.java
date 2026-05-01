@@ -4,6 +4,7 @@ import java.util.List;
 
 import tablut.board.Board;
 import tablut.board.Move;
+import tablut.client.FenParser;
 import tablut.game.GameLogic;
 import tablut.game.MoveFactory;
 import tablut.game.Perft;
@@ -40,6 +41,10 @@ public class TestMain {
                    "(" + move.fromX + "," + move.fromY + ") -> (" + move.toX + "," + move.toY + ")"
            );
         }
+        String f_2 = "4r4/9/9/4R4/3rKr3/4r4/9/9/9 s 20 1";
+        Board ba = FenParser.parse(f_2);
+
+        System.out.println(Perft.perft(new Board(),1));
     }
 
 

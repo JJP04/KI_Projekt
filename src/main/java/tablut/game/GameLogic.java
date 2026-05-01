@@ -69,12 +69,14 @@ public class GameLogic {
             //Überprüft eine Richtung
             int[] field1 = moveXFields(x, y, direction, 1);
             int[] field2 = moveXFields(x, y, direction, 2);
-            if (board.playingBoard[x][y] == ownFigure1) {
-                //nächstes Feld ist weiß oder schwarz
-                if (board.playingBoard[field1[0]][field1[1]] == opponentFigure) {
-                    //2 Felder weiter ist ownFigure, BOARDER, Throne oder CORNER --> schlagen
-                    if (board.playingBoard[field2[0]][field2[1]] == ownFigure2 || board.playingBoard[field2[0]][field2[1]] == board.playingBoard[5][5] || isCorner(field2[0], field2[1])) {
-                        board.playingBoard[field1[0]][field1[1]] = Board.EMPTY;
+            if (board.playingBoard[field1[0]][field1[1]] != Board.BORDER && board.playingBoard[field2[0]][field2[1]] != Board.BORDER) {
+                if (board.playingBoard[x][y] == ownFigure1) {
+                    //nächstes Feld ist weiß oder schwarz
+                    if (board.playingBoard[field1[0]][field1[1]] == opponentFigure) {
+                        //2 Felder weiter ist ownFigure, Throne oder CORNER --> schlagen
+                        if (board.playingBoard[field2[0]][field2[1]] == ownFigure2 || board.playingBoard[field2[0]][field2[1]] == board.playingBoard[5][5] || isCorner(field2[0], field2[1])) {
+                            board.playingBoard[field1[0]][field1[1]] = Board.EMPTY;
+                        }
                     }
                 }
             }
@@ -85,21 +87,24 @@ public class GameLogic {
     public static void basicThroneCapture(Board board, int x, int y) {
         //2 Felder weiter ist der Thron
         for (int[] direction : directions) {
+            int[] field1 = moveXFields(x, y, direction, 1);
             int[] field2 = moveXFields(x, y, direction, 2);
             //2 Felder weiter Thron und König auch drauf
-            if (board.playingBoard[field2[0]][field2[1]] == board.playingBoard[5][5] && board.playingBoard[5][5] == board.KING ) { 
-                int countBlack = 0;
-                int counterWhite = 0;
-                for (int[] t : throneNeighbor) {
-                    if (board.playingBoard[t[0]][t[1]] == board.BLACK) {
-                        countBlack++;
+            if (board.playingBoard[field1[0]][field1[1]] != Board.BORDER && board.playingBoard[field2[0]][field2[1]] != Board.BORDER) {
+                if (board.playingBoard[field2[0]][field2[1]] == board.playingBoard[5][5] && board.playingBoard[5][5] == board.KING) {
+                    int countBlack = 0;
+                    int counterWhite = 0;
+                    for (int[] t : throneNeighbor) {
+                        if (board.playingBoard[t[0]][t[1]] == board.BLACK) {
+                            countBlack++;
+                        }
+                        if (board.playingBoard[t[0]][t[1]] == board.WHITE) {
+                            counterWhite++;
+                        }
                     }
-                    if (board.playingBoard[t[0]][t[1]] == board.WHITE) {
-                        counterWhite++;
+                    if (countBlack == 3 && counterWhite == 1) {
+                        board.playingBoard[field1[0]][field1[1]] = Board.EMPTY;
                     }
-                }
-                if (countBlack == 3 && counterWhite == 1) {
-                    board.playingBoard[x][y] = Board.EMPTY;
                 }
             }
         }
@@ -158,11 +163,6 @@ public class GameLogic {
         return whiteWin(board) || blackWin(board) || isTie(board);
     }
 
-    //Prüft ob das Feld der Thron ist
-    public static boolean isKingTower(int x, int y) {
-        return (x == 5 && y == 5);
-    }
-
     // 1. Wenn sich eine Stellung wiederholt -->ToDo
 // 2. Wenn ein Spieler keine Züge mehr ausführen kann --> ToDo
 // 3. Wenn 50 Züge lang keine Figur geschlagen wurde
@@ -188,6 +188,11 @@ public class GameLogic {
             return false;
         }
         return true; //Wenn keine der Sonderfälle und Feld frei, dann legal
+    }
+
+    //Prüft ob das Feld der Thron ist
+    public static boolean isKingTower(int x, int y) {
+        return (x == 5 && y == 5);
     }
 
     public static boolean isCorner(int x, int y) {
