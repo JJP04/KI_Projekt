@@ -19,8 +19,6 @@ public class Main {
 
 
     public static void main(String[] args) throws Exception {
-
-
         //Menü
         System.out.println("Tablut KI ");
         System.out.println("1. Gameserver");
@@ -40,7 +38,6 @@ public class Main {
             default -> System.out.println("Ungültige Wahl!");
         }
     }
-
 
     public static void gameserver() throws Exception {
         System.out.println("Verbinde mit GameServer!");

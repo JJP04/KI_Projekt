@@ -14,7 +14,7 @@ public class MoveFactory {
         List<Move> moves = new ArrayList<>();
         for (int x = 1; x < 10; x++) {
             for (int y = 1; y < 10; y++) {
-                if (isOwnFigur(board, x, y)) {
+                if (isOwnFigure(board, x, y)) {
                     moves.addAll(getFigurMoves(board, x, y));
                 }
             }
@@ -44,7 +44,7 @@ public class MoveFactory {
     }
 
     //Überprüfung ob die Figur zum Spieler gehört, der am Zug ist
-    private boolean isOwnFigur(Board board, int x, int y) {
+    private boolean isOwnFigure(Board board, int x, int y) {
         if (board.playingBoard[x][y] == 1 && board.playBlackTurn) {
             return true; //schwarzer Zug
         } else if ((board.playingBoard[x][y] == -1 || board.playingBoard[x][y] == board.KING) && !board.playBlackTurn) { //weiße Figur oder König

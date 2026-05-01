@@ -30,7 +30,7 @@ public class TestMain {
 
     b.playingBoard[7][4] = Board.BLACK;
 
-        String ac_1 =  "9/9/3r1r3/4R4/7K1/9/9/9/9 w 0 1"; //soll 15, wir haben 11
+        String ac_1 =  "3aa4/2a6/4d4/a3da2a/a2d2d1a/1d1d1a3/3d3a1/1aK3d2/2a3a2 d 10 22"; //soll 15, wir haben 11
 
         Board b1 = FenParser.parse(ac_1);
         b1.printBoard();
