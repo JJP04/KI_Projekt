@@ -29,22 +29,22 @@ public class TestMain {
     b.playingBoard[8][2] = Board.KING;
 
     b.playingBoard[7][4] = Board.BLACK;
-    
-         
 
-       MoveFactory m = new MoveFactory();
-       List<Move> moves = m.getAllMoves(b);
-       System.out.println(moves.size());
+        String ac_1 =  "9/9/3r1r3/4R4/7K1/9/9/9/9 w 0 1"; //soll 15, wir haben 11
 
-       for (Move move : moves) {
-           System.out.println(
-                   "(" + move.fromX + "," + move.fromY + ") -> (" + move.toX + "," + move.toY + ")"
-           );
+        Board b1 = FenParser.parse(ac_1);
+        b1.printBoard();
+
+        MoveFactory m = new MoveFactory();
+        List<Move> moves = m.getAllMoves(b1);
+        System.out.println(moves.size());
+
+        for (Move move : moves) {
+            System.out.println(
+                    "(" + move.fromX + "," + move.fromY + ") -> (" + move.toX + "," + move.toY + ")"
+            );
         }
-        String f_2 = "4r4/9/9/4R4/3rKr3/4r4/9/9/9 s 20 1";
-        Board ba = FenParser.parse(f_2);
-
-        System.out.println(Perft.perft(new Board(),1));
+        System.out.println(Perft.perft(b1,1));
     }
 
 

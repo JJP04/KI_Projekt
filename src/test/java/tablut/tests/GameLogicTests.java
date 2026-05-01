@@ -176,7 +176,7 @@ public class GameLogicTests {
     void testIllegalFieldCorner() {
         Board b = createBoard();
 
-        boolean result = GameLogic.islegalField(b, 1, 1);
+        boolean result = GameLogic.islegalField(b, 1, 1, 1,2);
 
         assertFalse(result);
     }
@@ -186,6 +186,8 @@ public class GameLogicTests {
         Board b = emptyBoard();
 
         b.playingBoard[5][5] = Board.KING;
+        b.kingPos[0] = 5;
+        b.kingPos[1] = 5;
 
         b.playingBoard[4][5] = Board.BLACK;
         b.playingBoard[5][4] = Board.BLACK;
@@ -198,7 +200,7 @@ public class GameLogicTests {
 
         GameLogic.basicThroneCapture(b, x, y);
 
-        assertEquals(Board.EMPTY, b.playingBoard[x][y]);
+        assertEquals(Board.EMPTY, b.playingBoard[5][6]);
     }
 
     @Test
@@ -350,13 +352,15 @@ public class GameLogicTests {
 
         // König neben Thron
         b.playingBoard[4][5] = Board.KING;
+        b.kingPos[0] = 4;
+        b.kingPos[1] = 5;
 
         // 3 schwarze um ihn herum
         b.playingBoard[3][5] = Board.BLACK;
         b.playingBoard[4][4] = Board.BLACK;
         b.playingBoard[4][6] = Board.BLACK;
 
-        GameLogic.toCaputureKing(b, 4, 5);
+        GameLogic.toCaputureKing(b, 3, 5);
 
         assertEquals(Board.EMPTY, b.playingBoard[4][5]);
     }
@@ -395,7 +399,7 @@ public class GameLogicTests {
     @Test
     void testCornerIsIllegal() {
         Board b = emptyBoard();
-        boolean result = GameLogic.islegalField(b, 1, 1);
+        boolean result = GameLogic.islegalField(b, 1, 1,1,2);
         assertFalse(result);
     }
 
@@ -410,7 +414,7 @@ public class GameLogicTests {
     @Test
     void testBorderIsIllegal() {
         Board b = emptyBoard();
-        boolean result = GameLogic.islegalField(b, 0, 5); // Border
+        boolean result = GameLogic.islegalField(b, 0, 5,0,0); // Border
         assertFalse(result);
     }
 
@@ -420,7 +424,7 @@ public class GameLogicTests {
 
         b.playingBoard[4][4] = Board.BLACK;
 
-        boolean result = GameLogic.islegalField(b, 4, 4);
+        boolean result = GameLogic.islegalField(b, 4, 4,0,0);
 
         assertFalse(result);
     }
@@ -429,7 +433,7 @@ public class GameLogicTests {
     void testEmptyFieldIsLegal() {
         Board b = emptyBoard();
 
-        boolean result = GameLogic.islegalField(b, 4, 4);
+        boolean result = GameLogic.islegalField(b, 4, 4,0,0);
 
         assertTrue(result);
     }

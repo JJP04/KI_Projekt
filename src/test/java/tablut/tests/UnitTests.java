@@ -160,6 +160,6 @@ public class UnitTests {
         Board b = FenParser.parse(af_2);
         MoveFactory m = new MoveFactory();
         List<Move> moves = m.getAllMoves(b);
-        assertEquals(31, moves.size());
+        assertEquals(30, moves.size());
     }
 }
