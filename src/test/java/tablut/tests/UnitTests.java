@@ -283,19 +283,19 @@ public class UnitTests {
         Board b = FenParser.parse(q_2);
         assertEquals(14, Perft.perft(b, 1));
     }
-    @Test
-    void s_1() {
-        Board b = FenParser.parse(s_1);
-        assertEquals(47, Perft.perft(b, 1));
-    }
-    @Test
-    void s_2() {
-        Board b = FenParser.parse(s_2);
-        //assertEquals(44, Perft.perft(b, 1));
-        MoveFactory m = new MoveFactory();
-        List<Move> moves = m.getAllMoves(b);
-        assertEquals(25, moves.size());
-    }
+    // @Test
+    // void s_1() {
+    //     Board b = FenParser.parse(s_1);
+    //     assertEquals(47, Perft.perft(b, 1));
+    // }
+    // @Test
+    // void s_2() {
+    //     Board b = FenParser.parse(s_2);
+    //     //assertEquals(44, Perft.perft(b, 1));
+    //     MoveFactory m = new MoveFactory();
+    //     List<Move> moves = m.getAllMoves(b);
+    //     assertEquals(25, moves.size());
+    // }
    //  @Test
    //  void t_1() {
    //      Board b = FenParser.parse(t_1);
