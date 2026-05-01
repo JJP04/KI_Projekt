@@ -87,7 +87,6 @@ public class GameLogic {
         for (int[] direction : directions) {
             int[] field2 = moveXFields(x, y, direction, 2);
             //2 Felder weiter Thron und König auch drauf
-            System.out.println("test");
             if (board.playingBoard[field2[0]][field2[1]] == board.playingBoard[5][5] && board.playingBoard[5][5] == board.KING ) { 
                 int countBlack = 0;
                 int counterWhite = 0;
@@ -99,8 +98,6 @@ public class GameLogic {
                         counterWhite++;
                     }
                 }
-                System.out.println(countBlack);
-                System.out.println(counterWhite);
                 if (countBlack == 3 && counterWhite == 1) {
                     board.playingBoard[x][y] = Board.EMPTY;
                 }
