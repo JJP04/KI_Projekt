@@ -118,17 +118,17 @@ public class GameLogic {
             board.playingBoard[5][5] = Board.EMPTY;
         }
         //2. König auf Thron angrenzendem Feld, dann reicht 3 schwarze besetzt
-        if (board.playingBoard[x][y] == board.KING && ((x == 4 && y == 5) || (x == 6 && y == 5) || (x == 5 && y == 4) || (x == 5 && y == 6))) {
+        if (board.playingBoard[4][5] == board.KING || board.playingBoard[6][5] == board.KING || board.playingBoard[5][4] == board.KING || board.playingBoard[5][6] == board.KING) {
             int countBlack = 0;
             int[][] directions = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
             for (int[] direction : directions) {
-                int[] field = moveXFields(x, y, direction, 1);
+                int[] field = moveXFields(board.kingPos[0], board.kingPos[1], direction, 1);
                 if (board.playingBoard[field[0]][field[1]] == board.BLACK) {
                     countBlack++;
                 }
             }
             if (countBlack == 3) {
-                board.playingBoard[x][y] = Board.EMPTY;
+                board.playingBoard[board.kingPos[0]][board.kingPos[1]] = Board.EMPTY;
             }
         }
     }
@@ -181,6 +181,11 @@ public class GameLogic {
         }
         //Zielfeld = Außerhalb des Spielfelds
         if (board.playingBoard[x][y] == board.BORDER) {
+            return false;
+        }
+
+        //Zielfeld Thron, außer König
+        if (!(board.playingBoard[x][y] == board.KING) && isKingTower(x, y)) {
             return false;
         }
         //Feld ist besetzt
