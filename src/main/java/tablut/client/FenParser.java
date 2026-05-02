@@ -56,7 +56,7 @@ public class FenParser {
             col++;
         }
 
-        // 🔥 Spieler am Zug
+        // Spieler am Zug
         b.playBlackTurn = turnPart.equals("s"); // s = schwarz, w = weiß
 
         // optional

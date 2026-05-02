@@ -12,6 +12,7 @@ public class Board {
     public static final int BLACK = 1;
     public static final int WHITE = -1;
     public static final int KING = -2;
+    public List<int[][]> boardHistory = new ArrayList<>();
 
     public Board() {
         createBorder();
