@@ -2,7 +2,6 @@ package tablut.game;
 
 import tablut.board.Board;
 import tablut.board.Move;
-
 import java.util.ArrayList;
 import java.util.List;
 

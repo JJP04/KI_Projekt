@@ -5,7 +5,6 @@ import java.util.List;
 import tablut.board.Board;
 import tablut.board.Move;
 import tablut.client.FenParser;
-import tablut.game.GameLogic;
 import tablut.game.MoveFactory;
 import tablut.game.Perft;
 
@@ -25,18 +24,19 @@ public class TestMain {
             }
         }
 
+        String f_1 =  "9/5r3/6rR1/5RK2/6R1r/9/1R8/9/1r7 w 0 33";
+        String f_2 = "4r4/9/9/4R4/3rKr3/4r4/9/9/9 s 0 23";
 
-    b.playingBoard[8][2] = Board.KING;
+        perft(f_1);
+        perft(f_2);
+    }
 
-    b.playingBoard[7][4] = Board.BLACK;
-
-        String ac_1 =  "3aa4/2a6/4d4/a3da2a/a2d2d1a/1d1d1a3/3d3a1/1aK3d2/2a3a2 d 10 22"; //soll 15, wir haben 11
-
-        Board b1 = FenParser.parse(ac_1);
-        b1.printBoard();
+    public static void perft(String fen){
+        Board board = FenParser.parse(fen);
+        board.printBoard();
 
         MoveFactory m = new MoveFactory();
-        List<Move> moves = m.getAllMoves(b1);
+        List<Move> moves = m.getAllMoves(board);
         System.out.println(moves.size());
 
         for (Move move : moves) {
@@ -44,11 +44,9 @@ public class TestMain {
                     "(" + move.fromX + "," + move.fromY + ") -> (" + move.toX + "," + move.toY + ")"
             );
         }
-        System.out.println(Perft.perft(b1,1));
+        System.out.println(Perft.perft(board,1));
+        System.out.println(Perft.perft(board,2));
+        System.out.println(Perft.perft(board,3));
+        System.out.println(Perft.perft(board,4));
     }
-
-
-
-
-
 }
