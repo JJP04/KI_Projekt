@@ -3,6 +3,8 @@ package tablut.game;
 import tablut.board.Board;
 import tablut.board.Move;
 
+import java.util.Arrays;
+
 public class GameLogic {
 
     public static int[][] directions = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
@@ -34,6 +36,7 @@ public class GameLogic {
             board.kingPos[1] = toCol;
         }
         board.countMoves++;
+        savePosition(board);
 
         //Schlagen Methode aufrufen
         toCapture(board, toRow, toCol);
@@ -74,7 +77,7 @@ public class GameLogic {
                     //nächstes Feld ist weiß oder schwarz
                     if (board.playingBoard[field1[0]][field1[1]] == opponentFigure) {
                         //2 Felder weiter ist ownFigure, Throne oder CORNER --> schlagen
-                        if (board.playingBoard[field2[0]][field2[1]] == ownFigure2 || board.playingBoard[field2[0]][field2[1]] == board.playingBoard[5][5] || isCorner(field2[0], field2[1])) {
+                        if (board.playingBoard[field2[0]][field2[1]] == ownFigure2 || (GameLogic.isKingTower(field2[0], field2[1]) && board.playingBoard[5][5] == Board.EMPTY) || isCorner(field2[0], field2[1])) {
                             board.playingBoard[field1[0]][field1[1]] = Board.EMPTY;
                         }
                     }
@@ -169,7 +172,20 @@ public class GameLogic {
     public static boolean isTie(Board board) { //Berno
         if (board.countMoves >= 100) return true; //100halbezüge + 50 ganze
 
+        int count = 0;
+        for (int[][] past : board.boardHistory) {
+            if (Arrays.deepEquals(past, board.playingBoard)) {
+                count++;
+                if (count >= 2) return true;
+            }
+        }
         return false;
+
+
+    }
+
+    public static void savePosition(Board board) {
+        board.boardHistory.add(board.copy().playingBoard);
     }
 
     //Überprüft, ob das Zielfeld legal ist

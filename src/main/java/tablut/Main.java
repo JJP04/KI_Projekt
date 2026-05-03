@@ -14,8 +14,12 @@ public class Main {
 
     private static final String host = "localhost";
     private static final int port = 5000;
-    private static final String token = "gruppeF";
-    private static final String lobby = "lobbyF";
+    private static final String token = "";
+    private static final String lobby = "F";
+
+    //1cb2090a-3b8e-4ecf-99ca-c74e6eabeeba
+    //6c3645c6-8c14-43eb-92bf-778738e04ee5
+
 
 
     public static void main(String[] args) throws Exception {
@@ -40,9 +44,15 @@ public class Main {
     }
 
     public static void gameserver() throws Exception {
+
+
+
         System.out.println("Verbinde mit GameServer!");
         GameClient client = new GameClient(host, port);
-        client.runConnection(token, lobby);
+        System.out.print("Token eingeben: ");
+        Scanner scanner = new Scanner(System.in);
+        String token1 = scanner.nextLine();
+        client.runConnection(token1, lobby);
     }
 
     public static void kiVsKi() {
