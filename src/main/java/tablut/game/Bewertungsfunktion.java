@@ -84,8 +84,25 @@ public class Bewertungsfunktion {
     }
 
     public static int Materialwert(Board board) {
+        int blackCount = 0;
+        int whiteCount = 0;
 
-        return 0;
+    for (int r = 1; r <= 9; r++) {
+        for (int c = 1; c <= 9; c++) {
+
+            if (board.playingBoard[r][c] == Board.BLACK) {
+                blackCount++;
+            }
+
+            if (board.playingBoard[r][c] == Board.WHITE) {
+                whiteCount++;
+            }
+        }
+    }
+
+    blackCount=-(blackCount*5);
+    whiteCount=(whiteCount*3);
+    return blackCount + whiteCount;
     }
 
 
