@@ -37,12 +37,57 @@ public class Bewertungsfunktion {
 
 
     public static void bewerteStellung(Board board, List<Move> moves) {
-        int maxBewertung = 0;
+        int minMaxBewertung = 0;
         for (Move move : moves) {
             Board copy = board.copy();
             GameLogic.moveFigure(copy, move.fromX, move.fromY, move.toX, move.toY);
             //Bewertung der Spielsituation für Schwarz
+            int bewertung = +winnStatus(copy);
+
+
         }
     }
+
+    public static int winnStatus(Board board) {
+        if (GameLogic.isGameOver(board)) {
+            if (board.playBlackTurn) {
+                return 10000; //Weiß gewinnt
+            } else {
+                return -10000; //Schwarz gewinnt
+            }
+        }
+        return 0; //Spiel ist nicht vorbei
+    }
+
+    public static int fluchtMöglichkeitenKönig(Board board) {
+
+        return 0;
+    }
+
+    public static int druckAufKönig(Board board) {
+
+        return 0;
+    }
+
+    public static int DistanzEcke(Board board) {
+        int kingX = board.kingPos[0];
+        int kingY = board.kingPos[1];
+
+        int[][] cornsers = GameLogic.corners;
+
+        int minDistance = 0;
+        for (int[] corner : cornsers) {
+            int distance = Math.abs(kingX - corner[0]) + Math.abs(kingY - corner[1]);
+            minDistance = Math.min(minDistance, distance);
+        }
+        return minDistance * -10;
+    }
+
+    public static int Materialwert(Board board) {
+
+        return 0;
+    }
+
+
 }
 
