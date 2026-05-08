@@ -32,7 +32,7 @@ public class MoveFactory {
             int ny = y + direction[1];
 
             while (GameLogic.islegalField(board, nx, ny, x, y)) {
-                if (!GameLogic.isKingTower(nx, ny)) {
+                if ( !GameLogic.isKingTower(nx, ny)) {
                     figureMoves.add(new Move(x, y, nx, ny));
                 }
                 nx += direction[0];

@@ -6,13 +6,25 @@ import java.util.List;
 
 public class Board {
 
-    //Constant
+    //Konstanten für die Spielfeldwerte:
     public static final int EMPTY = 0;
     public static final int BORDER = 99;
     public static final int BLACK = 1;
     public static final int WHITE = -1;
     public static final int KING = -2;
     public List<int[][]> boardHistory = new ArrayList<>();
+
+    //Besondere Felder:
+    public static int[][] directions = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
+
+    public static int[][] corners = {{1, 1}, {1, 9}, {9, 1}, {9, 9}}; //Ecke als Sonderfeld
+
+    public static int[] throne = {5, 5}; //Thron als Sonderfeld
+    //aktuelle Position des Königs
+    public int[] kingPos = {5, 5};
+
+    public static int[][] throneNeighbor = {{4, 5}, {6, 5}, {5, 4}, {5, 6}}; //Thron angrenzende Felder als Sonderfelder
+
 
     public Board() {
         createBorder();
@@ -22,7 +34,7 @@ public class Board {
     //Board inklusive "Rand"
     public final int[][] playingBoard = new int[11][11];
 
-    public int[] kingPos = {5, 5};
+
 
     public final boolean[][] blackSoldersPos = new boolean[11][11];
     public final boolean[][] whiteSoldersPos = new boolean[11][11];

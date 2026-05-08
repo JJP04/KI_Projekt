@@ -7,12 +7,6 @@ import java.util.Arrays;
 
 public class GameLogic {
 
-    public static int[][] directions = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
-
-    public static int[][] corners = {{1, 1}, {1, 9}, {9, 1}, {9, 9}}; //Ecke als Sonderfeld
-
-    public static int[][] throneNeighbor = {{4, 5}, {6, 5}, {5, 4}, {5, 6}}; //Thron angrenzende Felder als Sonderfelder
-
     //Führt den Zug durch
     public static void moveFigure(Board board, int fromRow, int fromCol, int toRow, int toCol) {
 
@@ -68,7 +62,7 @@ public class GameLogic {
 
     //Klassisches schlagen
     public static void basicCapture(Board board, int x, int y, int ownFigure1, int ownFigure2, int opponentFigure) {
-        for (int[] direction : directions) {
+        for (int[] direction : Board.directions) {
             //Überprüft eine Richtung
             int[] field1 = moveXFields(x, y, direction, 1);
             int[] field2 = moveXFields(x, y, direction, 2);
@@ -77,7 +71,7 @@ public class GameLogic {
                     //nächstes Feld ist weiß oder schwarz
                     if (board.playingBoard[field1[0]][field1[1]] == opponentFigure) {
                         //2 Felder weiter ist ownFigure, Throne oder CORNER --> schlagen
-                        if (board.playingBoard[field2[0]][field2[1]] == ownFigure2 || (GameLogic.isKingTower(field2[0], field2[1]) && board.playingBoard[5][5] == Board.EMPTY) || isCorner(field2[0], field2[1])) {
+                        if (board.playingBoard[field2[0]][field2[1]] == ownFigure2 || (Board.throne == field1 || Board.throne == field2 && board.kingPos != Board.throne) || isCorner(field2[0], field2[1])) {
                             board.playingBoard[field1[0]][field1[1]] = Board.EMPTY;
                         }
                     }
@@ -89,7 +83,7 @@ public class GameLogic {
     //Schwarz: Sonderfall 18
     public static void basicThroneCapture(Board board, int x, int y) {
         //2 Felder weiter ist der Thron
-        for (int[] direction : directions) {
+        for (int[] direction : Board.directions) {
             int[] field1 = moveXFields(x, y, direction, 1);
             int[] field2 = moveXFields(x, y, direction, 2);
             //2 Felder weiter Thron und König auch drauf
@@ -97,7 +91,7 @@ public class GameLogic {
                 if (board.playingBoard[field2[0]][field2[1]] == board.playingBoard[5][5] && board.playingBoard[5][5] == board.KING) {
                     int countBlack = 0;
                     int counterWhite = 0;
-                    for (int[] t : throneNeighbor) {
+                    for (int[] t : Board.throneNeighbor) {
                         if (board.playingBoard[t[0]][t[1]] == board.BLACK) {
                             countBlack++;
                         }
@@ -123,7 +117,7 @@ public class GameLogic {
         //2. König auf Thron angrenzendem Feld, dann reicht 3 schwarze besetzt
         if (board.playingBoard[4][5] == board.KING || board.playingBoard[6][5] == board.KING || board.playingBoard[5][4] == board.KING || board.playingBoard[5][6] == board.KING) {
             int countBlack = 0;
-            int[][] directions = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
+            int[][] directions = Board.directions;
             for (int[] direction : directions) {
                 int[] field = moveXFields(board.kingPos[0], board.kingPos[1], direction, 1);
                 if (board.playingBoard[field[0]][field[1]] == board.BLACK) {
@@ -212,7 +206,7 @@ public class GameLogic {
     }
 
     public static boolean isCorner(int x, int y) {
-        for (int[] corner : corners) {
+        for (int[] corner : Board.corners) {
             if (corner[0] == x && corner[1] == y) {
                 return true;
             }

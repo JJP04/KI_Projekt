@@ -12,27 +12,14 @@ import java.util.List;
 public class Bewertungsfunktion {
 
     /**
-     * Bewertungsfunktion (weiß will max. und schwarz will min.) =
+     * Bewertungsfunktion (weiß will max. und schwarz will min.)
      * Gewinnstatus weiß (+/-10000)
      * + Fluchtmöglichkeiten des Königs (+200)
-     * - Druck auf König durch schwarz (-150)
+     * - Druck auf König  (-150)
      * - Distanz zur Ecke (-10 * Distanz) -- je näher König an Ecke desto besser, desto kleiner der Minus Wert
      * + Material Weiß (Anzahl Figuren * 1 oder +5)
      * - Material Schwarz (Anzahl Figuren * 0.5 oder +3)
      * <p>
-     * weiß:
-     * König:
-     * - Hoher Bonus, wenn Zug das Spiel beendet (König Ecke)
-     * - Hoher Bonus, wenn König bedroht und Zug König in Sicherheit bringt
-     * - Bonus, wenn König mit helfen Schlagen kann
-     * Bauern:
-     * - hoher Bonus wenn Zug eine eigene Figur schützt (weißer Bauer wertfoller als Schwarz Bauer)
-     * - Bonus wenn gegnerische Figur geschlagen werden kann, aber eigene Figur nicht bedroht wird
-     * <p>
-     * schwarz:
-     * Bauern:
-     * - hoher Bonus wenn Zug eine gegnerische Figur bedroht (schwarzer Bauer wertvoller als weißer Bauer)
-     * - Bonus wenn gegnerische Figur geschlagen werden kann, aber eigene Figur nicht bedroht wird
      */
 
 
@@ -41,14 +28,17 @@ public class Bewertungsfunktion {
         for (Move move : moves) {
             Board copy = board.copy();
             GameLogic.moveFigure(copy, move.fromX, move.fromY, move.toX, move.toY);
+            GameLogic.toCapture(copy, move.toX, move.toY);
             //Bewertung der Spielsituation für Schwarz
-            int bewertung = +winnStatus(copy);
-
-
+            minMaxBewertung = +winStatus(copy);
+            minMaxBewertung = +escapeKing(copy);
+            minMaxBewertung = +pressureKing(copy);
+            minMaxBewertung = +distanceCorner(copy);
+            minMaxBewertung = +material(copy);
         }
     }
 
-    public static int winnStatus(Board board) {
+    public static int winStatus(Board board) {
         if (GameLogic.isGameOver(board)) {
             if (board.playBlackTurn) {
                 return 10000; //Weiß gewinnt
@@ -59,21 +49,42 @@ public class Bewertungsfunktion {
         return 0; //Spiel ist nicht vorbei
     }
 
-    public static int fluchtMöglichkeitenKönig(Board board) {
+    /**
+     * Fluchtmöglichkeiten des Königs (+200):
+     * Wenn König durch zug mehr felder hat, die er betreten kann, dann besser.
+     *
+     * @param board
+     * @return int
+     */
+    public static int escapeKing(Board board) {
 
         return 0;
     }
 
-    public static int druckAufKönig(Board board) {
+    /**
+     * Druck auf König (-150):
+     * Wenn durch Zug mehr schwarze Figuren um den König sind, dann schlechter.
+     *
+     * @param board
+     * @return int
+     */
+    public static int pressureKing(Board board) {
 
         return 0;
     }
 
-    public static int DistanzEcke(Board board) {
+    /**
+     * Abstand zur Ecke (-10 * Distanz):
+     * Misst Entfernung zur nächsten Ecke, je näher König an Ecke desto besser, desto kleiner der Minus Wert
+     *
+     * @param board
+     * @return int
+     */
+    public static int distanceCorner(Board board) {
         int kingX = board.kingPos[0];
         int kingY = board.kingPos[1];
 
-        int[][] cornsers = GameLogic.corners;
+        int[][] cornsers = Board.corners;
 
         int minDistance = 0;
         for (int[] corner : cornsers) {
@@ -83,11 +94,28 @@ public class Bewertungsfunktion {
         return minDistance * -10;
     }
 
-    public static int Materialwert(Board board) {
-
-        return 0;
+    /**
+     * Berechnet Anzahl der Figuren (aktuell gleichwertigkeit von weiß und schwarzer Figur:
+     * schwarz = 16x1 = 16 Punkte
+     * weiß = 8x2 = 16 Punkte
+     * Wenn eine Figur geschlagen werden würde, wäre eben + oder -
+     *
+     * @param board
+     * @return int
+     */
+    public static int material(Board board) {
+        int counterBlack = 0;
+        int counterWhite = 0;
+        for (int i = 0; i < 11; i++) {
+            for (int j = 0; j < 11; j++) {
+                if (board.playingBoard[i][j] == Board.BLACK) {
+                    counterBlack++;
+                }
+                if (board.playingBoard[i][j] == Board.WHITE) {
+                    counterWhite++;
+                }
+            }
+        }
+        return (counterWhite * 2) - (counterBlack * 1);
     }
-
-
 }
-
