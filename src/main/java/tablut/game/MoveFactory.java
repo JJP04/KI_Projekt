@@ -9,7 +9,7 @@ import java.util.List;
 public class MoveFactory {
 
     //Liste mit allen Zügen, für jede Figur
-    public List<Move> getAllMoves(Board board) {
+    public static List<Move> getAllMoves(Board board) {
         List<Move> moves = new ArrayList<>();
         for (int x = 1; x < 10; x++) {
             for (int y = 1; y < 10; y++) {
@@ -22,7 +22,7 @@ public class MoveFactory {
     }
 
     //Alle Moves für eine Figur
-    private List<Move> getFigurMoves(Board board, int x, int y) {
+    public static List<Move> getFigurMoves(Board board, int x, int y) {
         List<Move> figureMoves = new ArrayList<>();
 
         int[][] directions = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
@@ -43,7 +43,7 @@ public class MoveFactory {
     }
 
     //Überprüfung ob die Figur zum Spieler gehört, der am Zug ist
-    private boolean isOwnFigure(Board board, int x, int y) {
+    private static boolean isOwnFigure(Board board, int x, int y) {
         if (board.playingBoard[x][y] == 1 && board.playBlackTurn) {
             return true; //schwarzer Zug
         } else if ((board.playingBoard[x][y] == -1 || board.playingBoard[x][y] == board.KING) && !board.playBlackTurn) { //weiße Figur oder König

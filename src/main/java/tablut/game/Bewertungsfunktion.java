@@ -5,6 +5,7 @@ import tablut.board.Move;
 
 import java.util.List;
 
+
 //Funktion zur Bewertung der Spielsituation, damit die KI den besten Zug auswählen kann
 //Wird in xy Klasse aufgerufen und itteriert dann über alle Züge rüber
 //Alle Züge durchlaufen, eine Kopie des Spielfelds erstellen und dann den Zug bewerten (Punkte geben) und dann den Zug mit der höchsten Bewertung auswählen
@@ -19,20 +20,6 @@ public class Bewertungsfunktion {
      * - Distanz zur Ecke (-10 * Distanz) -- je näher König an Ecke desto besser, desto kleiner der Minus Wert
      * + Material Weiß (Anzahl Figuren * 1 oder +5)
      * - Material Schwarz (Anzahl Figuren * 0.5 oder +3)
-     * <p>
-     * weiß:
-     * König:
-     * - Hoher Bonus, wenn Zug das Spiel beendet (König Ecke)
-     * - Hoher Bonus, wenn König bedroht und Zug König in Sicherheit bringt
-     * - Bonus, wenn König mit helfen Schlagen kann
-     * Bauern:
-     * - hoher Bonus wenn Zug eine eigene Figur schützt (weißer Bauer wertfoller als Schwarz Bauer)
-     * - Bonus wenn gegnerische Figur geschlagen werden kann, aber eigene Figur nicht bedroht wird
-     * <p>
-     * schwarz:
-     * Bauern:
-     * - hoher Bonus wenn Zug eine gegnerische Figur bedroht (schwarzer Bauer wertvoller als weißer Bauer)
-     * - Bonus wenn gegnerische Figur geschlagen werden kann, aber eigene Figur nicht bedroht wird
      */
 
 
@@ -43,11 +30,11 @@ public class Bewertungsfunktion {
             GameLogic.moveFigure(copy, move.fromX, move.fromY, move.toX, move.toY);
             GameLogic.toCapture(copy, move.toX, move.toY);
             //Bewertung der Spielsituation für Schwarz
-            minMaxBewertung = +winStatus(copy);
-            minMaxBewertung = +escapeKing(copy);
-            minMaxBewertung = +pressureKing(copy);
-            minMaxBewertung = +distanceCorner(copy);
-            minMaxBewertung = +material(copy);
+            minMaxBewertung += winStatus(copy);
+            minMaxBewertung += escapeKing(board,copy);
+            minMaxBewertung += pressureKing(copy);
+            minMaxBewertung += distanceCorner(copy);
+            minMaxBewertung += material(copy);
         }
     }
 
@@ -64,26 +51,35 @@ public class Bewertungsfunktion {
 
     /**
      * Fluchtmöglichkeiten des Königs (+200):
-     * Wenn König durch zug mehr felder hat, die er betreten kann, dann besser.
-     *
+     * Wenn König durch Zug mehr felder hat, die er betreten kann, dann besser.
+     * Vergleich der Anzahl an möglichen Felder des Königs vorher und nachher
      * @param board
      * @return int
      */
-    public static int escapeKing(Board board) {
+    public static int escapeKing(Board board, Board boardCopy) {
+        int beforCounter = MoveFactory.getFigurMoves(board, board.kingPos[0], board.kingPos[1]).size();
+        int afterCounter =  MoveFactory.getFigurMoves(boardCopy, board.kingPos[0], board.kingPos[1]).size();
 
-        return 0;
+        return (afterCounter - beforCounter) * 200;
     }
 
     /**
      * Druck auf König (-150):
-     * Wenn durch Zug mehr schwarze Figuren um den König sind, dann schlechter.
+     * Wenn durch Zug mehr schwarze Figuren um den König sind, dann schlechter für weiß.
      *
      * @param board
      * @return int
      */
     public static int pressureKing(Board board) {
-
-        return 0;
+        int pressure = 0;
+        int[][] directions = Board.directions;
+        for (int[] direction : directions) {
+            int[] field = GameLogic.moveXFields(board.kingPos[0], board.kingPos[1], direction, 1);
+            if (board.playingBoard[field[0]][field[1]] == board.BLACK) {
+                pressure++;
+            }
+        }
+        return pressure * -150;
     }
 
     /**
@@ -109,8 +105,8 @@ public class Bewertungsfunktion {
 
     /**
      * Berechnet Anzahl der Figuren (aktuell gleichwertigkeit von weiß und schwarzer Figur:
-     * schwarz = 16x1 = 16 Punkte
-     * weiß = 8x2 = 16 Punkte
+     * schwarz = 16x3 = 48 Punkte
+     * weiß = 8x5 = 40 Punkte
      * Wenn eine Figur geschlagen werden würde, wäre eben + oder -
      *
      * @param board
@@ -130,9 +126,7 @@ public class Bewertungsfunktion {
                 }
             }
         }
-        return (whiteCount * 2) - (blackCount * 1);
+        return (whiteCount * 5) - (blackCount * 3);
     }
-
-
 }
 
