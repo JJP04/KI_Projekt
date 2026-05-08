@@ -22,20 +22,30 @@ public class Bewertungsfunktion {
      * - Material Schwarz (Anzahl Figuren * 0.5 oder +3)
      */
 
-
-    public static void bewerteStellung(Board board, List<Move> moves) {
-        int minMaxBewertung = 0;
+    public static Move bewerteStellung(Board board, List<Move> moves) {
+        int bestMinMaxBewertung = board.playBlackTurn ? Integer.MAX_VALUE : Integer.MIN_VALUE;
+        Move bestMove = null;
         for (Move move : moves) {
+            int minMaxBewertung = 0;
             Board copy = board.copy();
             GameLogic.moveFigure(copy, move.fromX, move.fromY, move.toX, move.toY);
             GameLogic.toCapture(copy, move.toX, move.toY);
             //Bewertung der Spielsituation für Schwarz
             minMaxBewertung += winStatus(copy);
-            minMaxBewertung += escapeKing(board,copy);
-            minMaxBewertung += pressureKing(copy);
+            minMaxBewertung += escapeKing(board, copy);
+            minMaxBewertung += pressureKing(board, copy);
             minMaxBewertung += distanceCorner(copy);
             minMaxBewertung += material(copy);
+
+            if (board.playBlackTurn && minMaxBewertung < bestMinMaxBewertung) {
+                bestMinMaxBewertung = minMaxBewertung;
+                bestMove = move;
+            } else if (!board.playBlackTurn && minMaxBewertung > bestMinMaxBewertung) {
+                bestMinMaxBewertung = minMaxBewertung;
+                bestMove = move;
+            }
         }
+        return bestMove;
     }
 
     public static int winStatus(Board board) {
@@ -53,13 +63,13 @@ public class Bewertungsfunktion {
      * Fluchtmöglichkeiten des Königs (+200):
      * Wenn König durch Zug mehr felder hat, die er betreten kann, dann besser.
      * Vergleich der Anzahl an möglichen Felder des Königs vorher und nachher
+     *
      * @param board
      * @return int
      */
     public static int escapeKing(Board board, Board boardCopy) {
         int beforCounter = MoveFactory.getFigurMoves(board, board.kingPos[0], board.kingPos[1]).size();
-        int afterCounter =  MoveFactory.getFigurMoves(boardCopy, board.kingPos[0], board.kingPos[1]).size();
-
+        int afterCounter = MoveFactory.getFigurMoves(boardCopy, boardCopy.kingPos[0], boardCopy.kingPos[1]).size();
         return (afterCounter - beforCounter) * 200;
     }
 
@@ -70,15 +80,21 @@ public class Bewertungsfunktion {
      * @param board
      * @return int
      */
-    public static int pressureKing(Board board) {
-        int pressure = 0;
+    public static int pressureKing(Board board, Board boardCopy) {
+        int beforPressure = 0;
+        int afterPressure = 0;
         int[][] directions = Board.directions;
         for (int[] direction : directions) {
-            int[] field = GameLogic.moveXFields(board.kingPos[0], board.kingPos[1], direction, 1);
-            if (board.playingBoard[field[0]][field[1]] == board.BLACK) {
-                pressure++;
+            int[] fieldB = GameLogic.moveXFields(board.kingPos[0], board.kingPos[1], direction, 1);
+            if (board.playingBoard[fieldB[0]][fieldB[1]] == board.BLACK) {
+                beforPressure++;
+                int[] fieldA = GameLogic.moveXFields(boardCopy.kingPos[0], boardCopy.kingPos[1], direction, 1);
+                if (boardCopy.playingBoard[fieldA[0]][fieldA[1]] == boardCopy.BLACK) {
+                    afterPressure++;
+                }
             }
         }
+        int pressure = afterPressure - beforPressure;
         return pressure * -150;
     }
 
@@ -95,7 +111,7 @@ public class Bewertungsfunktion {
 
         int[][] cornsers = Board.corners;
 
-        int minDistance = 0;
+        int minDistance = Integer.MAX_VALUE;
         for (int[] corner : cornsers) {
             int distance = Math.abs(kingX - corner[0]) + Math.abs(kingY - corner[1]);
             minDistance = Math.min(minDistance, distance);
