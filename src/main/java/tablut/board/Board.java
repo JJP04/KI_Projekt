@@ -34,8 +34,6 @@ public class Board {
     //Board inklusive "Rand"
     public final int[][] playingBoard = new int[11][11];
 
-
-
     public final boolean[][] blackSoldersPos = new boolean[11][11];
     public final boolean[][] whiteSoldersPos = new boolean[11][11];
 

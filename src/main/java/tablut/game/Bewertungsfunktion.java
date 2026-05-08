@@ -20,6 +20,19 @@ public class Bewertungsfunktion {
      * + Material Weiß (Anzahl Figuren * 1 oder +5)
      * - Material Schwarz (Anzahl Figuren * 0.5 oder +3)
      * <p>
+     * weiß:
+     * König:
+     * - Hoher Bonus, wenn Zug das Spiel beendet (König Ecke)
+     * - Hoher Bonus, wenn König bedroht und Zug König in Sicherheit bringt
+     * - Bonus, wenn König mit helfen Schlagen kann
+     * Bauern:
+     * - hoher Bonus wenn Zug eine eigene Figur schützt (weißer Bauer wertfoller als Schwarz Bauer)
+     * - Bonus wenn gegnerische Figur geschlagen werden kann, aber eigene Figur nicht bedroht wird
+     * <p>
+     * schwarz:
+     * Bauern:
+     * - hoher Bonus wenn Zug eine gegnerische Figur bedroht (schwarzer Bauer wertvoller als weißer Bauer)
+     * - Bonus wenn gegnerische Figur geschlagen werden kann, aber eigene Figur nicht bedroht wird
      */
 
 
@@ -104,18 +117,22 @@ public class Bewertungsfunktion {
      * @return int
      */
     public static int material(Board board) {
-        int counterBlack = 0;
-        int counterWhite = 0;
-        for (int i = 0; i < 11; i++) {
-            for (int j = 0; j < 11; j++) {
-                if (board.playingBoard[i][j] == Board.BLACK) {
-                    counterBlack++;
+        int blackCount = 0;
+        int whiteCount = 0;
+
+        for (int r = 1; r <= 9; r++) {
+            for (int c = 1; c <= 9; c++) {
+                if (board.playingBoard[r][c] == Board.BLACK) {
+                    blackCount++;
                 }
-                if (board.playingBoard[i][j] == Board.WHITE) {
-                    counterWhite++;
+                if (board.playingBoard[r][c] == Board.WHITE) {
+                    whiteCount++;
                 }
             }
         }
-        return (counterWhite * 2) - (counterBlack * 1);
+        return (whiteCount * 2) - (blackCount * 1);
     }
+
+
 }
+
