@@ -3,6 +3,7 @@ package tablut.game;
 import tablut.board.Board;
 import tablut.board.Move;
 
+import java.util.Arrays;
 import java.util.List;
 
 
@@ -22,6 +23,8 @@ public class Bewertungsfunktion {
      * - Material Schwarz (Anzahl Figuren * 0.5 oder +3)
      */
 
+
+    //Nutze FindestbemoveAlphaBeta aus SearchMove anstatt das hier
     public static Move bewerteStellung(Board board, List<Move> moves) {
         int bestMinMaxBewertung = board.playBlackTurn ? Integer.MAX_VALUE : Integer.MIN_VALUE;
         Move bestMove = null;
@@ -29,7 +32,7 @@ public class Bewertungsfunktion {
             int minMaxBewertung = 0;
             Board copy = board.copy();
             GameLogic.moveFigure(copy, move.fromX, move.fromY, move.toX, move.toY);
-            GameLogic.toCapture(copy, move.toX, move.toY);
+            // GameLogic.toCapture(copy, move.toX, move.toY);
             //Bewertung der Spielsituation für Schwarz
             minMaxBewertung += winStatus(copy);
             minMaxBewertung += escapeKing(board, copy);
@@ -116,7 +119,7 @@ public class Bewertungsfunktion {
             int distance = Math.abs(kingX - corner[0]) + Math.abs(kingY - corner[1]);
             minDistance = Math.min(minDistance, distance);
         }
-        return minDistance * -10;
+        return minDistance * -80;
     }
 
     /**
@@ -144,5 +147,41 @@ public class Bewertungsfunktion {
         }
         return (whiteCount * 5) - (blackCount * 3);
     }
+
+
+    /**
+     * Neue Methoden, mehr auf Alpha Beta algo angepasst
+     *
+     */
+
+    public static int escapeKingAlphaBeta(Board board) {
+        int moves = MoveFactory.getFigurMoves(board, board.kingPos[0], board.kingPos[1]).size();
+        return moves * 50;
+    }
+
+    public static int pressureKingAlphaBeta(Board board) {
+        int pressure = 0;
+        for (int[] dir : Board.directions) {
+            int[] field = GameLogic.moveXFields(board.kingPos[0], board.kingPos[1], dir, 1);
+            if (board.playingBoard[field[0]][field[1]] == Board.BLACK) {
+                pressure++;
+            }
+        }
+        return pressure * -150;
+    }
+
+
+    //Bestrafft Stellung wiederHohlung
+    public static int checkBoardRepetition(Board board) {
+        for (int[][] past : board.boardHistory) {
+            if (Arrays.deepEquals(past, board.playingBoard)) {
+                // Stellung schon mal vorgekommen?
+                return board.playBlackTurn ? 5000 : -5000;
+            }
+        }
+        return 0; // noch nie vorgekommen
+    }
+
+
 }
 

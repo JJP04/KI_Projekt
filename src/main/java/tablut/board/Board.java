@@ -126,7 +126,9 @@ public class Board {
         b.playBlackTurn = this.playBlackTurn;
         b.countMoves = this.countMoves;
         b.kingPos = this.kingPos.clone();
-
+      //Boardhistory wird mit gegben
+        b.boardHistory = new ArrayList<>(this.boardHistory);  // ← neu
         return b;
+
     }
 }
