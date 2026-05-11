@@ -5,6 +5,7 @@ import tablut.board.Move;
 import tablut.game.Bewertungsfunktion;
 import tablut.game.GameLogic;
 import tablut.game.MoveFactory;
+import tablut.game.Perft;
 
 import java.util.List;
 import java.util.Random;
@@ -13,11 +14,12 @@ public class SearchMoves {
 
 
 
-    private static final int maxDepth = 3;
+    private static final int maxDepth = 2;
     private static final int infinity = Integer.MAX_VALUE / 2;
     private static final long buffer = 300;
     private static Move bestMoveFound = null;
     private static int bestScoreFound = 0;
+    public static int knotenZaehler = 0;
 
     public static Move makeRandomMove(Board b) {
 
@@ -72,11 +74,11 @@ public class SearchMoves {
             Board copy = board.copy();
             GameLogic.moveFigure(copy, move.fromX, move.fromY, move.toX, move.toY);
 
-            //Alpha Betta
-            int score = alphaBeta(copy, depth - 1, alpha, beta, deadline);
+//            //Alpha Betta
+//            int score = alphaBeta(copy, depth - 1, alpha, beta, deadline);
 
 //            Minimax
-//            int score = miniMaxStanard(copy, depth - 1, alpha, beta, deadline);
+            int score = miniMaxStanard(copy, depth - 1, alpha, beta, deadline);
 
             if (score == Integer.MIN_VALUE) return false;
 
@@ -164,7 +166,9 @@ public class SearchMoves {
             return Integer.MIN_VALUE;
         }
 
+
         if (depth == 0 || GameLogic.isGameOver(board)) {
+            knotenZaehler++;
             return ratePosition(board);
         }
 
@@ -181,12 +185,11 @@ public class SearchMoves {
                 Board copy = board.copy();
                 GameLogic.moveFigure(copy, move.fromX, move.fromY, move.toX, move.toY);
 
-                int childScore = alphaBeta(copy, depth - 1, alpha, beta, deadline);
+                int childScore = miniMaxStanard(copy, depth - 1, alpha, beta, deadline);
                 //Abbruch bei Zeit überschreitung
                 if (childScore == Integer.MIN_VALUE) return Integer.MIN_VALUE;
 
                 score = Math.max(score, childScore);
-                alpha = Math.max(alpha, score);
 
             }
             return score;
@@ -197,11 +200,10 @@ public class SearchMoves {
                 Board copy = board.copy();
                 GameLogic.moveFigure(copy, move.fromX, move.fromY, move.toX, move.toY);
 
-                int childScore = alphaBeta(copy, depth - 1, alpha, beta, deadline);
+                int childScore = miniMaxStanard(copy, depth - 1, alpha, beta, deadline);
                 if (childScore == Integer.MIN_VALUE) return Integer.MIN_VALUE;
 
                 score = Math.min(score, childScore);
-                beta = Math.min(beta, score);
 
             }
             return score;
@@ -217,6 +219,18 @@ public class SearchMoves {
                 + Bewertungsfunktion.escapeKingAlphaBeta(board)  // König beweglich?
                 + Bewertungsfunktion.pressureKingAlphaBeta(board) // Druck auf König?
                 + Bewertungsfunktion.checkBoardRepetition(board);
+    }
+
+
+    public static void main(String[] args) {
+        Board board = new Board();
+
+
+        knotenZaehler = 0;
+        miniMaxStanard(board, 2, -infinity, infinity, Long.MAX_VALUE);
+        System.out.println("Minimax Tiefe 2: " + knotenZaehler);
+
+        System.out.println("Perft   Tiefe 2: " + Perft.perft(board, 2));
     }
 }
 
