@@ -45,8 +45,6 @@ public class Main {
 
     public static void gameserver() throws Exception {
 
-
-
         System.out.println("Verbinde mit GameServer!");
         GameClient client = new GameClient(host, port);
         System.out.print("Token eingeben: ");

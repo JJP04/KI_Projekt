@@ -48,6 +48,8 @@ public class FenParser {
                     break;
                 case 'K':
                     b.playingBoard[row][col] = Board.KING;
+                    b.kingPos[0] = row;
+                    b.kingPos[1] = col;
                     break;
                 default:
                     break;

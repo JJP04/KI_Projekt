@@ -5,35 +5,42 @@ import java.util.List;
 import tablut.board.Board;
 import tablut.board.Move;
 import tablut.client.FenParser;
+import tablut.game.Bewertungsfunktion;
+import tablut.game.GameLogic;
 import tablut.game.MoveFactory;
 import tablut.game.Perft;
+import tablut.ki.SearchMoves;
 
 public class TestMain {
 
 
     public static void main(String[] args) {
-        Board b = new Board();
+        String al_1 = "4rr3/4r4/5R3/r4r3/rr1r2Rrr/r3R3r/2R2K1R1/4r4/4r4 w 0 12";
+        Board board = FenParser.parse(al_1);
+        board.printBoard();
 
 
+        Move move = SearchMoves.findBestMoveAlphaBeta(board, 10000000);
+        System.out.println("King Position" + board.kingPos[0] + " " + board.kingPos[1]);
 
-        //    for (int i = 0; i < 11; i++) {
-        //     for (int j = 0; j < 11; j++) {
-        //         if (i == 0 || i == 10 || j == 0 || j == 10) {
-        //             b.playingBoard[i][j] = Board.BORDER;
-        //         } else {
-        //             b.playingBoard[i][j] = Board.EMPTY;
-        //         }
-        //     }
-        // }
-
-        String s_1 = "2s2s3/2w6/9/w2ww3s/s2sKw1ss/s3w4/9/9/5s3 w 0 9";
-
-        perft(s_1);
-        
-
+        System.out.println(
+                "Entscheidung AlphaBeta:" +
+                "(" + move.fromX + "," + move.fromY + ") -> (" + move.toX + "," + move.toY + ")"
+        );
+        Board copy = board.copy();
+        for (Move m : MoveFactory.getAllMoves(board)) {
+            GameLogic.moveFigure(copy, move.fromX, move.fromY, move.toX, move.toY);
+            int score = Bewertungsfunktion.ratePosition(board);
+            System.out.println(
+                    "(" + m.fromX + "," + m.fromY + ") -> (" + m.toX + "," + m.toY + ")"
+            );
+            System.out.println(score);
+            score = 0;
+            copy = board;
+        }
     }
 
-    public static void perft(String fen){
+    public static void perft(String fen) {
         Board board = FenParser.parse(fen);
         board.printBoard();
 
@@ -46,9 +53,9 @@ public class TestMain {
                     "(" + move.fromX + "," + move.fromY + ") -> (" + move.toX + "," + move.toY + ")"
             );
         }
-        System.out.println(Perft.perft(board,1));
-        System.out.println(Perft.perft(board,2));
-        System.out.println(Perft.perft(board,3));
-        System.out.println(Perft.perft(board,4));
+        System.out.println(Perft.perft(board, 1));
+        System.out.println(Perft.perft(board, 2));
+        System.out.println(Perft.perft(board, 3));
+        System.out.println(Perft.perft(board, 4));
     }
 }
