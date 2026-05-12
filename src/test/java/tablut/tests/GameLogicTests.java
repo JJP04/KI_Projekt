@@ -307,13 +307,10 @@ public class GameLogicTests {
     @Test
     void testCaptureAgainstThrone() {
         Board b = emptyBoard();
-
         b.playingBoard[5][7] = Board.BLACK;
         b.playingBoard[5][5] = Board.EMPTY; // Thron bleibt „leer“
         b.playingBoard[5][6] = Board.WHITE;
-
         GameLogic.basicCapture(b, 5, 7, Board.BLACK, Board.BLACK, Board.WHITE);
-
         assertEquals(Board.EMPTY, b.playingBoard[5][6]);
     }
 
