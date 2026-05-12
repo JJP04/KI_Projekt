@@ -12,8 +12,6 @@ import java.util.Random;
 
 public class SearchMoves {
 
-
-
     private static final int maxDepth = 2;
     private static final int infinity = Integer.MAX_VALUE / 2;
     private static final long buffer = 300;
@@ -22,7 +20,6 @@ public class SearchMoves {
     public static int knotenZaehler = 0;
 
     public static Move makeRandomMove(Board b) {
-
         //Optimieren als Array Später
         MoveFactory m = new MoveFactory();
         List<Move> moves = m.getAllMoves(b);
@@ -31,7 +28,6 @@ public class SearchMoves {
         Move randomMove = moves.get(rand.nextInt(moves.size()));
 
         return randomMove;
-
     }
 
     public static Move findBestMoveAlphaBeta(Board board, long timeLimitMs) {
@@ -47,14 +43,12 @@ public class SearchMoves {
 
             if (System.currentTimeMillis() >= deadline) break;
 
-
             boolean completed = startSearchAlg(board, moves, depth, deadline);
             //Wenn tiefe nicht beendet werden konnte
             if (!completed) break;
 
             if (bestScoreFound >= 9000 || bestScoreFound <= -9000) break;
         }
-
         return bestMoveFound;
     }
 
@@ -74,11 +68,11 @@ public class SearchMoves {
             Board copy = board.copy();
             GameLogic.moveFigure(copy, move.fromX, move.fromY, move.toX, move.toY);
 
-//            //Alpha Betta
-//            int score = alphaBeta(copy, depth - 1, alpha, beta, deadline);
+            //Alpha Betta
+            int score = alphaBeta(copy, depth - 1, alpha, beta, deadline);
 
-//            Minimax
-            int score = miniMaxStanard(copy, depth - 1, alpha, beta, deadline);
+            //Minimax
+//          int score = miniMaxStanard(copy, depth - 1, alpha, beta, deadline);
 
             if (score == Integer.MIN_VALUE) return false;
 
@@ -113,7 +107,7 @@ public class SearchMoves {
         }
 
         if (depth == 0 || GameLogic.isGameOver(board)) {
-            return ratePosition(board);
+            return Bewertungsfunktion.ratePosition(board);
         }
 
         List<Move> moves = MoveFactory.getAllMoves(board);
@@ -166,10 +160,9 @@ public class SearchMoves {
             return Integer.MIN_VALUE;
         }
 
-
         if (depth == 0 || GameLogic.isGameOver(board)) {
             knotenZaehler++;
-            return ratePosition(board);
+            return Bewertungsfunktion.ratePosition(board);
         }
 
         List<Move> moves = MoveFactory.getAllMoves(board);
@@ -210,21 +203,8 @@ public class SearchMoves {
         }
     }
 
-
-
-    public static int ratePosition(Board board) {
-        return Bewertungsfunktion.winStatus(board)          // Gewonnen? +10000 / -10000
-                + Bewertungsfunktion.distanceCorner(board)     // König nah an Ecke?
-                + Bewertungsfunktion.material(board)           // Figurenanzahl
-                + Bewertungsfunktion.escapeKingAlphaBeta(board)  // König beweglich?
-                + Bewertungsfunktion.pressureKingAlphaBeta(board) // Druck auf König?
-                + Bewertungsfunktion.checkBoardRepetition(board);
-    }
-
-
     public static void main(String[] args) {
         Board board = new Board();
-
 
         knotenZaehler = 0;
         miniMaxStanard(board, 2, -infinity, infinity, Long.MAX_VALUE);

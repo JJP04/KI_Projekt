@@ -1,16 +1,12 @@
 package tablut.game;
 
 import tablut.board.Board;
-import tablut.board.Move;
 
 import java.util.Arrays;
-import java.util.List;
-
 
 //Funktion zur Bewertung der Spielsituation, damit die KI den besten Zug auswählen kann
 //Wird in xy Klasse aufgerufen und itteriert dann über alle Züge rüber
 //Alle Züge durchlaufen, eine Kopie des Spielfelds erstellen und dann den Zug bewerten (Punkte geben) und dann den Zug mit der höchsten Bewertung auswählen
-
 public class Bewertungsfunktion {
 
     /**
@@ -23,32 +19,12 @@ public class Bewertungsfunktion {
      * - Material Schwarz (Anzahl Figuren * 0.5 oder +3)
      */
 
-
-    //Nutze FindestbemoveAlphaBeta aus SearchMove anstatt das hier
-    public static Move bewerteStellung(Board board, List<Move> moves) {
-        int bestMinMaxBewertung = board.playBlackTurn ? Integer.MAX_VALUE : Integer.MIN_VALUE;
-        Move bestMove = null;
-        for (Move move : moves) {
-            int minMaxBewertung = 0;
-            Board copy = board.copy();
-            GameLogic.moveFigure(copy, move.fromX, move.fromY, move.toX, move.toY);
-            // GameLogic.toCapture(copy, move.toX, move.toY);
-            //Bewertung der Spielsituation für Schwarz
-            minMaxBewertung += winStatus(copy);
-            minMaxBewertung += escapeKing(board, copy);
-            minMaxBewertung += pressureKing(board, copy);
-            minMaxBewertung += distanceCorner(copy);
-            minMaxBewertung += material(copy);
-
-            if (board.playBlackTurn && minMaxBewertung < bestMinMaxBewertung) {
-                bestMinMaxBewertung = minMaxBewertung;
-                bestMove = move;
-            } else if (!board.playBlackTurn && minMaxBewertung > bestMinMaxBewertung) {
-                bestMinMaxBewertung = minMaxBewertung;
-                bestMove = move;
-            }
-        }
-        return bestMove;
+    public static int ratePosition(Board board) {
+        return winStatus(board)          // Gewonnen? +10000 / -10000
+                + escapeKing(board)      // Fluchtmöglichkeiten
+                + pressureKing(board)    // Druck auf König
+                + distanceCorner(board)  // König Distanz Ecke
+                + material(board);       // Materialwert
     }
 
     public static int winStatus(Board board) {
@@ -66,47 +42,30 @@ public class Bewertungsfunktion {
      * Fluchtmöglichkeiten des Königs (+200):
      * Wenn König durch Zug mehr felder hat, die er betreten kann, dann besser.
      * Vergleich der Anzahl an möglichen Felder des Königs vorher und nachher
-     *
-     * @param board
-     * @return int
      */
-    public static int escapeKing(Board board, Board boardCopy) {
-        int beforCounter = MoveFactory.getFigurMoves(board, board.kingPos[0], board.kingPos[1]).size();
-        int afterCounter = MoveFactory.getFigurMoves(boardCopy, boardCopy.kingPos[0], boardCopy.kingPos[1]).size();
-        return (afterCounter - beforCounter) * 200;
+    public static int escapeKing(Board board) {
+        int moves = MoveFactory.getFigurMoves(board, board.kingPos[0], board.kingPos[1]).size();
+        return moves * 50;
     }
 
     /**
      * Druck auf König (-150):
      * Wenn durch Zug mehr schwarze Figuren um den König sind, dann schlechter für weiß.
-     *
-     * @param board
-     * @return int
      */
-    public static int pressureKing(Board board, Board boardCopy) {
-        int beforPressure = 0;
-        int afterPressure = 0;
-        int[][] directions = Board.directions;
-        for (int[] direction : directions) {
-            int[] fieldB = GameLogic.moveXFields(board.kingPos[0], board.kingPos[1], direction, 1);
-            if (board.playingBoard[fieldB[0]][fieldB[1]] == board.BLACK) {
-                beforPressure++;
-                int[] fieldA = GameLogic.moveXFields(boardCopy.kingPos[0], boardCopy.kingPos[1], direction, 1);
-                if (boardCopy.playingBoard[fieldA[0]][fieldA[1]] == boardCopy.BLACK) {
-                    afterPressure++;
-                }
+    public static int pressureKing(Board board) {
+        int pressure = 0;
+        for (int[] dir : Board.directions) {
+            int[] field = GameLogic.moveXFields(board.kingPos[0], board.kingPos[1], dir, 1);
+            if (board.playingBoard[field[0]][field[1]] == Board.BLACK) {
+                pressure++;
             }
         }
-        int pressure = afterPressure - beforPressure;
         return pressure * -150;
     }
 
     /**
-     * Abstand zur Ecke (-10 * Distanz):
+     * Abstand zur Ecke (-80 * Distanz):
      * Misst Entfernung zur nächsten Ecke, je näher König an Ecke desto besser, desto kleiner der Minus Wert
-     *
-     * @param board
-     * @return int
      */
     public static int distanceCorner(Board board) {
         int kingX = board.kingPos[0];
@@ -127,9 +86,6 @@ public class Bewertungsfunktion {
      * schwarz = 16x3 = 48 Punkte
      * weiß = 8x5 = 40 Punkte
      * Wenn eine Figur geschlagen werden würde, wäre eben + oder -
-     *
-     * @param board
-     * @return int
      */
     public static int material(Board board) {
         int blackCount = 0;
@@ -148,30 +104,9 @@ public class Bewertungsfunktion {
         return (whiteCount * 5) - (blackCount * 3);
     }
 
-
     /**
-     * Neue Methoden, mehr auf Alpha Beta algo angepasst
-     *
+     * Stellung Wiederholung (+5000 / -5000):
      */
-
-    public static int escapeKingAlphaBeta(Board board) {
-        int moves = MoveFactory.getFigurMoves(board, board.kingPos[0], board.kingPos[1]).size();
-        return moves * 50;
-    }
-
-    public static int pressureKingAlphaBeta(Board board) {
-        int pressure = 0;
-        for (int[] dir : Board.directions) {
-            int[] field = GameLogic.moveXFields(board.kingPos[0], board.kingPos[1], dir, 1);
-            if (board.playingBoard[field[0]][field[1]] == Board.BLACK) {
-                pressure++;
-            }
-        }
-        return pressure * -150;
-    }
-
-
-    //Bestrafft Stellung wiederHohlung
     public static int checkBoardRepetition(Board board) {
         for (int[][] past : board.boardHistory) {
             if (Arrays.deepEquals(past, board.playingBoard)) {
@@ -181,7 +116,5 @@ public class Bewertungsfunktion {
         }
         return 0; // noch nie vorgekommen
     }
-
-
 }
 
