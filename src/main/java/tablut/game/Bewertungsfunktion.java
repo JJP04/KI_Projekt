@@ -23,7 +23,7 @@ public class Bewertungsfunktion {
         return winStatus(board)          // Gewonnen? +10000 / -10000
                 + escapeKing(board)      // Fluchtmöglichkeiten
                 + pressureKing(board)    // Druck auf König
-                + distanceCorner(board)  // König Distanz Ecke
+                + distanceCorner(board) // König Distanz Ecke
                 + material(board);       // Materialwert
     }
 
@@ -45,11 +45,11 @@ public class Bewertungsfunktion {
      */
     public static int escapeKing(Board board) {
         int moves = MoveFactory.getFigurMoves(board, board.kingPos[0], board.kingPos[1]).size();
-        return moves * 50;
+        return moves * 25;
     }
 
     /**
-     * Druck auf König (-150):
+     * Druck auf König (-100):
      * Wenn durch Zug mehr schwarze Figuren um den König sind, dann schlechter für weiß.
      */
     public static int pressureKing(Board board) {
@@ -60,7 +60,7 @@ public class Bewertungsfunktion {
                 pressure++;
             }
         }
-        return pressure * -150;
+        return pressure * -100;
     }
 
     /**
@@ -78,8 +78,10 @@ public class Bewertungsfunktion {
             int distance = Math.abs(kingX - corner[0]) + Math.abs(kingY - corner[1]);
             minDistance = Math.min(minDistance, distance);
         }
-        return minDistance * -80;
+        return minDistance * -100;
     }
+
+
 
     /**
      * Berechnet Anzahl der Figuren (aktuell gleichwertigkeit von weiß und schwarzer Figur:
