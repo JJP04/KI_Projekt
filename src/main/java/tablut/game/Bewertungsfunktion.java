@@ -20,22 +20,34 @@ public class Bewertungsfunktion {
      */
 
     public static int ratePosition(Board board) {
-        return winStatus(board)          // Gewonnen? +10000 / -10000
-                + escapeKing(board)      // Fluchtmöglichkeiten
-                + pressureKing(board)    // Druck auf König
-                + distanceCorner(board) // König Distanz Ecke
-                + material(board);       // Materialwert
+        int win = winStatus(board);
+        int escape = escapeKing(board);
+        int pressure = pressureKing(board);
+        int distance = distanceCorner(board);
+        int mat = material(board);
+
+        System.out.printf("win=%d escape=%d pressure=%d distance=%d material=%d total=%d%n",
+                win, escape, pressure, distance, mat, win+escape+pressure+distance+mat);
+
+        return win + escape + pressure + distance + mat;
     }
 
+//    public static int winStatus(Board board) {
+//        if (GameLogic.isGameOver(board)) {
+//            if (board.playBlackTurn) {
+//                return 10000; //Weiß gewinnt
+//            } else {
+//                return -10000; //Schwarz gewinnt
+//            }
+//        }
+//        return 0; //Spiel ist nicht vorbei
+//    }
+
     public static int winStatus(Board board) {
-        if (GameLogic.isGameOver(board)) {
-            if (board.playBlackTurn) {
-                return 10000; //Weiß gewinnt
-            } else {
-                return -10000; //Schwarz gewinnt
-            }
-        }
-        return 0; //Spiel ist nicht vorbei
+        if (GameLogic.whiteWin(board)) return 10000;
+        if (GameLogic.blackWin(board)) return -10000;
+        if (GameLogic.isTie(board)) return 0;
+        return 0;
     }
 
     /**
@@ -45,7 +57,7 @@ public class Bewertungsfunktion {
      */
     public static int escapeKing(Board board) {
         int moves = MoveFactory.getFigurMoves(board, board.kingPos[0], board.kingPos[1]).size();
-        return moves * 25;
+        return moves * 10;
     }
 
     /**
@@ -60,7 +72,7 @@ public class Bewertungsfunktion {
                 pressure++;
             }
         }
-        return pressure * -100;
+        return pressure * -20;
     }
 
     /**
@@ -103,7 +115,7 @@ public class Bewertungsfunktion {
                 }
             }
         }
-        return (whiteCount * 5) - (blackCount * 3);
+        return (whiteCount * 30) - (blackCount * 10);
     }
 
     /**
@@ -113,7 +125,7 @@ public class Bewertungsfunktion {
         for (int[][] past : board.boardHistory) {
             if (Arrays.deepEquals(past, board.playingBoard)) {
                 // Stellung schon mal vorgekommen?
-                return board.playBlackTurn ? 5000 : -5000;
+                return board.playBlackTurn ? 9000 : -9000;
             }
         }
         return 0; // noch nie vorgekommen

@@ -13,6 +13,7 @@ public class Board {
     public static final int WHITE = -1;
     public static final int KING = -2;
     public List<int[][]> boardHistory = new ArrayList<>();
+    public boolean isSearchCopy = false;
 
     //Besondere Felder:
     public static int[][] directions = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
@@ -126,8 +127,9 @@ public class Board {
         b.playBlackTurn = this.playBlackTurn;
         b.countMoves = this.countMoves;
         b.kingPos = this.kingPos.clone();
+        b.isSearchCopy = true;
       //Boardhistory wird mit gegben
-        b.boardHistory = new ArrayList<>(this.boardHistory);  // ← neu
+        b.boardHistory = new ArrayList<>();  // ← neu
         return b;
 
     }
