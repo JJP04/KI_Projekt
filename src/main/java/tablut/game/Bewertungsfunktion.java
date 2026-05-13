@@ -12,11 +12,11 @@ public class Bewertungsfunktion {
     /**
      * Bewertungsfunktion (weiß will max. und schwarz will min.)
      * Gewinnstatus weiß (+/-10000)
-     * + Fluchtmöglichkeiten des Königs (+200)
-     * - Druck auf König  (-150)
+     * + Fluchtmöglichkeiten des Königs (mögliche Züge vom König * 10)
+     * - Druck auf König  (100* Anzahl besetzer Felder um den König)
      * - Distanz zur Ecke (-10 * Distanz) -- je näher König an Ecke desto besser, desto kleiner der Minus Wert
-     * + Material Weiß (Anzahl Figuren * 1 oder +5)
-     * - Material Schwarz (Anzahl Figuren * 0.5 oder +3)
+     * + Material Weiß (Anzahl Figuren *5)
+     * - Material Schwarz (Anzahl Figuren *3)
      */
 
     public static int ratePosition(Board board) {
@@ -51,7 +51,7 @@ public class Bewertungsfunktion {
     }
 
     /**
-     * Fluchtmöglichkeiten des Königs (+200):
+     * Fluchtmöglichkeiten des Königs (Anzahl * 20):
      * Wenn König durch Zug mehr felder hat, die er betreten kann, dann besser.
      * Vergleich der Anzahl an möglichen Felder des Königs vorher und nachher
      */
