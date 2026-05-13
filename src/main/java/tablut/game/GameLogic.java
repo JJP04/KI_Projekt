@@ -7,6 +7,7 @@ import java.util.Arrays;
 
 public class GameLogic {
 
+
     //Führt den Zug durch
     public static void moveFigure(Board board, int fromRow, int fromCol, int toRow, int toCol) {
 
@@ -29,8 +30,10 @@ public class GameLogic {
             board.kingPos[0] = toRow;
             board.kingPos[1] = toCol;
         }
-        board.countMoves++;
-        savePosition(board);
+       board.countMoves++;
+        if (!board.isSearchCopy) {  // ← nur speichern wenn echtes Spiel
+            savePosition(board);
+        }
 
         //Schlagen Methode aufrufen
         toCapture(board, toRow, toCol);
@@ -63,15 +66,29 @@ public class GameLogic {
     //Klassisches schlagen
     public static void basicCapture(Board board, int x, int y, int ownFigure1, int ownFigure2, int opponentFigure) {
         for (int[] direction : Board.directions) {
-            //Überprüft eine Richtung
             int[] field1 = moveXFields(x, y, direction, 1);
             int[] field2 = moveXFields(x, y, direction, 2);
-            if (board.playingBoard[field1[0]][field1[1]] != Board.BORDER && board.playingBoard[field2[0]][field2[1]] != Board.BORDER) {
+            if (board.playingBoard[field1[0]][field1[1]] != Board.BORDER
+                    && board.playingBoard[field2[0]][field2[1]] != Board.BORDER) {
                 if (board.playingBoard[x][y] == ownFigure1) {
-                    //nächstes Feld ist weiß oder schwarz
                     if (board.playingBoard[field1[0]][field1[1]] == opponentFigure) {
-                        //2 Felder weiter ist ownFigure, Throne oder CORNER --> schlagen
-                        if (board.playingBoard[field2[0]][field2[1]] == ownFigure2 ||( Arrays.equals(Board.throne, field2) && board.kingPos != Board.throne) || isCorner(field2[0], field2[1])) {
+
+                        // König auf Thron oder Thron-Nachbarfeld → nicht normal schlagbar
+                        if (opponentFigure == Board.KING) {
+                            int kx = board.kingPos[0];
+                            int ky = board.kingPos[1];
+                            if ((kx == 5 && ky == 5) ||
+                                    (kx == 4 && ky == 5) ||
+                                    (kx == 6 && ky == 5) ||
+                                    (kx == 5 && ky == 4) ||
+                                    (kx == 5 && ky == 6)) {
+                                continue;
+                            }
+                        }
+
+                        if (board.playingBoard[field2[0]][field2[1]] == ownFigure2
+                                || Arrays.equals(Board.throne, field2) && board.playingBoard[5][5] == Board.EMPTY
+                                || isCorner(field2[0], field2[1])) {
                             board.playingBoard[field1[0]][field1[1]] = Board.EMPTY;
                         }
                     }
@@ -163,19 +180,20 @@ public class GameLogic {
     // 1. Wenn sich eine Stellung wiederholt -->ToDo
 // 2. Wenn ein Spieler keine Züge mehr ausführen kann --> ToDo
 // 3. Wenn 50 Züge lang keine Figur geschlagen wurde
-    public static boolean isTie(Board board) { //Berno
-        if (board.countMoves >= 100) return true; //100halbezüge + 50 ganze
-
+    public static boolean isTie(Board board) {
+        if (board.countMoves >= 100) {
+            return true;
+        }
         int count = 0;
         for (int[][] past : board.boardHistory) {
             if (Arrays.deepEquals(past, board.playingBoard)) {
                 count++;
-                if (count >= 2) return true;
+                if (count >= 2) {
+                    return true;
+                }
             }
         }
         return false;
-
-
     }
 
     public static void savePosition(Board board) {

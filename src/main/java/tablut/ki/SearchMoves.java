@@ -12,7 +12,7 @@ import java.util.Random;
 
 public class SearchMoves {
 
-    private static final int maxDepth = 2;
+    private static final int maxDepth = 3;
     private static final int infinity = Integer.MAX_VALUE / 2;
     private static final long buffer = 300;
     private static Move bestMoveFound = null;
@@ -68,13 +68,13 @@ public class SearchMoves {
             Board copy = board.copy();
             GameLogic.moveFigure(copy, move.fromX, move.fromY, move.toX, move.toY);
 
-            //Alpha Betta
             int score = alphaBeta(copy, depth - 1, alpha, beta, deadline);
 
-            //Minimax
-//          int score = miniMaxStanard(copy, depth - 1, alpha, beta, deadline);
-
             if (score == Integer.MIN_VALUE) return false;
+
+            // ← NEU: Zug + Score ausgeben
+            System.out.printf("Zug: %d,%d --> %d,%d  Score: %d%n",
+                    move.fromX, move.fromY, move.toX, move.toY, score);
 
             if (isMax) {
                 if (score > bestScore) {
@@ -94,6 +94,9 @@ public class SearchMoves {
         if (bestMove != null) {
             bestMoveFound = bestMove;
             bestScoreFound = bestScore;
+            System.out.println("→ Bester Zug: " + bestMove.fromX + "," + bestMove.fromY
+                    + " --> " + bestMove.toX + "," + bestMove.toY
+                    + "  Score: " + bestScoreFound);
         }
         return true;
     }
