@@ -26,9 +26,6 @@ public class Bewertungsfunktion {
         int distance = distanceCorner(board);
         int mat = material(board);
 
-        System.out.printf("win=%d escape=%d pressure=%d distance=%d material=%d total=%d%n",
-                win, escape, pressure, distance, mat, win+escape+pressure+distance+mat);
-
         return win + escape + pressure + distance + mat;
     }
 

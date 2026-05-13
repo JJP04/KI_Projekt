@@ -12,7 +12,7 @@ import java.util.Random;
 
 public class SearchMoves {
 
-    private static final int maxDepth = 3;
+    private static final int maxDepth = 5;
     private static final int infinity = Integer.MAX_VALUE / 2;
     private static final long buffer = 300;
     private static Move bestMoveFound = null;
@@ -72,9 +72,9 @@ public class SearchMoves {
 
             if (score == Integer.MIN_VALUE) return false;
 
-            // ← NEU: Zug + Score ausgeben
-            System.out.printf("Zug: %d,%d --> %d,%d  Score: %d%n",
-                    move.fromX, move.fromY, move.toX, move.toY, score);
+//            // ← NEU: Zug + Score ausgeben
+//            System.out.printf("Zug: %d,%d --> %d,%d  Score: %d%n",
+//                    move.fromX, move.fromY, move.toX, move.toY, score);
 
             if (isMax) {
                 if (score > bestScore) {
@@ -93,10 +93,10 @@ public class SearchMoves {
 
         if (bestMove != null) {
             bestMoveFound = bestMove;
-            bestScoreFound = bestScore;
-            System.out.println("→ Bester Zug: " + bestMove.fromX + "," + bestMove.fromY
-                    + " --> " + bestMove.toX + "," + bestMove.toY
-                    + "  Score: " + bestScoreFound);
+//            bestScoreFound = bestScore;
+////            System.out.println("→ Bester Zug: " + bestMove.fromX + "," + bestMove.fromY
+////                    + " --> " + bestMove.toX + "," + bestMove.toY
+////                    + "  Score: " + bestScoreFound);
         }
         return true;
     }

@@ -23,7 +23,7 @@ public class BewertungsfunktionTests {
     void whiteWins1() {
         Board board = FenParser.parse(whiteWins1);
         board.printBoard();
-        Move moveKI = SearchMoves.findBestMoveAlphaBeta(board, 10000000);
+        Move moveKI = SearchMoves.findBestMoveAlphaBeta(board, 120000);
         System.out.println("KI Zug: " + moveKI.fromX + "," + moveKI.fromY + "--> " + moveKI.toX + "," + moveKI.toY);
         assertAll(
                 () -> assertEquals(7, moveKI.fromX),
@@ -36,7 +36,7 @@ public class BewertungsfunktionTests {
     void blackWins2() {
         Board board = FenParser.parse(blackWins2);
         board.printBoard();
-        Move moveKI = SearchMoves.findBestMoveAlphaBeta(board, 10000000);
+        Move moveKI = SearchMoves.findBestMoveAlphaBeta(board, 120000);
         System.out.println("KI Zug: " + moveKI.fromX + "," + moveKI.fromY + "--> " + moveKI.toX + "," + moveKI.toY);
         assertAll(
                 () -> assertEquals(3, moveKI.fromX),
@@ -51,7 +51,7 @@ public class BewertungsfunktionTests {
     void ratePositionWhiteWins() {
         Board board = FenParser.parse(whiteWins1);
         board.printBoard();
-        Move moveKI = SearchMoves.findBestMoveAlphaBeta(board, 10000000);
+        Move moveKI = SearchMoves.findBestMoveAlphaBeta(board, 120000);
         int a = Bewertungsfunktion.ratePosition(board);
         System.out.println(a);
         System.out.println("KI Zug: " + moveKI.fromX + "," + moveKI.fromY + "--> " + moveKI.toX + "," + moveKI.toY );
@@ -66,7 +66,7 @@ public class BewertungsfunktionTests {
     void ratePositionBlackWins() {
         Board board = FenParser.parse(blackWins1);
         board.printBoard();
-        Move moveKI = SearchMoves.findBestMoveAlphaBeta(board, 10000000);
+        Move moveKI = SearchMoves.findBestMoveAlphaBeta(board, 120000);
         int a = Bewertungsfunktion.ratePosition(board);
         System.out.println(a);
         System.out.println("KI Zug: " + moveKI.fromX + "," + moveKI.fromY + "--> " + moveKI.toX + "," + moveKI.toY );
@@ -76,7 +76,7 @@ public class BewertungsfunktionTests {
     void ratePositionBlackWins2() {
         Board board = FenParser.parse(blackWins2);
         board.printBoard();
-        Move moveKI = SearchMoves.findBestMoveAlphaBeta(board, 10000000);
+        Move moveKI = SearchMoves.findBestMoveAlphaBeta(board, 120000);
         int a = Bewertungsfunktion.ratePosition(board);
         System.out.println(a);
         System.out.println("KI Zug: " + moveKI.fromX + "," + moveKI.fromY + "--> " + moveKI.toX + "," + moveKI.toY );
@@ -86,7 +86,7 @@ public class BewertungsfunktionTests {
     void ratePositionStart() {
         Board board = FenParser.parse(start);
         board.printBoard();
-        Move moveKI = SearchMoves.findBestMoveAlphaBeta(board, 10000000);
+        Move moveKI = SearchMoves.findBestMoveAlphaBeta(board, 120000);
         int a = Bewertungsfunktion.ratePosition(board);
         System.out.println(a);
         System.out.println("KI Zug: " + moveKI.fromX + "," + moveKI.fromY + "--> " + moveKI.toX + "," + moveKI.toY );
@@ -96,7 +96,7 @@ public class BewertungsfunktionTests {
     void materialStart() {
         Board board = FenParser.parse(start);
         board.printBoard();
-        Move moveKI = SearchMoves.findBestMoveAlphaBeta(board, 10000000);
+        Move moveKI = SearchMoves.findBestMoveAlphaBeta(board, 120000);
         int a = Bewertungsfunktion.material(board);
         System.out.println(a);
         System.out.println("KI Zug: " + moveKI.fromX + "," + moveKI.fromY + "--> " + moveKI.toX + "," + moveKI.toY );
@@ -106,7 +106,7 @@ public class BewertungsfunktionTests {
     void materialWhiteWins1() {
         Board board = FenParser.parse(whiteWins1);
         board.printBoard();
-        Move moveKI = SearchMoves.findBestMoveAlphaBeta(board, 10000000);
+        Move moveKI = SearchMoves.findBestMoveAlphaBeta(board, 120000);
         int a = Bewertungsfunktion.material(board);
         System.out.println(a);
         System.out.println("KI Zug: " + moveKI.fromX + "," + moveKI.fromY + "--> " + moveKI.toX + "," + moveKI.toY );
@@ -116,7 +116,7 @@ public class BewertungsfunktionTests {
     void distanceCornerStart() {
         Board board = FenParser.parse(start);
         board.printBoard();
-        Move moveKI = SearchMoves.findBestMoveAlphaBeta(board, 10000000);
+        Move moveKI = SearchMoves.findBestMoveAlphaBeta(board, 120000);
         int a = Bewertungsfunktion.distanceCorner(board);
         System.out.println(a);
         System.out.println("KI Zug: " + moveKI.fromX + "," + moveKI.fromY + "--> " + moveKI.toX + "," + moveKI.toY );
@@ -126,7 +126,7 @@ public class BewertungsfunktionTests {
     void distanceCornerWhiteWins1() {
         Board board = FenParser.parse(whiteWins1);
         board.printBoard();
-        Move moveKI = SearchMoves.findBestMoveAlphaBeta(board, 10000000);
+        Move moveKI = SearchMoves.findBestMoveAlphaBeta(board, 120000);
         int a = Bewertungsfunktion.distanceCorner(board);
         System.out.println(a);
         System.out.println("KI Zug: " + moveKI.fromX + "," + moveKI.fromY + "--> " + moveKI.toX + "," + moveKI.toY );
@@ -136,7 +136,7 @@ public class BewertungsfunktionTests {
     void pressureKingStart() {
         Board board = FenParser.parse(start);
         board.printBoard();
-        Move moveKI = SearchMoves.findBestMoveAlphaBeta(board, 10000000);
+        Move moveKI = SearchMoves.findBestMoveAlphaBeta(board, 120000);
         int a = Bewertungsfunktion.pressureKing(board);
         System.out.println(a);
         System.out.println("KI Zug: " + moveKI.fromX + "," + moveKI.fromY + "--> " + moveKI.toX + "," + moveKI.toY );
@@ -146,7 +146,7 @@ public class BewertungsfunktionTests {
     void pressureKingBlackWins1() {
         Board board = FenParser.parse(blackWins1);
         board.printBoard();
-        Move moveKI = SearchMoves.findBestMoveAlphaBeta(board, 10000000);
+        Move moveKI = SearchMoves.findBestMoveAlphaBeta(board, 120000);
         int a = Bewertungsfunktion.pressureKing(board);
         System.out.println(a);
         System.out.println("KI Zug: " + moveKI.fromX + "," + moveKI.fromY + "--> " + moveKI.toX + "," + moveKI.toY );
@@ -156,7 +156,7 @@ public class BewertungsfunktionTests {
     void escapeKingStart() {
         Board board = FenParser.parse(start);
         board.printBoard();
-        Move moveKI = SearchMoves.findBestMoveAlphaBeta(board, 10000000);
+        Move moveKI = SearchMoves.findBestMoveAlphaBeta(board, 120000);
         int a = Bewertungsfunktion.escapeKing(board);
         System.out.println(a);
         System.out.println("KI Zug: " + moveKI.fromX + "," + moveKI.fromY + "--> " + moveKI.toX + "," + moveKI.toY );
@@ -166,7 +166,7 @@ public class BewertungsfunktionTests {
     void escapeKingBlackWins1() {
         Board board = FenParser.parse(blackWins1);
         board.printBoard();
-        Move moveKI = SearchMoves.findBestMoveAlphaBeta(board, 10000000);
+        Move moveKI = SearchMoves.findBestMoveAlphaBeta(board, 120000);
         int a = Bewertungsfunktion.escapeKing(board);
         System.out.println(a);
         System.out.println("KI Zug: " + moveKI.fromX + "," + moveKI.fromY + "--> " + moveKI.toX + "," + moveKI.toY );
@@ -176,7 +176,7 @@ public class BewertungsfunktionTests {
     void escapeKingWhiteWins1() {
         Board board = FenParser.parse(whiteWins1);
         board.printBoard();
-        Move moveKI = SearchMoves.findBestMoveAlphaBeta(board, 10000000);
+        Move moveKI = SearchMoves.findBestMoveAlphaBeta(board, 120000);
         int a = Bewertungsfunktion.escapeKing(board);
         System.out.println(a);
         System.out.println("KI Zug: " + moveKI.fromX + "," + moveKI.fromY + "--> " + moveKI.toX + "," + moveKI.toY );
