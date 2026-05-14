@@ -5,8 +5,11 @@ import tablut.board.Board;
 import tablut.board.Move;
 import tablut.client.FenParser;
 import tablut.game.Bewertungsfunktion;
+import tablut.game.MoveFactory;
 import tablut.game.Perft;
 import tablut.ki.SearchMoves;
+
+import java.util.List;
 
 public class benchmarkTests {
 
@@ -77,6 +80,22 @@ public class benchmarkTests {
     void maxDepthInOneSec() {
         Board board = FenParser.parse(whiteWins);
         Move move = SearchMoves.findBestMoveAlphaBeta(board, 1000);
+
+    }
+
+    @Test
+    void perftInOneSec() {
+        Board board = FenParser.parse(whiteWins);
+
+        long start = System.currentTimeMillis();
+
+        long nodes = 0;
+
+        while (System.currentTimeMillis() - start < 1000) {
+            nodes += Perft.perft(board, 3);
+        }
+
+        System.out.println(nodes);
     }
 }
 

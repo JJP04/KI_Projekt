@@ -33,13 +33,13 @@ public class SearchMoves {
     public static Move findBestMoveAlphaBeta(Board board, long timeLimitMs) {
         List<Move> moves = MoveFactory.getAllMoves(board);
         if (moves.isEmpty()) return null;
-
         long deadline = System.currentTimeMillis() + timeLimitMs - buffer;
 
         bestMoveFound = moves.get(0);
         bestScoreFound = 0;
 
         for (int depth = 1; depth <= maxDepth; depth++) {
+            
 
             if (System.currentTimeMillis() >= deadline) break;
 
@@ -48,6 +48,7 @@ public class SearchMoves {
             if (!completed) break;
 
             if (bestScoreFound >= 9000 || bestScoreFound <= -9000) break;
+            System.out.println(depth + ". Iteration beendet");
         }
         return bestMoveFound;
     }

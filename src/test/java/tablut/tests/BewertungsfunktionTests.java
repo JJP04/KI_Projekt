@@ -5,8 +5,6 @@ import tablut.board.Board;
 import tablut.board.Move;
 import tablut.client.FenParser;
 import tablut.game.Bewertungsfunktion;
-import tablut.game.GameLogic;
-import tablut.game.Perft;
 import tablut.ki.SearchMoves;
 
 import static org.junit.jupiter.api.Assertions.*;
