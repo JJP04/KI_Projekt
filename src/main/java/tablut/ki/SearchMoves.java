@@ -18,6 +18,7 @@ public class SearchMoves {
     private static Move bestMoveFound = null;
     private static int bestScoreFound = 0;
     public static int knotenZaehler = 0;
+    public static long nodes = 0;
 
     public static Move makeRandomMove(Board b) {
         //Optimieren als Array Später
@@ -32,6 +33,7 @@ public class SearchMoves {
 
     public static Move findBestMoveAlphaBeta(Board board, long timeLimitMs) {
         List<Move> moves = MoveFactory.getAllMoves(board);
+        nodes = 0;
         if (moves.isEmpty()) return null;
 
         long deadline = System.currentTimeMillis() + timeLimitMs - buffer;
@@ -49,6 +51,7 @@ public class SearchMoves {
 
             if (bestScoreFound >= 9000 || bestScoreFound <= -9000) break;
         }
+        System.out.println(nodes);
         return bestMoveFound;
     }
 
@@ -107,6 +110,7 @@ public class SearchMoves {
 
     //Standard Alpha-Beta
     public static int alphaBeta(Board board, int depth, int alpha, int beta, long deadline) {
+        nodes++;
 
         //Nur bei Jedem 4K noten ZeitCheck - Rechnezitsparen
         if ((depth & 0x3) == 0 && System.currentTimeMillis() >= deadline) {
