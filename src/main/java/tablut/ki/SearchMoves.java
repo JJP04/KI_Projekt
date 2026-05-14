@@ -12,9 +12,10 @@ import java.util.Random;
 
 public class SearchMoves {
 
-    private static final int maxDepth = 5;
+    public static int maxDepth = 4;
+    public static int depth = 1;
     private static final int infinity = Integer.MAX_VALUE / 2;
-    private static final long buffer = 300;
+    private static final long buffer = 50;
     private static Move bestMoveFound = null;
     private static int bestScoreFound = 0;
     public static int knotenZaehler = 0;
@@ -40,8 +41,7 @@ public class SearchMoves {
         bestMoveFound = moves.get(0);
         bestScoreFound = 0;
 
-        for (int depth = 1; depth <= maxDepth; depth++) {
-            
+        for (int currentDepth = 1; currentDepth <= maxDepth; currentDepth++) {
 
             if (System.currentTimeMillis() >= deadline) break;
 
@@ -50,9 +50,9 @@ public class SearchMoves {
             if (!completed) break;
 
             if (bestScoreFound >= 9000 || bestScoreFound <= -9000) break;
-            System.out.println(depth + ". Iteration beendet");
+            depth = currentDepth;
+
         }
-        System.out.println(nodes);
         return bestMoveFound;
     }
 

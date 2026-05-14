@@ -7,10 +7,11 @@ import java.util.List;
 
 public class Perft {
 
-
-   static MoveFactory moveFactory = new MoveFactory();
+    static MoveFactory moveFactory = new MoveFactory();
+    public static long deadline;
 
     public static long perft(Board b, int depth) {
+        if (System.currentTimeMillis() >= deadline) return 0;
 
         if (depth == 0) return 1;
         if (GameLogic.isGameOver(b)) {
@@ -21,6 +22,7 @@ public class Perft {
         long nodes = 0;
 
         for (Move move : moves) {
+            if (System.currentTimeMillis() >= deadline) return nodes;
             Board copy = b.copy();
             GameLogic.moveFigure(copy, move.fromX, move.fromY, move.toX, move.toY);
             nodes += perft(copy, depth - 1);
