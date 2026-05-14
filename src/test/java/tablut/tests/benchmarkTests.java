@@ -2,9 +2,11 @@ package tablut.tests;
 
 import org.junit.jupiter.api.Test;
 import tablut.board.Board;
+import tablut.board.Move;
 import tablut.client.FenParser;
 import tablut.game.Bewertungsfunktion;
 import tablut.game.Perft;
+import tablut.ki.SearchMoves;
 
 public class benchmarkTests {
 
@@ -69,6 +71,12 @@ public class benchmarkTests {
         }
         long end = System.nanoTime();
         System.out.println("Zeit: " + (end - start) / 1_000_000.0 + " ms");
+    }
+
+    @Test
+    void maxDepthInOneSec() {
+        Board board = FenParser.parse(whiteWins);
+        Move move = SearchMoves.findBestMoveAlphaBeta(board, 1000);
     }
 }
 
