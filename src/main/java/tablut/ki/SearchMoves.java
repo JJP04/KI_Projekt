@@ -225,8 +225,3 @@ public class SearchMoves {
         System.out.println("Perft   Tiefe 2: " + Perft.perft(board, 2));
     }
 }
-
-
-
-
-

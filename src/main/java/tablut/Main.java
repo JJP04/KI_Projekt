@@ -18,18 +18,14 @@ public class Main {
     private static final String token = "";
     private static final String lobby = "F";
 
-    //1cb2090a-3b8e-4ecf-99ca-c74e6eabeeba
-    //6c3645c6-8c14-43eb-92bf-778738e04ee5
-
-
-
     public static void main(String[] args) throws Exception {
-        //Menü
+
         System.out.println("Tablut KI ");
         System.out.println("1. Gameserver");
         System.out.println("2. KI vs KI");
-        System.out.println("3. Du vs KI");
-        System.out.println("4. Du vs Du (Gut um Spiel zu Testen/Debugging)");
+        System.out.println("3. KI vs KI - Manueller FenString");
+        System.out.println("4. Du vs KI");
+        System.out.println("5. Du vs Du (Gut um Spiel zu Testen/Debugging)");
         System.out.print("Wahl: (Gebe die Nummer an)  ");
 
         Scanner scanner = new Scanner(System.in);
@@ -37,9 +33,10 @@ public class Main {
 
         switch (wahl) {
             case 1 -> gameserver();
-            case 2 -> kiVsKi();
-            case 3 -> menschVsKi();
-            case 4 -> menschVsMensch();
+            case 2 -> kiVsKi(new Board());
+            case 3 -> kiVsKi_FenString();
+            case 4 -> menschVsKi();
+            case 5 -> menschVsMensch();
             default -> System.out.println("Ungültige Wahl!");
         }
     }
@@ -54,31 +51,39 @@ public class Main {
         client.runConnection(token1, lobby);
     }
 
-    public static void kiVsKi() {
+    public static void kiVsKi(Board board) {
         System.out.println("kiVsKi");
-
-        //TestFenString:
-        String al_1 = "4rr3/4r4/5R3/r4r3/rr1r2Rrr/r3R3r/2R2K1R1/4r4/4r4 w 0 12";
-        Board board = FenParser.parse(al_1);
-        //Board board = new Board();
         board.printBoard();
 
         while (!GameLogic.isGameOver(board)) {
-            Move move = SearchMoves.findBestMoveAlphaBeta(board,10000000);
+            Move move = SearchMoves.findBestMoveAlphaBeta(board, 10000000);
 
             String farbe = board.playBlackTurn ? "Schwarz" : "Weiß";
             if (move == null) {
                 System.out.println("Kein Zug möglich!" + farbe + " hat verloren!");
                 break;
             }
-
             GameLogic.moveFigure(board, move.fromX, move.fromY, move.toX, move.toY);
             System.out.println(farbe + " Zug: " + move.fromX + "," + move.fromY + "---> " + move.toX + "," + move.toY);
 
             board.printBoard();
         }
         System.out.println("Das Spiel ist vorbei!");
-        gameEnd(board);
+        GameLogic.gameEnd(board);
+    }
+
+    public static void kiVsKi_FenString() {
+        System.out.println("Gebe einen FenString ein: ");
+        Scanner scanner = new Scanner(System.in);
+        String fenString = scanner.nextLine();
+
+        //TestFenSt:
+        String startstellung = "3rrr3/4r4/4R4/r3R3r/rrRRKRRrr/r3R3r/4R4/4r4/3rrr3 s 0 1";
+        String whiteWins = "4rr3/4r4/5R3/r4r3/rr1r2Rrr/r3R3r/2R2K1R1/4r4/4r4 w 0 12";
+        String blackWins = "4r4/1r2r4/2r1Kr3/3rRr3/9/2R1r2R1/9/4r4/9 w 0 1";
+
+        Board board = FenParser.parse(fenString);
+        kiVsKi(board);
     }
 
     public static void menschVsKi() {
@@ -108,47 +113,28 @@ public class Main {
 
                 Move move = SearchMoves.makeRandomMove(board);
 
-
                 if (move == null) {
                     System.out.println("Kein Zug möglich!" + "Ki" + " hat verloren!");
                     break;
                 }
-
-
                 GameLogic.moveFigure(board, move.fromX, move.fromY, move.toX, move.toY);
                 System.out.println("Ki" + " Zug: " + move.fromX + "," + move.fromY + "---> " + move.toX + "," + move.toY);
-
             }
             board.printBoard();
-
-
         }
 
-
         System.out.println("Das Spiel ist vorbei!");
-        gameEnd(board);
-
-
+        GameLogic.gameEnd(board);
     }
 
     public static void menschVsMensch() {
         Board board = new Board();
         Scanner scanner = new Scanner(System.in);
 
-
         board.printBoard();
         while (!GameLogic.isGameOver(board)) {
 
             System.out.print((board.playBlackTurn ? "Schwarz" : "Weiß") + " am Zug: ");
-
-//            //Nur für Test
-//            MoveFactory factory = new MoveFactory();
-//            List<Move> moves = factory.getAllMoves(board);
-//            if (moves.isEmpty()) {
-//                System.out.println("Verloren Kein zug Möglich");
-//                break;
-//            }
-
 
             System.out.print("Dein Zug: ");
             System.out.println("fromRow");
@@ -163,21 +149,9 @@ public class Main {
             GameLogic.moveFigure(board, fromRow, fromCol, toRow, toCol);
 
             board.printBoard();
-
         }
-
         System.out.println("Das Spiel ist vorbei!");
-        gameEnd(board);
-
-
-    }
-
-    //Maybe Lieber in GameLogic
-    private static void gameEnd(Board board) {
-        System.out.println("Spielende nach " + board.countMoves + " Zügen");
-        if (GameLogic.whiteWin(board)) System.out.println("Weiß gewinnt!");
-        else if (GameLogic.blackWin(board)) System.out.println("Schwarz gewinnt!");
-        else System.out.println("Unentschieden!");
+        GameLogic.gameEnd(board);
     }
 }
 

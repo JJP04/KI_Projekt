@@ -44,7 +44,6 @@ public class BewertungsfunktionTests {
         );
     }
 
-
     @Test
     void ratePositionWhiteWins() {
         Board board = FenParser.parse(whiteWins1);
@@ -60,6 +59,7 @@ public class BewertungsfunktionTests {
                 () -> assertEquals(6, moveKI.toY)
         );
     }
+
     @Test
     void ratePositionBlackWins() {
         Board board = FenParser.parse(blackWins1);

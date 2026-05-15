@@ -4,11 +4,7 @@ import tablut.board.Board;
 
 import java.util.Arrays;
 
-//Funktion zur Bewertung der Spielsituation, damit die KI den besten Zug auswählen kann
-//Wird in xy Klasse aufgerufen und itteriert dann über alle Züge rüber
-//Alle Züge durchlaufen, eine Kopie des Spielfelds erstellen und dann den Zug bewerten (Punkte geben) und dann den Zug mit der höchsten Bewertung auswählen
 public class Bewertungsfunktion {
-
     /**
      * Bewertungsfunktion (weiß will max. und schwarz will min.)
      * Gewinnstatus weiß (+/-10000)
@@ -28,17 +24,6 @@ public class Bewertungsfunktion {
 
         return win + escape + pressure + distance + mat;
     }
-
-//    public static int winStatus(Board board) {
-//        if (GameLogic.isGameOver(board)) {
-//            if (board.playBlackTurn) {
-//                return 10000; //Weiß gewinnt
-//            } else {
-//                return -10000; //Schwarz gewinnt
-//            }
-//        }
-//        return 0; //Spiel ist nicht vorbei
-//    }
 
     public static int winStatus(Board board) {
         if (GameLogic.whiteWin(board)) return 10000;
@@ -89,7 +74,6 @@ public class Bewertungsfunktion {
         }
         return minDistance * -100;
     }
-
 
 
     /**

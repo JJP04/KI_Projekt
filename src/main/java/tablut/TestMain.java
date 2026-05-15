@@ -14,11 +14,20 @@ import tablut.ki.SearchMoves;
 public class TestMain {
 
     //Board übergeben und besten Zug ermitteln, danach alle möglichen Züge durchgehen und bewerten
+
+    /**
+     * Ermittelt besten Zug für eine gegebene Stellung inklusive Bewertung
+     * Anschließend werden alle möglichen Züge durchgegangen inklusive Bewertungen
+     */
     public static void main(String[] args) {
+
+        //Bordstellung manuell angeben:
         String al_1 = "4rr3/4r4/5R3/r4r3/rr1r2Rrr/r3R3r/2R2K1R1/4r4/4r4 w 0 12";
         Board board = FenParser.parse(al_1);
         Board bestBoard = board.copy();
         board.printBoard();
+        //Suchtiefe manuell angeben:
+        SearchMoves.maxDepth = 1;
 
         Move move = SearchMoves.findBestMoveAlphaBeta(board, 10000000);
         GameLogic.moveFigure(bestBoard, move.fromX, move.fromY, move.toX, move.toY);
@@ -27,7 +36,6 @@ public class TestMain {
                 "Entscheidung AlphaBeta:" +
                         "(" + move.fromX + "," + move.fromY + ") -> (" + move.toX + "," + move.toY + ")" +
                         " Score: " + scoreBestmove
-
         );
 
         for (Move m : MoveFactory.getAllMoves(board)) {
@@ -42,6 +50,9 @@ public class TestMain {
         }
     }
 
+    /**
+     * Perft Test: Berechnet die Anzahl der möglichen Stellungen in einer bestimmten Tiefe.
+     */
     public static void perft(String fen) {
         Board board = FenParser.parse(fen);
         board.printBoard();

@@ -196,6 +196,13 @@ public class GameLogic {
         return false;
     }
 
+    public static void gameEnd(Board board) {
+        System.out.println("Spielende nach " + board.countMoves + " Zügen");
+        if (whiteWin(board)) System.out.println("Weiß gewinnt!");
+        else if (blackWin(board)) System.out.println("Schwarz gewinnt!");
+        else System.out.println("Unentschieden!");
+    }
+
     public static void savePosition(Board board) {
         board.boardHistory.add(board.copy().playingBoard);
     }
