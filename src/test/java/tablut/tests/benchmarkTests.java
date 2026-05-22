@@ -95,7 +95,7 @@ public class benchmarkTests {
         System.out.println(Perft.perft(board, SearchMoves.depth));
 
         System.out.println("Zustände mit Cutoffs: ");
-        System.out.println(SearchMoves.nodes);
+        System.out.println(SearchMoves.knotenZaehler);
 
         System.out.println("Bester Zug: ");
         System.out.println(move.fromX + "," + move.fromY + " --> " + move.toX + "," + move.toY);
@@ -115,7 +115,7 @@ public class benchmarkTests {
         System.out.println(Perft.perft(board, 4));
 
         System.out.println("Zustände mit Cutoffs: ");
-        System.out.println(SearchMoves.nodes);
+        System.out.println(SearchMoves.knotenZaehler);
 
         System.out.println("Bester Zug: ");
         System.out.println(move.fromX + "," + move.fromY + "--> " + move.toX + "," + move.toY);
@@ -132,7 +132,7 @@ public class benchmarkTests {
         System.out.println(Perft.perft(board, SearchMoves.depth));
 
         System.out.println("Zustände mit Cutoffs: ");
-        System.out.println(SearchMoves.nodes);
+        System.out.println(SearchMoves.knotenZaehler);
 
         System.out.println("Bester Zug: ");
         System.out.println(move.fromX + "," + move.fromY + "--> " + move.toX + "," + move.toY);

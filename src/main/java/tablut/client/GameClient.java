@@ -3,6 +3,7 @@ package tablut.client;
 import tablut.board.Board;
 import tablut.board.Move;
 import tablut.game.GameLogic;
+import tablut.game.MoveFactory;
 import tablut.ki.SearchMoves;
 
 import java.io.BufferedReader;
@@ -134,7 +135,7 @@ public class GameClient {
     }
 
     public void kiMakeMove() throws IOException {
-        Move move = SearchMoves.makeRandomMove(board);
+        Move move = MoveFactory.makeRandomMove(board);
         if (move == null) {
             System.out.println("Kein Zug möglich!");
             return;

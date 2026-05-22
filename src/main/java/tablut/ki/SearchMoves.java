@@ -19,22 +19,13 @@ public class SearchMoves {
     private static Move bestMoveFound = null;
     private static int bestScoreFound = 0;
     public static int knotenZaehler = 0;
-    public static long nodes = 0;
 
-    public static Move makeRandomMove(Board b) {
-        //Optimieren als Array Später
-        MoveFactory m = new MoveFactory();
-        List<Move> moves = m.getAllMoves(b);
-        if (moves.isEmpty()) return null;
-        Random rand = new Random();
-        Move randomMove = moves.get(rand.nextInt(moves.size()));
 
-        return randomMove;
-    }
-
+    /**
+     * Findet den besten Zug für die aktuelle Spielsituation auf dem Board unter Verwendung von Alpha-Beta-Suche.
+     */
     public static Move findBestMoveAlphaBeta(Board board, long timeLimitMs) {
         List<Move> moves = MoveFactory.getAllMoves(board);
-        nodes = 0;
         if (moves.isEmpty()) return null;
         long deadline = System.currentTimeMillis() + timeLimitMs - buffer;
 
@@ -42,22 +33,21 @@ public class SearchMoves {
         bestScoreFound = 0;
 
         for (int currentDepth = 1; currentDepth <= maxDepth; currentDepth++) {
-
             if (System.currentTimeMillis() >= deadline) break;
 
             boolean completed = startSearchAlg(board, moves, depth, deadline);
-            //Wenn tiefe nicht beendet werden konnte
+            //Wenn Zeitlimit erreicht
             if (!completed) break;
-
+            //Abbruch bei Gewinn oder Verlust
             if (bestScoreFound >= 9000 || bestScoreFound <= -9000) break;
             depth = currentDepth;
-
         }
         return bestMoveFound;
     }
 
-
-    //Berechnung der Tiefe eines Zuges/Bester Zug auf der Jeweiligen Tiefe
+    /**
+     * Bewertet ALLE Züge auf einer bestimmten Tiefe
+     */
     public static boolean startSearchAlg(Board board, List<Move> moves, int depth, long deadline) {
         boolean isMax = !board.playBlackTurn;
 
@@ -68,22 +58,23 @@ public class SearchMoves {
 
         for (Move move : moves) {
             if (System.currentTimeMillis() >= deadline) return false;
-
+            //Führt den Zug auf einer Kopie des Boards aus
             Board copy = board.copy();
             GameLogic.moveFigure(copy, move.fromX, move.fromY, move.toX, move.toY);
 
-            //Alpha Betta
+            //Alpha-Beta-Suche:
             int score = alphaBeta(copy, depth - 1, alpha, beta, deadline);
 
-            //Minimax
-//          int score = miniMaxStanard(copy, depth - 1, alpha, beta, deadline);
+            //Minimax-Suche:
+            //int score = miniMaxStanard(copy, depth - 1, alpha, beta, deadline);
 
             if (score == Integer.MIN_VALUE) return false;
 
-//            // ← NEU: Zug + Score ausgeben
-//            System.out.printf("Zug: %d,%d --> %d,%d  Score: %d%n",
-//                    move.fromX, move.fromY, move.toX, move.toY, score);
+            //Zug + Score ausgeben:
+            //System.out.printf("Zug: %d,%d --> %d,%d  Score: %d%n",
+            //move.fromX, move.fromY, move.toX, move.toY, score);
 
+            //MAX --> höchster Score, MIN --> niedrigster Score
             if (isMax) {
                 if (score > bestScore) {
                     bestScore = score;
@@ -101,19 +92,21 @@ public class SearchMoves {
 
         if (bestMove != null) {
             bestMoveFound = bestMove;
-//            bestScoreFound = bestScore;
-////            System.out.println("→ Bester Zug: " + bestMove.fromX + "," + bestMove.fromY
-////                    + " --> " + bestMove.toX + "," + bestMove.toY
-////                    + "  Score: " + bestScoreFound);
+            bestScoreFound = bestScore;
+            //System.out.println("→ Bester Zug: " + bestMove.fromX + "," + bestMove.fromY
+            //        + " --> " + bestMove.toX + "," + bestMove.toY
+            //        + "  Score: " + bestScoreFound);
         }
         return true;
     }
 
-    //Standard Alpha-Beta
+    /**
+     * Führt die Alpha-Beta-Suche durch und bewertet die Positionen auf der angegebenen Tiefe
+     * Gibt den besten Score zurück
+     */
     public static int alphaBeta(Board board, int depth, int alpha, int beta, long deadline) {
-        nodes++;
 
-        //Nur bei Jedem 4K noten ZeitCheck - Rechnezitsparen
+        //Nur bei jedem 4. Knoten ZeitCheck => Rechnerzeitsparen
         if ((depth & 0x3) == 0 && System.currentTimeMillis() >= deadline) {
             return Integer.MIN_VALUE;
         }
@@ -128,7 +121,7 @@ public class SearchMoves {
         }
 
         boolean maxScore = !board.playBlackTurn;
-
+        //Kindknoten rekursiv bewerten
         if (maxScore) {
             int score = -infinity;
             for (Move move : moves) {
@@ -145,7 +138,6 @@ public class SearchMoves {
                 if (alpha >= beta) break;
             }
             return score;
-
         } else {
             int score = infinity;
             for (Move move : moves) {
@@ -164,10 +156,12 @@ public class SearchMoves {
         }
     }
 
-    //Standard MiniMax - Keine Cutoff
+    /**
+     * Standard Minimax-Suche ohne Cutoffs
+     */
     public static int miniMaxStanard(Board board, int depth, int alpha, int beta, long deadline) {
 
-        //Nur bei Jedem 4K noten ZeitCheck - Rechnezitsparen
+        //Nur bei jedem 4. Knoten ZeitCheck => Rechnerzeitsparen
         if ((depth & 0x3) == 0 && System.currentTimeMillis() >= deadline) {
             return Integer.MIN_VALUE;
         }
@@ -198,7 +192,6 @@ public class SearchMoves {
 
             }
             return score;
-
         } else {
             int score = infinity;
             for (Move move : moves) {
@@ -209,12 +202,14 @@ public class SearchMoves {
                 if (childScore == Integer.MIN_VALUE) return Integer.MIN_VALUE;
 
                 score = Math.min(score, childScore);
-
             }
             return score;
         }
     }
 
+    /**
+     * Testet Anzahl der Knoten, die bei bestimmter Alpha-Beta-Suche bzw. Minimax-Suche auf einer bestimmten Tiefe besucht werden
+     */
     public static void main(String[] args) {
         Board board = new Board();
 

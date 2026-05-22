@@ -111,7 +111,7 @@ public class Main {
                 GameLogic.moveFigure(board, fromRow, fromCol, toRow, toCol);
             } else {
 
-                Move move = SearchMoves.makeRandomMove(board);
+                Move move = MoveFactory.makeRandomMove(board);
 
                 if (move == null) {
                     System.out.println("Kein Zug möglich!" + "Ki" + " hat verloren!");

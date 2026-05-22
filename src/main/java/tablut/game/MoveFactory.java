@@ -4,6 +4,7 @@ import tablut.board.Board;
 import tablut.board.Move;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 //Objekt mit allen Zügen
 public class MoveFactory {
@@ -51,4 +52,17 @@ public class MoveFactory {
         }
         return false;
     }
+
+    //Zum Testen: Zufälligen Zug generieren
+    public static Move makeRandomMove(Board b) {
+        //Optimieren als Array Später
+        MoveFactory m = new MoveFactory();
+        List<Move> moves = m.getAllMoves(b);
+        if (moves.isEmpty()) return null;
+        Random rand = new Random();
+        Move randomMove = moves.get(rand.nextInt(moves.size()));
+
+        return randomMove;
+    }
+
 }
