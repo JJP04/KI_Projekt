@@ -33,6 +33,7 @@ public class SearchMoves {
     }
 
     public static Move findBestMoveAlphaBeta(Board board, long timeLimitMs) {
+       //TODO Muss erstzet werden duch die "Sotierten" Züge
         List<Move> moves = MoveFactory.getAllMoves(board);
         nodes = 0;
         if (moves.isEmpty()) return null;
@@ -73,10 +74,13 @@ public class SearchMoves {
             GameLogic.moveFigure(copy, move.fromX, move.fromY, move.toX, move.toY);
 
             //Alpha Betta
-            int score = alphaBeta(copy, depth - 1, alpha, beta, deadline);
+//            int score = alphaBeta(copy, depth - 1, alpha, beta, deadline);
 
             //Minimax
 //          int score = miniMaxStanard(copy, depth - 1, alpha, beta, deadline);
+
+            //PVS
+           int score = pvs(copy, depth - 1, alpha, beta, deadline);
 
             if (score == Integer.MIN_VALUE) return false;
 
@@ -214,6 +218,85 @@ public class SearchMoves {
             return score;
         }
     }
+
+
+    public static int pvs(Board board, int depth, int alpha, int beta, long deadline) {
+        nodes++;
+
+        if ((depth & 0x3) == 0 && System.currentTimeMillis() >= deadline) {
+            return Integer.MIN_VALUE;
+        }
+
+        if (depth == 0 || GameLogic.isGameOver(board)) {
+            return Bewertungsfunktion.ratePosition(board);
+        }
+
+        List<Move> moves = MoveFactory.getAllMoves(board);
+        if (moves.isEmpty()) {
+            return 0;
+        }
+
+        boolean maxScore = !board.playBlackTurn;
+
+        if (maxScore) {
+            int score = -infinity;
+            for (int i = 0; i < moves.size(); i++) {
+                Move move = moves.get(i);
+                Board copy = board.copy();
+                GameLogic.moveFigure(copy, move.fromX, move.fromY, move.toX, move.toY);
+
+                int childScore;
+                if (i == 0) {
+                    // Erster Zug: volles Fenster
+                    childScore = pvs(copy, depth - 1, alpha, beta, deadline);
+                } else {
+                    // Alle anderen: Nullfenster
+                    childScore = pvs(copy, depth - 1, alpha, alpha + 1, deadline);
+                    if (childScore == Integer.MIN_VALUE) return Integer.MIN_VALUE;
+                    // Fail-high: Zug ist besser als alpha, genauen Wert holen
+                    if (childScore > alpha && childScore < beta) {
+                        childScore = pvs(copy, depth - 1, alpha, beta, deadline);
+                    }
+                }
+
+                if (childScore == Integer.MIN_VALUE) return Integer.MIN_VALUE;
+                score = Math.max(score, childScore);
+                alpha = Math.max(alpha, score);
+                if (alpha >= beta) break;
+            }
+            return score;
+
+        } else {
+            int score = infinity;
+            for (int i = 0; i < moves.size(); i++) {
+                Move move = moves.get(i);
+                Board copy = board.copy();
+                GameLogic.moveFigure(copy, move.fromX, move.fromY, move.toX, move.toY);
+
+                int childScore;
+                if (i == 0) {
+                    // Erster Zug: volles Fenster
+                    childScore = pvs(copy, depth - 1, alpha, beta, deadline);
+                } else {
+                    // Alle anderen: Nullfenster
+                    childScore = pvs(copy, depth - 1, beta - 1, beta, deadline);
+                    if (childScore == Integer.MIN_VALUE) return Integer.MIN_VALUE;
+                    // Fail-low: Zug ist schlechter als beta, genauen Wert holen
+                    if (childScore > alpha && childScore < beta) {
+                        childScore = pvs(copy, depth - 1, alpha, beta, deadline);
+                    }
+                }
+
+                if (childScore == Integer.MIN_VALUE) return Integer.MIN_VALUE;
+                score = Math.min(score, childScore);
+                beta = Math.min(beta, score);
+                if (alpha >= beta) break;
+            }
+            return score;
+        }
+    }
+
+
 
     public static void main(String[] args) {
         Board board = new Board();
