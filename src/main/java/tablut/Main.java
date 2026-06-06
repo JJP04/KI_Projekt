@@ -10,6 +10,8 @@ import tablut.client.GameClient;
 import tablut.game.GameLogic;
 import tablut.game.MoveFactory;
 import tablut.ki.SearchMoves;
+import tablut.ki.TranspositionTable;
+import tablut.ki.ZobristHashing;
 
 public class Main {
 
@@ -31,9 +33,17 @@ public class Main {
         Scanner scanner = new Scanner(System.in);
         int wahl = scanner.nextInt();
 
+        Board board = new Board();
+        //Zobrist initialisieren (Jede Figur auf jedem Feld bekommt einen zufälligen Wert zugeordnet)
+        ZobristHashing.initializeZobristTable();
+        //Hash für die Startstellung berechnen
+        board.hash = ZobristHashing.computeHash(board);
+        //Transposition Table erstellen (Hash-Tabelle um bereits bewertete Stellungen zu speichern)
+        TranspositionTable tt = new TranspositionTable();
+
         switch (wahl) {
             case 1 -> gameserver();
-            case 2 -> kiVsKi(new Board());
+            case 2 -> kiVsKi(board);
             case 3 -> kiVsKi_FenString();
             case 4 -> menschVsKi();
             case 5 -> menschVsMensch();
@@ -55,7 +65,9 @@ public class Main {
         System.out.println("kiVsKi");
         board.printBoard();
 
+
         while (!GameLogic.isGameOver(board)) {
+
             Move move = SearchMoves.findBestMoveAlphaBeta(board, 10000000);
 
             String farbe = board.playBlackTurn ? "Schwarz" : "Weiß";

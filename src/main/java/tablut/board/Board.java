@@ -8,44 +8,42 @@ import java.util.List;
 
 public class Board {
 
-    //Konstanten für die Spielfeldwerte:
+    //KONSTANTEN
     public static final int EMPTY = 0;
     public static final int BORDER = 99;
     public static final int BLACK = 1;
     public static final int WHITE = -1;
     public static final int KING = -2;
+
     public List<int[][]> boardHistory = new ArrayList<>();
     public boolean isSearchCopy = false;
 
-    //Besondere Felder:
-    public static int[][] directions = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
-
-    public static int[][] corners = {{1, 1}, {1, 9}, {9, 1}, {9, 9}}; //Ecke als Sonderfeld
-
-    public static int[] throne = {5, 5}; //Thron als Sonderfeld
-    //aktuelle Position des Königs
-    public int[] kingPos = {5, 5};
-
-    public static int[][] throneNeighbor = {{4, 5}, {6, 5}, {5, 4}, {5, 6}}; //Thron angrenzende Felder als Sonderfelder
-
-
-    public Board() {
-        createBorder();
-        setUpBoard();
-    }
-
-    //Board inklusive "Rand"
+    //SPIELZUSTAND:
     public final int[][] playingBoard = new int[11][11];
 
     public final boolean[][] blackSoldersPos = new boolean[11][11];
     public final boolean[][] whiteSoldersPos = new boolean[11][11];
 
+    //Spezialfelder
+    public static int[][] directions = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
+    public static int[][] corners = {{1, 1}, {1, 9}, {9, 1}, {9, 9}};
+    public static int[] throne = {5, 5};
+    public static int[][] throneNeighbor = {{4, 5}, {6, 5}, {5, 4}, {5, 6}}; //Thron angrenzende Felder als Sonderfelder
+
+    //aktuelle Position des Königs
+    public int[] kingPos = {5, 5};
     //Schwarz Beginnt
     public boolean playBlackTurn = true;
-
-    //Zähler Max 50 Züge?
+    //Zähler Max 50 Züge
     public int countMoves = 0;
+    //Hash-Wert
+    public long hash;
 
+    //SPIELFELD ERSTELLEN
+    public Board() {
+        createBorder();
+        setUpBoard();
+    }
     public void createBorder() {
         for (int i = 0; i < 11; i++) {
             playingBoard[0][i] = BORDER;
@@ -54,7 +52,6 @@ public class Board {
             playingBoard[i][10] = BORDER;
         }
     }
-
     public void setUpBoard() {
         int[][] blackStart = {{1, 4}, {1, 5}, {1, 6}, {2, 5}, {9, 4}, {9, 5}, {9, 6}, {8, 5}, {4, 1}, {5, 1}, {6, 1}, {5, 2}, {4, 9}, {5, 9}, {6, 9}, {5, 8}};
         int[][] whiteStart = {{3, 5}, {5, 3}, {5, 7}, {7, 5}, {4, 5}, {5, 4}, {5, 6}, {6, 5}};
@@ -64,13 +61,11 @@ public class Board {
             playingBoard[pos[0]][pos[1]] = BLACK;
             blackSoldersPos[pos[0]][pos[1]] = true;
         }
-
         //White
         for (int[] pos : whiteStart) {
             playingBoard[pos[0]][pos[1]] = WHITE;
             whiteSoldersPos[pos[0]][pos[1]] = true;
         }
-
         // König auf Thron
         playingBoard[5][5] = KING;
     }
@@ -132,6 +127,8 @@ public class Board {
         b.isSearchCopy = true;
         //Boardhistory wird mit gegben
         b.boardHistory = new ArrayList<>();  // ← neu
+
+        b.hash = this.hash; // Hash-Wert wird mit kopiert, da die Position identisch ist
         return b;
 
     }

@@ -49,7 +49,6 @@ public class ZobristHashing {
         return hash;
     }
 
-
     /**
      * Aktualisiert den Zobrist-Hash, wenn eine Figur von einer Position zu einer anderen bewegt wird.
      * Effizienter als jedes mal gesamte Board zu berechnen
