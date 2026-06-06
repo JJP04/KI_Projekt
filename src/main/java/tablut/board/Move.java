@@ -7,6 +7,8 @@ public class Move {
     public int fromX, fromY;
     public int toX, toY;
 
+    public int capturedPiece; // Für unmakeMove, um die geschlagene Figur zu speichern
+
     public Move(int fromX, int fromY, int toX, int toY) {
         this.fromX = fromX;
         this.fromY = fromY;
