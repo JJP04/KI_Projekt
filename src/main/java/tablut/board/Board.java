@@ -1,5 +1,7 @@
 package tablut.board;
 
+import tablut.ki.ZobristHashing;
+
 import java.util.ArrayList;
 import java.util.List;
 //Erstellt Spielfeld mit Figuren
@@ -128,7 +130,7 @@ public class Board {
         b.countMoves = this.countMoves;
         b.kingPos = this.kingPos.clone();
         b.isSearchCopy = true;
-      //Boardhistory wird mit gegben
+        //Boardhistory wird mit gegben
         b.boardHistory = new ArrayList<>();  // ← neu
         return b;
 
