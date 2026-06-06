@@ -2,6 +2,7 @@ package tablut.game;
 
 import tablut.board.Board;
 import tablut.board.Move;
+import tablut.ki.ZobristHashing;
 
 import java.util.Arrays;
 
@@ -30,13 +31,17 @@ public class GameLogic {
             board.kingPos[0] = toRow;
             board.kingPos[1] = toCol;
         }
-       board.countMoves++;
+
+        board.countMoves++;
         if (!board.isSearchCopy) {  // ← nur speichern wenn echtes Spiel
             savePosition(board);
         }
 
         //Schlagen Methode aufrufen
         toCapture(board, toRow, toCol);
+
+        //Hash aktualisieren
+        board.hash = ZobristHashing.updateHash(board.hash, board.playingBoard[toRow][toCol], fromRow, fromCol, toRow, toCol);
 
         //Zug wechseln
         board.playBlackTurn = !board.playBlackTurn;

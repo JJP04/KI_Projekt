@@ -23,7 +23,7 @@ public class ZobristHashing {
             }
         }
     }
-    private static int pieceToIndex(int piece) {
+    public static int pieceToIndex(int piece) {
         if (piece == Board.BLACK) return 0;
         if (piece == Board.WHITE) return 1;
         if (piece == Board.KING)  return 2;

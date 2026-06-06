@@ -80,7 +80,7 @@ public class SearchMoves {
             //Führt den Zug auf einer Kopie des Boards aus
             Board copy = board.copy();
             GameLogic.moveFigure(copy, move.fromX, move.fromY, move.toX, move.toY);
-            copy.hash = ZobristHashing.updateHash(board.hash, copy.playingBoard[move.toX][move.toY], move.fromX, move.fromY, move.toX, move.toY);
+
             //Alpha Beta:
             //int score = alphaBeta(copy, depth - 1, alpha, beta, deadline);
 
@@ -233,20 +233,13 @@ public class SearchMoves {
         //Überprüfung, ob Spielzustand bereits in Transposition Table gespeichert ist
         TranspositionTable.Entry entry = tt.get(board.hash);
         if (entry != null && entry.depth >= depth) {
-            if (entry.type == 0) {
-                return entry.score; // Exakt → sofort fertig
-            }
-            if (entry.type == -1) { //
-                if (entry.score <= alpha) {
-                    return entry.score; //UPPERBOUND Cutoff
-                }
-            }
-            if (entry.type == 1) { //
-                if (entry.score >= beta) {
-                    return entry.score; // LOWERBOUND Cutoff
-                }
-            }
+            if (entry.type == 0) return entry.score;
+
+            if (entry.type == -1) return entry.score;
+
+            if (entry.type == 1) return entry.score;
         }
+
 
         if ((depth & 0x3) == 0 && System.currentTimeMillis() >= deadline) {
             return Integer.MIN_VALUE;
@@ -260,12 +253,21 @@ public class SearchMoves {
         if (moves.isEmpty()) {
             return 0;
         }
+
+        //Stellt Move ganz an Anfang von Moves, da schon vorher einmal erkannt
+        if (entry != null && entry.move != null) {
+            moves.remove(entry.move);
+            moves.addFirst(entry.move);
+        }
+
+        int alphaOrig = alpha;
+        int betaOrig = beta;
+
+        Move bestMove = null;
+
         boolean maxScore = !board.playBlackTurn;
 
         if (maxScore) {
-
-            int alphaOrig = alpha;
-            int betaOrig = beta;
 
             int score = -infinity;
 
@@ -289,6 +291,11 @@ public class SearchMoves {
                 }
 
                 if (childScore == Integer.MIN_VALUE) return Integer.MIN_VALUE;
+
+                if (childScore > score) {
+                    bestMove = move;
+                }
+
                 score = Math.max(score, childScore);
                 alpha = Math.max(alpha, score);
                 if (alpha >= beta) break;
@@ -303,13 +310,10 @@ public class SearchMoves {
                 type = 0; // EXACT
             }
 
-            tt.put(board.hash, depth, score, type, null);
+            tt.put(board.hash, new TranspositionTable.Entry(depth, score, type, bestMove));
             return score;
 
         } else {
-            int alphaOrig = alpha;
-            int betaOrig = beta;
-
             int score = infinity;
             for (int i = 0; i < moves.size(); i++) {
                 Move move = moves.get(i);
@@ -331,6 +335,11 @@ public class SearchMoves {
                 }
 
                 if (childScore == Integer.MIN_VALUE) return Integer.MIN_VALUE;
+
+                if (childScore > score) {
+                    bestMove = move;
+                }
+
                 score = Math.min(score, childScore);
                 beta = Math.min(beta, score);
                 if (alpha >= beta) break;
@@ -343,7 +352,8 @@ public class SearchMoves {
             } else {
                 type = 0; // EXACT
             }
-            tt.put(board.hash, depth, score, type, null);
+
+            tt.put(board.hash, new TranspositionTable.Entry(depth, score, type, bestMove));
             return score;
         }
     }

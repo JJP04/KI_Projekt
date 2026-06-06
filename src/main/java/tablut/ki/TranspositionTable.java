@@ -34,12 +34,7 @@ public class TranspositionTable {
         return table.get(hash);
     }
 
-    public void put(long hash, int depth, int score, int type, Move move) {
-
-        Entry old = table.get(hash);
-
-        if (old == null && old.depth > depth) {
-            table.put(hash, new Entry(depth, score, type, move));
-        }
+    public void put(long hash, Entry entry){
+        table.put(hash, entry);
     }
 }
