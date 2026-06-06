@@ -23,8 +23,11 @@ public class TranspositionTable {
         }
     }
 
-    private final HashMap<Long, Entry> table = new HashMap<>();
+    public final HashMap<Long, Entry> table = new HashMap<>();
 
+    public int size() {
+        return table.size();
+    }
 
     public boolean contains(long hash) {
         return table.containsKey(hash);
@@ -34,7 +37,10 @@ public class TranspositionTable {
         return table.get(hash);
     }
 
-    public void put(long hash, Entry entry){
-        table.put(hash, entry);
+    public void put(long hash, Entry entry) {
+        Entry existing = table.get(hash);
+        if (existing == null || entry.depth >= existing.depth) {
+            table.put(hash, entry);
+        }
     }
 }

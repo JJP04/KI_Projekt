@@ -33,7 +33,6 @@ public class Move {
         board.playingBoard[move.fromX][move.fromY] = Board.EMPTY;
     }
 
-
     public static void unmakeMove(Board board, Move move, int capturedPiece) {
         int piece = board.playingBoard[move.toX][move.toY];
 

@@ -23,6 +23,7 @@ public class SearchMoves {
 
     public static TranspositionTable tt = new TranspositionTable();
 
+
     public static Move makeRandomMove(Board b) {
         //Optimieren als Array Später
         MoveFactory m = new MoveFactory();
@@ -44,12 +45,13 @@ public class SearchMoves {
         if (moves.isEmpty()) return null;
         long deadline = System.currentTimeMillis() + timeLimitMs - buffer;
 
+        //Zobrist initialisieren (Jede Figur auf jedem Feld bekommt einen zufälligen Wert zugeordnet)
+        ZobristHashing.initializeZobristTable();
+        //Hash für die Startstellung berechnen
+        board.hash = ZobristHashing.computeHash(board);
+
         bestMoveFound = moves.get(0);
         bestScoreFound = 0;
-
-        //Transposition Table + Zobrist Hashing initialisieren
-        ZobristHashing.initializeZobristTable();
-
 
         for (int currentDepth = 1; currentDepth <= maxDepth; currentDepth++) {
             if (System.currentTimeMillis() >= deadline) break;
@@ -88,7 +90,7 @@ public class SearchMoves {
             //int score = miniMaxStanard(copy, depth - 1, alpha, beta, deadline);
 
             //PVS:
-            int score = pvs(copy, depth - 1, alpha, beta, deadline, tt);
+            int score = pvs(copy, depth - 1, alpha, beta, deadline);
 
             if (score == Integer.MIN_VALUE) return false;
 
@@ -226,8 +228,7 @@ public class SearchMoves {
         }
     }
 
-
-    public static int pvs(Board board, int depth, int alpha, int beta, long deadline, TranspositionTable tt) {
+    public static int pvs(Board board, int depth, int alpha, int beta, long deadline) {
         nodes++;
 
         //Überprüfung, ob Spielzustand bereits in Transposition Table gespeichert ist
@@ -235,9 +236,9 @@ public class SearchMoves {
         if (entry != null && entry.depth >= depth) {
             if (entry.type == 0) return entry.score;
 
-            if (entry.type == -1) return entry.score;
+            if (entry.type == -1 && entry.score >= beta) return entry.score;
 
-            if (entry.type == 1) return entry.score;
+            if (entry.type == 1 && entry.score <= alpha) return entry.score;
         }
 
 
@@ -279,14 +280,14 @@ public class SearchMoves {
                 int childScore;
                 if (i == 0) {
                     // Erster Zug: volles Fenster
-                    childScore = pvs(copy, depth - 1, alpha, beta, deadline, tt);
+                    childScore = pvs(copy, depth - 1, alpha, beta, deadline);
                 } else {
                     // Alle anderen: Nullfenster
-                    childScore = pvs(copy, depth - 1, alpha, alpha + 1, deadline, tt);
+                    childScore = pvs(copy, depth - 1, alpha, alpha + 1, deadline);
                     if (childScore == Integer.MIN_VALUE) return Integer.MIN_VALUE;
                     // Fail-high: Zug ist besser als alpha, genauen Wert holen
                     if (childScore > alpha && childScore < beta) {
-                        childScore = pvs(copy, depth - 1, alpha, beta, deadline, tt);
+                        childScore = pvs(copy, depth - 1, alpha, beta, deadline);
                     }
                 }
 
@@ -323,14 +324,14 @@ public class SearchMoves {
                 int childScore;
                 if (i == 0) {
                     // Erster Zug: volles Fenster
-                    childScore = pvs(copy, depth - 1, alpha, beta, deadline, tt);
+                    childScore = pvs(copy, depth - 1, alpha, beta, deadline);
                 } else {
                     // Alle anderen: Nullfenster
-                    childScore = pvs(copy, depth - 1, beta - 1, beta, deadline, tt);
+                    childScore = pvs(copy, depth - 1, beta - 1, beta, deadline);
                     if (childScore == Integer.MIN_VALUE) return Integer.MIN_VALUE;
                     // Fail-low: Zug ist schlechter als beta, genauen Wert holen
                     if (childScore > alpha && childScore < beta) {
-                        childScore = pvs(copy, depth - 1, alpha, beta, deadline, tt);
+                        childScore = pvs(copy, depth - 1, alpha, beta, deadline);
                     }
                 }
 

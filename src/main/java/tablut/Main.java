@@ -34,12 +34,6 @@ public class Main {
         int wahl = scanner.nextInt();
 
         Board board = new Board();
-        //Zobrist initialisieren (Jede Figur auf jedem Feld bekommt einen zufälligen Wert zugeordnet)
-        ZobristHashing.initializeZobristTable();
-        //Hash für die Startstellung berechnen
-        board.hash = ZobristHashing.computeHash(board);
-        //Transposition Table erstellen (Hash-Tabelle um bereits bewertete Stellungen zu speichern)
-        TranspositionTable tt = new TranspositionTable();
 
         switch (wahl) {
             case 1 -> gameserver();
@@ -79,6 +73,9 @@ public class Main {
             System.out.println(farbe + " Zug: " + move.fromX + "," + move.fromY + "---> " + move.toX + "," + move.toY);
 
             board.printBoard();
+
+            System.out.println("TT Einträge: " + SearchMoves.tt.size());;
+
         }
         System.out.println("Das Spiel ist vorbei!");
         GameLogic.gameEnd(board);
