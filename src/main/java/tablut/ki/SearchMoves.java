@@ -41,6 +41,7 @@ public class SearchMoves {
     public static Move findBestMoveAlphaBeta(Board board, long timeLimitMs) {
         //TODO Muss erstzet werden duch die "Sotierten" Züge
         List<Move> moves = MoveFactory.getAllMoves(board);
+        KillerHeuristik.sortMoves(moves, 0);
         nodes = 0;
         if (moves.isEmpty()) return null;
         long deadline = System.currentTimeMillis() + timeLimitMs - buffer;
@@ -84,13 +85,13 @@ public class SearchMoves {
             GameLogic.moveFigure(copy, move.fromX, move.fromY, move.toX, move.toY);
 
             //Alpha Beta:
-            //int score = alphaBeta(copy, depth - 1, alpha, beta, deadline);
+            int score = alphaBeta(copy, depth - 1, alpha, beta, deadline, 1);
 
             //Minimax:
             //int score = miniMaxStanard(copy, depth - 1, alpha, beta, deadline);
 
             //PVS:
-            int score = pvs(copy, depth - 1, alpha, beta, deadline);
+            //int score = pvs(copy, depth - 1, alpha, beta, deadline);
 
             if (score == Integer.MIN_VALUE) return false;
 
@@ -127,7 +128,7 @@ public class SearchMoves {
      * Führt die Alpha-Beta-Suche durch und bewertet die Positionen auf der angegebenen Tiefe
      * Gibt den besten Score zurück
      */
-    public static int alphaBeta(Board board, int depth, int alpha, int beta, long deadline) {
+    public static int alphaBeta(Board board, int depth, int alpha, int beta, long deadline, int ply ) {
         nodes++;
 
         //Nur bei jedem 4. Knoten ZeitCheck => Rechnerzeitsparen
@@ -138,6 +139,8 @@ public class SearchMoves {
             return Bewertungsfunktion.ratePosition(board);
         }
         List<Move> moves = MoveFactory.getAllMoves(board);
+        KillerHeuristik.sortMoves(moves, ply);
+
         if (moves.isEmpty()) {
             return 0;
         }
@@ -150,14 +153,19 @@ public class SearchMoves {
                 Board copy = board.copy();
                 GameLogic.moveFigure(copy, move.fromX, move.fromY, move.toX, move.toY);
 
-                int childScore = alphaBeta(copy, depth - 1, alpha, beta, deadline);
+                int childScore = alphaBeta(copy, depth - 1, alpha, beta, deadline, ply+1);
                 //Abbruch bei Zeit überschreitung
                 if (childScore == Integer.MIN_VALUE) return Integer.MIN_VALUE;
 
                 score = Math.max(score, childScore);
                 alpha = Math.max(alpha, score);
                 //Beta Cutoff
-                if (alpha >= beta) break;
+                 if (alpha >= beta) {
+                    //if (!isCapture(move)) {
+                    KillerHeuristik.storeKiller(move, ply);
+                   //s }
+                    break;
+                }
             }
             return score;
         } else {
@@ -166,13 +174,19 @@ public class SearchMoves {
                 Board copy = board.copy();
                 GameLogic.moveFigure(copy, move.fromX, move.fromY, move.toX, move.toY);
 
-                int childScore = alphaBeta(copy, depth - 1, alpha, beta, deadline);
+                int childScore = alphaBeta(copy, depth - 1, alpha, beta, deadline, ply +1);
                 if (childScore == Integer.MIN_VALUE) return Integer.MIN_VALUE;
 
                 score = Math.min(score, childScore);
                 beta = Math.min(beta, score);
                 //Alpha Cutoff
-                if (alpha >= beta) break;
+                if (alpha >= beta) {
+                    //if (!isCapture(move)) {
+                    KillerHeuristik.storeKiller(move, ply);
+                   //s }
+                    break;
+                }
+                    
             }
             return score;
         }
