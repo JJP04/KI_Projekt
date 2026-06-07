@@ -12,7 +12,7 @@ import java.util.Random;
 
 public class SearchMoves {
 
-    public static int maxDepth = 4;
+    public static int maxDepth = 10;
     public static int depth = 1;
     private static final int infinity = Integer.MAX_VALUE / 2;
     private static final long buffer = 50;
@@ -84,14 +84,14 @@ public class SearchMoves {
             Board copy = board.copy();
             GameLogic.moveFigure(copy, move.fromX, move.fromY, move.toX, move.toY);
 
-            //Alpha Beta:
-            int score = alphaBeta(copy, depth - 1, alpha, beta, deadline, 1);
-
             //Minimax:
             //int score = miniMaxStanard(copy, depth - 1, alpha, beta, deadline);
 
+            //Alpha Beta:
+            //int score = alphaBeta(copy, depth - 1, alpha, beta, deadline, 1);
+
             //PVS:
-            //int score = pvs(copy, depth - 1, alpha, beta, deadline);
+            int score = pvs(copy, depth - 1, alpha, beta, deadline);
 
             if (score == Integer.MIN_VALUE) return false;
 
@@ -384,8 +384,5 @@ public class SearchMoves {
 
         System.out.println("Perft   Tiefe 2: " + Perft.perft(board, 2));
     }
-
-
-
-
 }
+

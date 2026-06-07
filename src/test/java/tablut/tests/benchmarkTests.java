@@ -63,17 +63,22 @@ public class benchmarkTests {
 //        benchmarktests(blackWins);
     }
 
+    //Alpha-Beta vs. PVS
+    //PVS - PVS + TT
+    //PVS - PVS + KH
+    //PVS - PVS + TT + KH
+
     public static void benchmarktests(String boardFen) {
         Board board = FenParser.parse(boardFen);
         board.printBoard();
-        //System.out.println("\nBenchmark: Bewertungsfunktion 10000 mal aufrufen:");
-        //bestMovesAndTimeFor10000(board);
+        System.out.println("\nBenchmark: Bewertungsfunktion 10000 mal aufrufen:");
+        bestMovesAndTimeFor10000(board);
         System.out.println("\nBenchmark: Tiefe in 1 Sekunde:");
         depthInOneSec(board);
-        //System.out.println("\nBenchmark: Zeit für Tiefe 4");
-        //depth4in2Minuits(board);
-        //System.out.println("\nBenchmark: Maximale Tiefe in 2 Minuten:");
-        //depthXin2Minuits(board);
+        System.out.println("\nBenchmark: Zeit für Tiefe 4");
+        depth4in2Minuits(board);
+        System.out.println("\nBenchmark: Maximale Tiefe in 2 Minuten:");
+        depthXin2Minuits(board);
     }
 
     public static void bestMovesAndTimeFor10000(Board board) {
