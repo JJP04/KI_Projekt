@@ -94,6 +94,7 @@ public class GameLogic {
                         if (board.playingBoard[field2[0]][field2[1]] == ownFigure2
                                 || Arrays.equals(Board.throne, field2) && board.playingBoard[5][5] == Board.EMPTY
                                 || isCorner(field2[0], field2[1])) {
+                            board.hash = ZobristHashing.captureHash(board.hash, opponentFigure, field1[0], field1[1]);
                             board.playingBoard[field1[0]][field1[1]] = Board.EMPTY;
                         }
                     }
@@ -122,6 +123,7 @@ public class GameLogic {
                         }
                     }
                     if (countBlack == 3 && counterWhite == 1) {
+                        board.hash = ZobristHashing.captureHash(board.hash, board.WHITE, field1[0], field1[1]);
                         board.playingBoard[field1[0]][field1[1]] = Board.EMPTY;
                     }
                 }
@@ -134,6 +136,7 @@ public class GameLogic {
     public static void toCaputureKing(Board board, int x, int y) {
         //1. Thron durch 4 schwarze besetzt
         if (board.playingBoard[5][5] == board.KING && board.playingBoard[4][5] == board.BLACK && board.playingBoard[6][5] == board.BLACK && board.playingBoard[5][4] == board.BLACK && board.playingBoard[5][6] == board.BLACK) {
+            board.hash = ZobristHashing.captureHash(board.hash, board.KING, x, y);
             board.playingBoard[5][5] = Board.EMPTY;
         }
         //2. König auf Thron angrenzendem Feld, dann reicht 3 schwarze besetzt
@@ -147,6 +150,7 @@ public class GameLogic {
                 }
             }
             if (countBlack == 3) {
+                board.hash = ZobristHashing.captureHash(board.hash, board.KING,x,y);
                 board.playingBoard[board.kingPos[0]][board.kingPos[1]] = Board.EMPTY;
             }
         }

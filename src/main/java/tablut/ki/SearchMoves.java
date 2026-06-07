@@ -241,7 +241,6 @@ public class SearchMoves {
             if (entry.type == 1 && entry.score <= alpha) return entry.score;
         }
 
-
         if ((depth & 0x3) == 0 && System.currentTimeMillis() >= deadline) {
             return Integer.MIN_VALUE;
         }
@@ -371,4 +370,8 @@ public class SearchMoves {
 
         System.out.println("Perft   Tiefe 2: " + Perft.perft(board, 2));
     }
+
+
+
+
 }

@@ -27,8 +27,7 @@ public class ZobristHashing {
         if (piece == Board.BLACK) return 0;
         if (piece == Board.WHITE) return 1;
         if (piece == Board.KING)  return 2;
-
-        throw new IllegalArgumentException();
+        return 99;
     }
 
     /**
@@ -62,6 +61,14 @@ public class ZobristHashing {
         hash ^= zobristTable[pieceIndex][fromFieldIndex];
         // Füge die Figur an der neuen Position hinzu
         hash ^= zobristTable[pieceIndex][toFieldIndex];
+        return hash;
+    }
+
+    public static long captureHash(long hash, int piece, int row, int col){
+        int pieceIndex = pieceToIndex(piece);
+        int fieldIndex = (row - 1) * 9 + (col - 1);
+        hash ^= zobristTable[pieceIndex][fieldIndex];
+
         return hash;
     }
 }

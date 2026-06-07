@@ -54,26 +54,26 @@ public class benchmarkTests {
         String startstellung = "3rrr3/4r4/4R4/r3R3r/rrRRKRRrr/r3R3r/4R4/4r4/3rrr3 s 0 1";
         benchmarktests(startstellung);
 
-        System.out.println("Weiß gewinnt in 2:");
-        String whiteWins = "4rr3/4r4/5R3/r4r3/rr1r2Rrr/r3R3r/2R2K1R1/4r4/4r4 w 0 12";
-        benchmarktests(whiteWins);
-
-        System.out.println("Schwarz gewinnt in 2:");
-        String blackWins = "4r4/1r2r4/2r1Kr3/3rRr3/9/2R1r2R1/9/4r4/9 w 0 1";
-        benchmarktests(blackWins);
+//        System.out.println("Weiß gewinnt in 2:");
+//        String whiteWins = "4rr3/4r4/5R3/r4r3/rr1r2Rrr/r3R3r/2R2K1R1/4r4/4r4 w 0 12";
+//        benchmarktests(whiteWins);
+//
+//        System.out.println("Schwarz gewinnt in 2:");
+//        String blackWins = "4r4/1r2r4/2r1Kr3/3rRr3/9/2R1r2R1/9/4r4/9 w 0 1";
+//        benchmarktests(blackWins);
     }
 
     public static void benchmarktests(String boardFen) {
         Board board = FenParser.parse(boardFen);
         board.printBoard();
-        System.out.println("\nBenchmark: Bewertungsfunktion 10000 mal aufrufen:");
-        bestMovesAndTimeFor10000(board);
+        //System.out.println("\nBenchmark: Bewertungsfunktion 10000 mal aufrufen:");
+        //bestMovesAndTimeFor10000(board);
         System.out.println("\nBenchmark: Tiefe in 1 Sekunde:");
         depthInOneSec(board);
-        System.out.println("\nBenchmark: Zeit für Tiefe 4");
-        depth4in2Minuits(board);
-        System.out.println("\nBenchmark: Maximale Tiefe in 2 Minuten:");
-        depthXin2Minuits(board);
+        //System.out.println("\nBenchmark: Zeit für Tiefe 4");
+        //depth4in2Minuits(board);
+        //System.out.println("\nBenchmark: Maximale Tiefe in 2 Minuten:");
+        //depthXin2Minuits(board);
     }
 
     public static void bestMovesAndTimeFor10000(Board board) {
