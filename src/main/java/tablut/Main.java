@@ -49,10 +49,13 @@ public class Main {
 
         System.out.println("Verbinde mit GameServer!");
         GameClient client = new GameClient(host, port);
-        System.out.print("Token eingeben: ");
         Scanner scanner = new Scanner(System.in);
+        System.out.print("Token eingeben: ");
         String token1 = scanner.nextLine();
-        client.runConnection(token1, lobby);
+        System.out.print("Lobby-Name eingeben (z.B. F): ");
+        String lobbyName = scanner.nextLine().trim();
+        if (lobbyName.isEmpty()) lobbyName = lobby;
+        client.runConnection(token1, lobbyName);
     }
 
     public static void kiVsKi(Board board) {

@@ -67,6 +67,13 @@ public class GameClient {
         String msg = receiveMessage();
         while (!msg.equals("ok")) {
             System.out.println("Config: " + msg);
+            if (msg.startsWith("set start_pos ")) {
+                String startPos = msg.substring("set start_pos ".length()).trim();
+                if (!startPos.isEmpty()) {
+                    board = FenParser.serverFenparse(startPos);
+                    System.out.println("Startposition gesetzt.");
+                }
+            }
             msg = receiveMessage();
         }
         sendMessage("ok");
@@ -135,7 +142,7 @@ public class GameClient {
     }
 
     public void kiMakeMove() throws IOException {
-        Move move = MoveFactory.makeRandomMove(board);
+        Move move = SearchMoves.findBestMoveAlphaBeta(board, 5000);
         if (move == null) {
             System.out.println("Kein Zug möglich!");
             return;
