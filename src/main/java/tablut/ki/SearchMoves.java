@@ -88,10 +88,10 @@ public class SearchMoves {
             //int score = miniMaxStanard(copy, depth - 1, alpha, beta, deadline);
 
             //Alpha Beta:
-            //int score = alphaBeta(copy, depth - 1, alpha, beta, deadline, 1);
+         //  int score = alphaBeta(copy, depth - 1, alpha, beta, deadline, 1);
 
             //PVS:
-            int score = pvs(copy, depth - 1, alpha, beta, deadline);
+          int score = pvs(copy, depth - 1, alpha, beta, deadline, 1);
 
             if (score == Integer.MIN_VALUE) return false;
 
@@ -139,8 +139,6 @@ public class SearchMoves {
             return Bewertungsfunktion.ratePosition(board);
         }
         List<Move> moves = MoveFactory.getAllMoves(board);
-        KillerHeuristik.sortMoves(moves, ply);
-
         if (moves.isEmpty()) {
             return 0;
         }
@@ -154,18 +152,11 @@ public class SearchMoves {
                 GameLogic.moveFigure(copy, move.fromX, move.fromY, move.toX, move.toY);
 
                 int childScore = alphaBeta(copy, depth - 1, alpha, beta, deadline, ply+1);
-                //Abbruch bei Zeit überschreitung
                 if (childScore == Integer.MIN_VALUE) return Integer.MIN_VALUE;
 
                 score = Math.max(score, childScore);
                 alpha = Math.max(alpha, score);
-                //Beta Cutoff
-                 if (alpha >= beta) {
-                    //if (!isCapture(move)) {
-                    KillerHeuristik.storeKiller(move, ply);
-                   //s }
-                    break;
-                }
+                if (alpha >= beta) break;
             }
             return score;
         } else {
@@ -174,19 +165,12 @@ public class SearchMoves {
                 Board copy = board.copy();
                 GameLogic.moveFigure(copy, move.fromX, move.fromY, move.toX, move.toY);
 
-                int childScore = alphaBeta(copy, depth - 1, alpha, beta, deadline, ply +1);
+                int childScore = alphaBeta(copy, depth - 1, alpha, beta, deadline, ply+1);
                 if (childScore == Integer.MIN_VALUE) return Integer.MIN_VALUE;
 
                 score = Math.min(score, childScore);
                 beta = Math.min(beta, score);
-                //Alpha Cutoff
-                if (alpha >= beta) {
-                    //if (!isCapture(move)) {
-                    KillerHeuristik.storeKiller(move, ply);
-                   //s }
-                    break;
-                }
-                    
+                if (alpha >= beta) break;
             }
             return score;
         }
@@ -242,16 +226,14 @@ public class SearchMoves {
         }
     }
 
-    public static int pvs(Board board, int depth, int alpha, int beta, long deadline) {
+    public static int pvs(Board board, int depth, int alpha, int beta, long deadline, int ply) {
         nodes++;
 
         //Überprüfung, ob Spielzustand bereits in Transposition Table gespeichert ist
         TranspositionTable.Entry entry = tt.get(board.hash);
         if (entry != null && entry.depth >= depth) {
             if (entry.type == 0) return entry.score;
-
             if (entry.type == -1 && entry.score <= alpha) return entry.score;
-
             if (entry.type == 1 && entry.score >= beta) return entry.score;
         }
 
@@ -268,7 +250,10 @@ public class SearchMoves {
             return 0;
         }
 
-        //Stellt Move ganz an Anfang von Moves, da schon vorher einmal erkannt
+        // Killer-Heuristik sortiert Züge nach Ply
+        KillerHeuristik.sortMoves(moves, ply);
+
+        // TT-Zug hat höchste Priorität → nach Sortierung an erste Stelle setzen
         if (entry != null && entry.move != null) {
             moves.remove(entry.move);
             moves.addFirst(entry.move);
@@ -293,14 +278,14 @@ public class SearchMoves {
                 int childScore;
                 if (i == 0) {
                     // Erster Zug: volles Fenster
-                    childScore = pvs(copy, depth - 1, alpha, beta, deadline);
+                    childScore = pvs(copy, depth - 1, alpha, beta, deadline, ply + 1);
                 } else {
                     // Alle anderen: Nullfenster
-                    childScore = pvs(copy, depth - 1, alpha, alpha + 1, deadline);
+                    childScore = pvs(copy, depth - 1, alpha, alpha + 1, deadline, ply + 1);
                     if (childScore == Integer.MIN_VALUE) return Integer.MIN_VALUE;
                     // Fail-high: Zug ist besser als alpha, genauen Wert holen
                     if (childScore > alpha && childScore < beta) {
-                        childScore = pvs(copy, depth - 1, alpha, beta, deadline);
+                        childScore = pvs(copy, depth - 1, alpha, beta, deadline, ply + 1);
                     }
                 }
 
@@ -312,7 +297,11 @@ public class SearchMoves {
 
                 score = Math.max(score, childScore);
                 alpha = Math.max(alpha, score);
-                if (alpha >= beta) break;
+                if (alpha >= beta) {
+                    KillerHeuristik.storeKiller(move, ply);
+                    KillerHeuristik.addHistory(move, depth);
+                    break;
+                }
             }
 
             int type;
@@ -337,14 +326,14 @@ public class SearchMoves {
                 int childScore;
                 if (i == 0) {
                     // Erster Zug: volles Fenster
-                    childScore = pvs(copy, depth - 1, alpha, beta, deadline);
+                    childScore = pvs(copy, depth - 1, alpha, beta, deadline, ply + 1);
                 } else {
                     // Alle anderen: Nullfenster
-                    childScore = pvs(copy, depth - 1, beta - 1, beta, deadline);
+                    childScore = pvs(copy, depth - 1, beta - 1, beta, deadline, ply + 1);
                     if (childScore == Integer.MIN_VALUE) return Integer.MIN_VALUE;
                     // Fail-low: Zug ist schlechter als beta, genauen Wert holen
                     if (childScore > alpha && childScore < beta) {
-                        childScore = pvs(copy, depth - 1, alpha, beta, deadline);
+                        childScore = pvs(copy, depth - 1, alpha, beta, deadline, ply + 1);
                     }
                 }
 
@@ -356,7 +345,11 @@ public class SearchMoves {
 
                 score = Math.min(score, childScore);
                 beta = Math.min(beta, score);
-                if (alpha >= beta) break;
+                if (alpha >= beta) {
+                    KillerHeuristik.storeKiller(move, ply);
+                    KillerHeuristik.addHistory(move, depth);
+                    break;
+                }
             }
             int type;
             if (score <= alphaOrig) {
@@ -385,4 +378,3 @@ public class SearchMoves {
         System.out.println("Perft   Tiefe 2: " + Perft.perft(board, 2));
     }
 }
-
