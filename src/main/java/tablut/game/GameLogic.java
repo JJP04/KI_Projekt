@@ -41,7 +41,7 @@ public class GameLogic {
         toCapture(board, toRow, toCol);
 
         //Hash aktualisieren
-        board.hash = ZobristHashing.updateHash(board.hash, board.playingBoard[toRow][toCol], fromRow, fromCol, toRow, toCol);
+        board.hash = ZobristHashing.updateHash(board.hash, figure, fromRow, fromCol, toRow, toCol);
 
         //Zug wechseln
         board.playBlackTurn = !board.playBlackTurn;
@@ -136,7 +136,7 @@ public class GameLogic {
     public static void toCaputureKing(Board board, int x, int y) {
         //1. Thron durch 4 schwarze besetzt
         if (board.playingBoard[5][5] == board.KING && board.playingBoard[4][5] == board.BLACK && board.playingBoard[6][5] == board.BLACK && board.playingBoard[5][4] == board.BLACK && board.playingBoard[5][6] == board.BLACK) {
-            board.hash = ZobristHashing.captureHash(board.hash, board.KING, x, y);
+            board.hash = ZobristHashing.captureHash(board.hash, board.KING, 5, 5);
             board.playingBoard[5][5] = Board.EMPTY;
         }
         //2. König auf Thron angrenzendem Feld, dann reicht 3 schwarze besetzt
@@ -150,7 +150,7 @@ public class GameLogic {
                 }
             }
             if (countBlack == 3) {
-                board.hash = ZobristHashing.captureHash(board.hash, board.KING,x,y);
+                board.hash = ZobristHashing.captureHash(board.hash, board.KING, board.kingPos[0], board.kingPos[1]);
                 board.playingBoard[board.kingPos[0]][board.kingPos[1]] = Board.EMPTY;
             }
         }

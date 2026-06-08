@@ -57,7 +57,7 @@ public class SearchMoves {
         for (int currentDepth = 1; currentDepth <= maxDepth; currentDepth++) {
             if (System.currentTimeMillis() >= deadline) break;
 
-            boolean completed = startSearchAlg(board, moves, depth, deadline);
+            boolean completed = startSearchAlg(board, moves, currentDepth, deadline);
             //Wenn Zeitlimit erreicht
             if (!completed) break;
             //Abbruch bei Gewinn oder Verlust
@@ -250,9 +250,9 @@ public class SearchMoves {
         if (entry != null && entry.depth >= depth) {
             if (entry.type == 0) return entry.score;
 
-            if (entry.type == -1 && entry.score >= beta) return entry.score;
+            if (entry.type == -1 && entry.score <= alpha) return entry.score;
 
-            if (entry.type == 1 && entry.score <= alpha) return entry.score;
+            if (entry.type == 1 && entry.score >= beta) return entry.score;
         }
 
         if ((depth & 0x3) == 0 && System.currentTimeMillis() >= deadline) {
@@ -350,7 +350,7 @@ public class SearchMoves {
 
                 if (childScore == Integer.MIN_VALUE) return Integer.MIN_VALUE;
 
-                if (childScore > score) {
+                if (childScore < score) {
                     bestMove = move;
                 }
 

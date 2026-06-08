@@ -33,6 +33,18 @@ public class Move {
         board.playingBoard[move.fromX][move.fromY] = Board.EMPTY;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof Move)) return false;
+        Move m = (Move) o;
+        return fromX == m.fromX && fromY == m.fromY && toX == m.toX && toY == m.toY;
+    }
+
+    @Override
+    public int hashCode() {
+        return fromX * 1000 + fromY * 100 + toX * 10 + toY;
+    }
+
     public static void unmakeMove(Board board, Move move, int capturedPiece) {
         int piece = board.playingBoard[move.toX][move.toY];
 
