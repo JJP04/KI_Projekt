@@ -82,7 +82,7 @@ public class SearchMoves {
             if (System.currentTimeMillis() >= deadline) return false;
             //Führt den Zug auf einer Kopie des Boards aus
             Board copy = board.copy();
-            GameLogic.moveFigure(copy, move.fromX, move.fromY, move.toX, move.toY);
+            MoveFactory.moveFigure(copy, move);
 
             //Minimax:
             //int score = miniMaxStanard(copy, depth - 1, alpha, beta, deadline);
@@ -272,8 +272,7 @@ public class SearchMoves {
 
             for (int i = 0; i < moves.size(); i++) {
                 Move move = moves.get(i);
-                Move
-                GameLogic.moveFigure(copy, move.fromX, move.fromY, move.toX, move.toY);
+                MoveFactory.moveFigure(copy, move);
 
                 int childScore;
                 if (i == 0) {
@@ -321,7 +320,7 @@ public class SearchMoves {
             for (int i = 0; i < moves.size(); i++) {
                 Move move = moves.get(i);
                 Board copy = board.copy();
-                GameLogic.moveFigure(copy, move.fromX, move.fromY, move.toX, move.toY);
+                MoveFactory.moveFigure(copy, move);
 
                 int childScore;
                 if (i == 0) {

@@ -1,9 +1,7 @@
 package tablut.board;
 
-import tablut.game.GameLogic;
 import tablut.ki.ZobristHashing;
 
-//Objekt aus einem Zug
 public class Move {
     public int fromX, fromY;
     public int toX, toY;
@@ -11,8 +9,7 @@ public class Move {
     //Undo Data
     public Capture[] capturedFigures = new Capture[2]; //Values: capturedX, capturedY, capturedFigure
     public int caputreCount = 0;
-    public long oldHash;
-    public boolean oldTurn;
+
 
     public Move(int fromX, int fromY, int toX, int toY) {
         this.fromX = fromX;
@@ -22,39 +19,46 @@ public class Move {
     }
 
     public static void makeMove(Board board, Move move) {
-        int piece = board.playingBoard[move.fromX][move.fromY];
+        // Board update
+        int figure = board.playingBoard[move.fromX][move.fromY];
 
+        board.playingBoard[move.toX][move.toY] = figure;
+        board.playingBoard[move.fromX][move.fromY] = Board.EMPTY;
+
+        //Hash update
         int fromIndex = (move.fromX - 1) * 9 + (move.fromY - 1);
         int toIndex = (move.toX - 1) * 9 + (move.toY - 1);
 
-        GameLogic.toCapture(board, move, move.toX, move.toY);
+        int figureIndex = ZobristHashing.pieceToIndex(figure);
 
-        int pieceIndex = ZobristHashing.pieceToIndex(piece);
-        // Hash update
-        board.hash ^= ZobristHashing.zobristTable[pieceIndex][fromIndex];
-        board.hash ^= ZobristHashing.zobristTable[pieceIndex][toIndex];
-
-        // Board update
-        board.playingBoard[move.toX][move.toY] = piece;
-        board.playingBoard[move.fromX][move.fromY] = Board.EMPTY;
+        board.hash ^= ZobristHashing.zobristTable[figureIndex][fromIndex];
+        board.hash ^= ZobristHashing.zobristTable[figureIndex][toIndex];
     }
 
 
-    public static void unmakeMove(Board board, Move move, int capturedPiece) {
-        int piece = board.playingBoard[move.toX][move.toY];
+    public static void unmakeMove(Board board, Move move) {
+        //Board Update
+        int figure = board.playingBoard[move.toX][move.toY];
 
+        board.playingBoard[move.fromX][move.fromY] = figure;
+        board.playingBoard[move.toX][move.toY] = Board.EMPTY;
+
+        if (move.capturedFigures[0] != null) {
+            board.playingBoard[move.capturedFigures[0].x][move.capturedFigures[0].y] = move.capturedFigures[0].figure;
+        }
+        if (move.capturedFigures[1] != null) {
+            board.playingBoard[move.capturedFigures[1].x][move.capturedFigures[1].y] = move.capturedFigures[1].figure;
+        }
+
+        //Hash Update
         int fromIndex = (move.fromX - 1) * 9 + (move.fromY - 1);
         int toIndex = (move.toX - 1) * 9 + (move.toY - 1);
 
-        int pieceIndex = ZobristHashing.pieceToIndex(piece);
+        int pieceIndex = ZobristHashing.pieceToIndex(figure);
 
         // Hash zurück
         board.hash ^= ZobristHashing.zobristTable[pieceIndex][toIndex];
         board.hash ^= ZobristHashing.zobristTable[pieceIndex][fromIndex];
-
-        // Board zurück
-        board.playingBoard[move.fromX][move.fromY] = piece;
-        board.playingBoard[move.toX][move.toY] = capturedPiece;
     }
 
     @Override

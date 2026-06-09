@@ -33,10 +33,10 @@ public class MoveFactory {
             board.kingPos[1] = move.toY;
         }
 
-//        board.countMoves++;
-//        if (!board.isSearchCopy) {  // ← nur speichern wenn echtes Spiel
-//            savePosition(board);
-//        }
+        board.countMoves++;
+        if (!board.isSearchCopy) {  // ← nur speichern wenn echtes Spiel
+            savePosition(board);
+        }
 
         //Schlagen Methode aufrufen
         GameLogic.toCapture(board, move, move.);
