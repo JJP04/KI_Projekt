@@ -2,12 +2,51 @@ package tablut.game;
 
 import tablut.board.Board;
 import tablut.board.Move;
+import tablut.ki.ZobristHashing;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
 //Objekt mit allen Zügen
 public class MoveFactory {
+
+    public static void moveFigure(Board board, Move move) {
+
+        int figure = board.playingBoard[move.fromX][move.fromY];
+
+        if (figure == Board.EMPTY || figure == Board.BORDER) {
+            System.out.println("Keine Figur auf Feld");
+            return;
+        }
+        board.playingBoard[move.fromX][move.fromY] = Board.EMPTY;
+        board.playingBoard[move.toX][move.toY] = figure;
+
+        if (figure == Board.BLACK) {
+            board.blackSoldersPos[move.fromX][move.fromY] = false;
+            board.blackSoldersPos[move.toX][move.toY] = true;
+        } else if (figure == Board.WHITE) {
+            board.whiteSoldersPos[move.fromX][move.fromY] = false;
+            board.whiteSoldersPos[move.toX][move.toY] = true;
+        } else if (figure == Board.KING) {
+            board.kingPos[0] = move.toX;
+            board.kingPos[1] = move.toY;
+        }
+
+//        board.countMoves++;
+//        if (!board.isSearchCopy) {  // ← nur speichern wenn echtes Spiel
+//            savePosition(board);
+//        }
+
+        //Schlagen Methode aufrufen
+        GameLogic.toCapture(board, move, move.);
+
+        //Hash aktualisieren
+        board.hash = ZobristHashing.updateHash(board.hash, figure, move.fromX, move.fromY, move.toX, move.toY);
+
+        //Zug wechseln
+        board.playBlackTurn = !board.playBlackTurn;
+    }
 
     //Liste mit allen Zügen, für jede Figur
     public static List<Move> getAllMoves(Board board) {
@@ -33,7 +72,7 @@ public class MoveFactory {
             int ny = y + direction[1];
 
             while (GameLogic.islegalField(board, nx, ny, x, y)) {
-                if ( !GameLogic.isKingTower(nx, ny)) {
+                if (Board.throne[0] != nx || Board.throne[1] != ny) {
                     figureMoves.add(new Move(x, y, nx, ny));
                 }
                 nx += direction[0];

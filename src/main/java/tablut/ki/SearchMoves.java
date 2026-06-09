@@ -272,7 +272,7 @@ public class SearchMoves {
 
             for (int i = 0; i < moves.size(); i++) {
                 Move move = moves.get(i);
-                Board copy = board.copy();
+                Move
                 GameLogic.moveFigure(copy, move.fromX, move.fromY, move.toX, move.toY);
 
                 int childScore;

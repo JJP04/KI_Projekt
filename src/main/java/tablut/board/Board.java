@@ -109,7 +109,6 @@ public class Board {
         }
     }
 
-
     public Board copy() {
         //Optimiere Unnötige neu Belgen des Bordes
         Board b = new Board();

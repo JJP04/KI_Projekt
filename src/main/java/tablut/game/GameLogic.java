@@ -1,6 +1,7 @@
 package tablut.game;
 
 import tablut.board.Board;
+import tablut.board.Capture;
 import tablut.board.Move;
 import tablut.ki.ZobristHashing;
 
@@ -8,122 +9,47 @@ import java.util.Arrays;
 
 public class GameLogic {
 
-
-    //Führt den Zug durch
-    public static void moveFigure(Board board, int fromRow, int fromCol, int toRow, int toCol) {
-
-        int figure = board.playingBoard[fromRow][fromCol];
-
-        if (figure == Board.EMPTY || figure == Board.BORDER) {
-            System.out.println("Keine Figur auf Feld");
-            return;
-        }
-        board.playingBoard[fromRow][fromCol] = Board.EMPTY;
-        board.playingBoard[toRow][toCol] = figure;
-
-        if (figure == Board.BLACK) {
-            board.blackSoldersPos[fromRow][fromCol] = false;
-            board.blackSoldersPos[toRow][toCol] = true;
-        } else if (figure == Board.WHITE) {
-            board.whiteSoldersPos[fromRow][fromCol] = false;
-            board.whiteSoldersPos[toRow][toCol] = true;
-        } else if (figure == Board.KING) {
-            board.kingPos[0] = toRow;
-            board.kingPos[1] = toCol;
-        }
-
-        board.countMoves++;
-        if (!board.isSearchCopy) {  // ← nur speichern wenn echtes Spiel
-            savePosition(board);
-        }
-
-        //Schlagen Methode aufrufen
-        toCapture(board, toRow, toCol);
-
-        //Hash aktualisieren
-        board.hash = ZobristHashing.updateHash(board.hash, figure, fromRow, fromCol, toRow, toCol);
-
-        //Zug wechseln
-        board.playBlackTurn = !board.playBlackTurn;
-    }
-
-
     //Methode für das Schlagen Prinzip Bauern: Kriegt einen Position und schaut ob dadurch eine Figur geschlagen wird
-    public static void toCapture(Board board, int x, int y) {
+    public static void toCapture(Board board, Move move, int x, int y) {
         //SCHWARZ:
         if (board.playBlackTurn) {
             //Überprüft erst nach standard schlagen
-            basicCapture(board, x, y, 1, 1, -1); //Ob Bauer schlagen wird basic
-            basicCapture(board, x, y, 1, 1, -2); //Ob König geschlagen wird basic
-            basicThroneCapture(board, x, y); //Ob Thron geschlagen wird Sonderfall
-            toCaputureKing(board, x, y); //Ob König geschlagen wird Sonderfall
+            basicCapture(board, move, x, y, Board.BLACK, Board.BLACK, Board.WHITE); //Ob Bauer schlagen wird basic
+            basicCapture(board, move, x, y, Board.BLACK, Board.BLACK, Board.KING); //Ob König geschlagen wird basic
+            basicThroneCapture(board, move, x, y); //Ob Thron geschlagen wird Sonderfall
+            toCaputureKing(board, move, x, y); //Ob König geschlagen wird Sonderfall
             //WEIß:
         } else {
-            if (board.playingBoard[x][y] == board.KING) {
-                basicCapture(board, x, y, -2, -1, 1); //Köing und andere seite Bauer
+            if (board.playingBoard[x][y] == Board.KING) {
+                basicCapture(board, move, x, y, Board.KING, Board.WHITE, Board.BLACK); //Köing und andere seite Bauer
             } else {
-                basicCapture(board, x, y, -1, -1, 1); //Bauer und andere Seite Bauer
-                basicCapture(board, x, y, -1, -2, 1); //Bauer und andere Seite König
+                basicCapture(board, move, x, y, Board.WHITE, Board.WHITE, Board.BLACK); //Bauer und andere Seite Bauer
+                basicCapture(board, move, x, y, Board.WHITE, Board.KING, Board.BLACK); //Bauer und andere Seite König
             }
         }
     }
 
     //Klassisches schlagen
-    public static void basicCapture(Board board, int x, int y, int ownFigure1, int ownFigure2, int opponentFigure) {
+    public static void basicCapture(Board board, Move move, int x, int y, int ownFigure1, int ownFigure2, int opponentFigure) {
         for (int[] direction : Board.directions) {
             int[] field1 = moveXFields(x, y, direction, 1);
             int[] field2 = moveXFields(x, y, direction, 2);
-            if (board.playingBoard[field1[0]][field1[1]] != Board.BORDER
-                    && board.playingBoard[field2[0]][field2[1]] != Board.BORDER) {
-                if (board.playingBoard[x][y] == ownFigure1) {
-                    if (board.playingBoard[field1[0]][field1[1]] == opponentFigure) {
-
-                        // König auf Thron oder Thron-Nachbarfeld → nicht normal schlagbar
-                        if (opponentFigure == Board.KING) {
-                            int kx = board.kingPos[0];
-                            int ky = board.kingPos[1];
-                            if ((kx == 5 && ky == 5) ||
-                                    (kx == 4 && ky == 5) ||
-                                    (kx == 6 && ky == 5) ||
-                                    (kx == 5 && ky == 4) ||
-                                    (kx == 5 && ky == 6)) {
-                                continue;
-                            }
-                        }
-
-                        if (board.playingBoard[field2[0]][field2[1]] == ownFigure2
-                                || Arrays.equals(Board.throne, field2) && board.playingBoard[5][5] == Board.EMPTY
-                                || isCorner(field2[0], field2[1])) {
-                            board.hash = ZobristHashing.captureHash(board.hash, opponentFigure, field1[0], field1[1]);
-                            board.playingBoard[field1[0]][field1[1]] = Board.EMPTY;
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    //Schwarz: Sonderfall 18
-    public static void basicThroneCapture(Board board, int x, int y) {
-        //2 Felder weiter ist der Thron
-        for (int[] direction : Board.directions) {
-            int[] field1 = moveXFields(x, y, direction, 1);
-            int[] field2 = moveXFields(x, y, direction, 2);
-            //2 Felder weiter Thron und König auch drauf
+            //1. Feld ist nicht Rand und 2. Feld ist nicht Rand
             if (board.playingBoard[field1[0]][field1[1]] != Board.BORDER && board.playingBoard[field2[0]][field2[1]] != Board.BORDER) {
-                if (board.playingBoard[field2[0]][field2[1]] == board.playingBoard[5][5] && board.playingBoard[5][5] == board.KING) {
-                    int countBlack = 0;
-                    int counterWhite = 0;
-                    for (int[] t : Board.throneNeighbor) {
-                        if (board.playingBoard[t[0]][t[1]] == board.BLACK) {
-                            countBlack++;
-                        }
-                        if (board.playingBoard[t[0]][t[1]] == board.WHITE) {
-                            counterWhite++;
-                        }
+                // 0. Feld ist eigene Figur und 2. Feld ist Gegnerische Figur
+                if (board.playingBoard[x][y] == ownFigure1 && board.playingBoard[field1[0]][field1[1]] == opponentFigure) {
+                    //Sonderfall: König auf dem Thron oder angrenzendem Feld, dann muss er von 4 bzw 3 Figuren umgeben sein, damit er geschlagen wird
+                    if (opponentFigure == Board.KING && ((Board.throne[0] == board.kingPos[0] && Board.throne[1] == board.kingPos[1]) || isThroneNeighbor(board.kingPos[0], board.kingPos[1]))) {
+                        continue;
                     }
-                    if (countBlack == 3 && counterWhite == 1) {
-                        board.hash = ZobristHashing.captureHash(board.hash, board.WHITE, field1[0], field1[1]);
+                    //2. Feld ist eigene Figur ODER 2. Feld ist Thron UND leer ODER 2. Feld ist Ecke, dann wird geschlagen
+                    if (board.playingBoard[field2[0]][field2[1]] == ownFigure2 || (Board.throne[0] == field2[0] && Board.throne[1] == field2[1] && board.playingBoard[5][5] == Board.EMPTY) || isCorner(field2[0], field2[1])) {
+                        //Hash aktualisieren und Figur entfernen
+                        board.hash = ZobristHashing.captureHash(board.hash, opponentFigure, field1[0], field1[1]);
+                        //Geschlagene Figur speichern
+                        move.capturedFigures[move.caputreCount] = new Capture(field1[0], field1[1], opponentFigure);
+                        move.caputreCount++;
+                        //Board aktualisieren
                         board.playingBoard[field1[0]][field1[1]] = Board.EMPTY;
                     }
                 }
@@ -131,27 +57,74 @@ public class GameLogic {
         }
     }
 
-    //Methode für schlagen des Königs:
-    // Wird der König in allen anderen Fällen auch normal geschalen 
-    public static void toCaputureKing(Board board, int x, int y) {
-        //1. Thron durch 4 schwarze besetzt
-        if (board.playingBoard[5][5] == board.KING && board.playingBoard[4][5] == board.BLACK && board.playingBoard[6][5] == board.BLACK && board.playingBoard[5][4] == board.BLACK && board.playingBoard[5][6] == board.BLACK) {
-            board.hash = ZobristHashing.captureHash(board.hash, board.KING, 5, 5);
-            board.playingBoard[5][5] = Board.EMPTY;
-        }
-        //2. König auf Thron angrenzendem Feld, dann reicht 3 schwarze besetzt
-        if (board.playingBoard[4][5] == board.KING || board.playingBoard[6][5] == board.KING || board.playingBoard[5][4] == board.KING || board.playingBoard[5][6] == board.KING) {
-            int countBlack = 0;
-            int[][] directions = Board.directions;
-            for (int[] direction : directions) {
-                int[] field = moveXFields(board.kingPos[0], board.kingPos[1], direction, 1);
-                if (board.playingBoard[field[0]][field[1]] == board.BLACK) {
-                    countBlack++;
+    //Schwarz: Sonderfall 18
+    public static void basicThroneCapture(Board board, Move move, int x, int y) {
+        for (int[] direction : Board.directions) {
+            int[] field1 = moveXFields(x, y, direction, 1);
+            int[] field2 = moveXFields(x, y, direction, 2);
+            //1. Feld ist nicht Rand und 2. Feld ist nicht Rand
+            if (board.playingBoard[field1[0]][field1[1]] != Board.BORDER && board.playingBoard[field2[0]][field2[1]] != Board.BORDER) {
+                //2. Feld ist Thron und König auf Thron
+                if (field2 == Board.throne && board.kingPos == Board.throne) {
+                    int countBlack = 0;
+                    int counterWhite = 0;
+                    for (int[] t : Board.throneNeighbor) {
+                        if (board.playingBoard[t[0]][t[1]] == Board.BLACK) {
+                            countBlack++;
+                        }
+                        if (board.playingBoard[t[0]][t[1]] == Board.WHITE) {
+                            counterWhite++;
+                        }
+                    }
+                    if (countBlack == 3 && counterWhite == 1) {
+                        //Hash aktualisieren und Figur entfernen
+                        board.hash = ZobristHashing.captureHash(board.hash, Board.WHITE, field1[0], field1[1]);
+                        //Geschlagene Figur speichern
+                        move.capturedFigures[move.caputreCount] = new Capture(field1[0], field1[1], Board.WHITE);
+                        move.caputreCount++;
+                        //Board aktualisieren
+                        board.playingBoard[field1[0]][field1[1]] = Board.EMPTY;
+                    }
                 }
             }
-            if (countBlack == 3) {
-                board.hash = ZobristHashing.captureHash(board.hash, board.KING, board.kingPos[0], board.kingPos[1]);
-                board.playingBoard[board.kingPos[0]][board.kingPos[1]] = Board.EMPTY;
+        }
+    }
+
+    //Methode für schlagen des Königs Sonderfälle
+    public static void toCaputureKing(Board board, Move move, int x, int y) {
+        boolean surrounded = true;
+        //1. König auf Thron, dann muss er von 4 schwarzen besetzt sein
+        if (Board.throne[0] == board.kingPos[0] && Board.throne[1] == board.kingPos[1]) {
+            for (int[] t : Board.throneNeighbor) {
+                if (board.playingBoard[t[0]][t[1]] != Board.BLACK) {
+                    surrounded = false;
+                    break;
+                }
+            }
+            if (surrounded) {
+                board.hash = ZobristHashing.captureHash(board.hash, Board.KING, 5, 5);
+                move.capturedFigures[move.caputreCount] = new Capture(5, 5, Board.KING);
+                move.caputreCount++;
+                board.playingBoard[5][5] = Board.EMPTY;
+            }
+        }
+        //2. König auf einem Thron angrenzendem Feld, dann reicht 3 schwarze besetzt
+        for (int[] t : Board.throneNeighbor) {
+            if (board.kingPos[0] == t[0] && board.kingPos[1] == t[1]) {
+                int countBlack = 0;
+                int[][] directions = Board.directions;
+                for (int[] direction : directions) {
+                    int[] field = moveXFields(board.kingPos[0], board.kingPos[1], direction, 1);
+                    if (board.playingBoard[field[0]][field[1]] == Board.BLACK) {
+                        countBlack++;
+                    }
+                }
+                if (countBlack == 3) {
+                    board.hash = ZobristHashing.captureHash(board.hash, Board.KING, board.kingPos[0], board.kingPos[1]);
+                    move.capturedFigures[move.caputreCount] = new Capture(board.kingPos[0], board.kingPos[1], Board.KING);
+                    move.caputreCount++;
+                    board.playingBoard[board.kingPos[0]][board.kingPos[1]] = Board.EMPTY;
+                }
             }
         }
     }
@@ -181,14 +154,13 @@ public class GameLogic {
         return true;
     }
 
-    //Prüft ob das Spiel Vorbei ist
     public static boolean isGameOver(Board board) {
         return whiteWin(board) || blackWin(board) || isTie(board);
     }
 
-    // 1. Wenn sich eine Stellung wiederholt -->ToDo
-// 2. Wenn ein Spieler keine Züge mehr ausführen kann --> ToDo
-// 3. Wenn 50 Züge lang keine Figur geschlagen wurde
+    // 1. Wenn sich eine Stellung wiederholt
+    // 2. Wenn ein Spieler keine Züge mehr ausführen kann
+    // 3. Wenn 50 Züge lang keine Figur geschlagen wurde
     public static boolean isTie(Board board) {
         if (board.countMoves >= 100) {
             return true;
@@ -234,9 +206,13 @@ public class GameLogic {
         return true; //Wenn keine der Sonderfälle und Feld frei, dann legal
     }
 
-    //Prüft ob das Feld der Thron ist
-    public static boolean isKingTower(int x, int y) {
-        return (x == 5 && y == 5);
+    public static boolean isThroneNeighbor(int x, int y) {
+        for (int[] neighbor : Board.throneNeighbor) {
+            if (neighbor[0] == x && neighbor[1] == y) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public static boolean isCorner(int x, int y) {
