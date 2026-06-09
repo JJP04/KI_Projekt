@@ -149,7 +149,7 @@ public class SearchMoves {
             int score = -infinity;
             for (Move move : moves) {
                 Board copy = board.copy();
-                GameLogic.moveFigure(copy, move.fromX, move.fromY, move.toX, move.toY);
+                MoveFactory.moveFigure(copy, move);
 
                 int childScore = alphaBeta(copy, depth - 1, alpha, beta, deadline, ply+1);
                 if (childScore == Integer.MIN_VALUE) return Integer.MIN_VALUE;
@@ -163,7 +163,7 @@ public class SearchMoves {
             int score = infinity;
             for (Move move : moves) {
                 Board copy = board.copy();
-                GameLogic.moveFigure(copy, move.fromX, move.fromY, move.toX, move.toY);
+                MoveFactory.moveFigure(copy, move);
 
                 int childScore = alphaBeta(copy, depth - 1, alpha, beta, deadline, ply+1);
                 if (childScore == Integer.MIN_VALUE) return Integer.MIN_VALUE;
@@ -202,7 +202,7 @@ public class SearchMoves {
             int score = -infinity;
             for (Move move : moves) {
                 Board copy = board.copy();
-                GameLogic.moveFigure(copy, move.fromX, move.fromY, move.toX, move.toY);
+                MoveFactory.moveFigure(copy, move);
 
                 int childScore = miniMaxStanard(copy, depth - 1, alpha, beta, deadline);
                 //Abbruch bei Zeit überschreitung
@@ -215,7 +215,7 @@ public class SearchMoves {
             int score = infinity;
             for (Move move : moves) {
                 Board copy = board.copy();
-                GameLogic.moveFigure(copy, move.fromX, move.fromY, move.toX, move.toY);
+                MoveFactory.moveFigure(copy, move);
 
                 int childScore = miniMaxStanard(copy, depth - 1, alpha, beta, deadline);
                 if (childScore == Integer.MIN_VALUE) return Integer.MIN_VALUE;

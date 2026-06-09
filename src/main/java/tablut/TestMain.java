@@ -30,7 +30,7 @@ public class TestMain {
         SearchMoves.maxDepth = 1;
 
         Move move = SearchMoves.findBestMoveAlphaBeta(board, 10000000);
-        GameLogic.moveFigure(bestBoard, move.fromX, move.fromY, move.toX, move.toY);
+        MoveFactory.moveFigure(bestBoard, move);
         int scoreBestmove = Bewertungsfunktion.ratePosition(bestBoard);
         System.out.println(
                 "Entscheidung AlphaBeta:" +
@@ -40,7 +40,7 @@ public class TestMain {
 
         for (Move m : MoveFactory.getAllMoves(board)) {
             Board copy = board.copy();
-            GameLogic.moveFigure(copy, m.fromX, m.fromY, m.toX, m.toY);
+            MoveFactory.moveFigure(copy, move);
             int score = Bewertungsfunktion.ratePosition(copy);
             System.out.println(
                     "(" + m.fromX + "," + m.fromY + ") -> (" +

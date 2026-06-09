@@ -24,7 +24,7 @@ public class Perft {
         for (Move move : moves) {
             if (System.currentTimeMillis() >= deadline) return nodes;
             Board copy = b.copy();
-            GameLogic.moveFigure(copy, move.fromX, move.fromY, move.toX, move.toY);
+            MoveFactory.moveFigure(copy, move);
             nodes += perft(copy, depth - 1);
         }
         return nodes;

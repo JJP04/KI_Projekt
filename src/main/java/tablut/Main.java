@@ -72,12 +72,13 @@ public class Main {
                 System.out.println("Kein Zug möglich!" + farbe + " hat verloren!");
                 break;
             }
-            GameLogic.moveFigure(board, move.fromX, move.fromY, move.toX, move.toY);
+            MoveFactory.moveFigure(board, move);
             System.out.println(farbe + " Zug: " + move.fromX + "," + move.fromY + "---> " + move.toX + "," + move.toY);
 
             board.printBoard();
 
-            System.out.println("TT Einträge: " + SearchMoves.tt.size());;
+            System.out.println("TT Einträge: " + SearchMoves.tt.size());
+            ;
 
         }
         System.out.println("Das Spiel ist vorbei!");
@@ -120,7 +121,9 @@ public class Main {
                 System.out.println("toCol");
                 int toCol = scanner.nextInt();
 
-                GameLogic.moveFigure(board, fromRow, fromCol, toRow, toCol);
+                Move move = new Move(fromRow, fromCol, toRow, toCol);
+                
+                MoveFactory.moveFigure(board, move);
             } else {
 
                 Move move = MoveFactory.makeRandomMove(board);
@@ -129,7 +132,7 @@ public class Main {
                     System.out.println("Kein Zug möglich!" + "Ki" + " hat verloren!");
                     break;
                 }
-                GameLogic.moveFigure(board, move.fromX, move.fromY, move.toX, move.toY);
+                MoveFactory.moveFigure(board, move);
                 System.out.println("Ki" + " Zug: " + move.fromX + "," + move.fromY + "---> " + move.toX + "," + move.toY);
             }
             board.printBoard();
@@ -158,7 +161,9 @@ public class Main {
             System.out.println("toCol");
             int toCol = scanner.nextInt();
 
-            GameLogic.moveFigure(board, fromRow, fromCol, toRow, toCol);
+            Move move = new Move(fromRow, fromCol, toRow, toCol);
+
+            MoveFactory.moveFigure(board, move);
 
             board.printBoard();
         }

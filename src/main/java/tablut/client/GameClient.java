@@ -133,7 +133,9 @@ public class GameClient {
 
             // Sicherstellen dass moveFigure mit richtigem Turn aufgerufen wird
             board.playBlackTurn = (colorGame == 1);
-            GameLogic.moveFigure(board, fromRow, fromCol, toRow, toCol);
+
+            Move move = new Move(fromRow, fromCol, toRow, toCol);
+            MoveFactory.moveFigure(board, move );
             board.playBlackTurn = (colorGame == 0);
 
         } catch (NumberFormatException e) {

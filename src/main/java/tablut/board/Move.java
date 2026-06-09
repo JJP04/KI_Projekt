@@ -29,12 +29,12 @@ public class Move {
         int fromIndex = (move.fromX - 1) * 9 + (move.fromY - 1);
         int toIndex = (move.toX - 1) * 9 + (move.toY - 1);
 
+
         int figureIndex = ZobristHashing.pieceToIndex(figure);
 
         board.hash ^= ZobristHashing.zobristTable[figureIndex][fromIndex];
         board.hash ^= ZobristHashing.zobristTable[figureIndex][toIndex];
     }
-
 
     public static void unmakeMove(Board board, Move move) {
         //Board Update
