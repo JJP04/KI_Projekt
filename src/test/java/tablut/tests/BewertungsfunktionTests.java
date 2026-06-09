@@ -52,12 +52,8 @@ public class BewertungsfunktionTests {
         int a = Bewertungsfunktion.ratePosition(board);
         System.out.println(a);
         System.out.println("KI Zug: " + moveKI.fromX + "," + moveKI.fromY + "--> " + moveKI.toX + "," + moveKI.toY );
-        assertAll(
-                () -> assertEquals(7, moveKI.fromX),
-                () -> assertEquals(6, moveKI.fromY),
-                () -> assertEquals(9, moveKI.toX),
-                () -> assertEquals(6, moveKI.toY)
-        );
+
+        assertEquals(new Move(7, 6, 9, 6), moveKI);
     }
 
     @Test

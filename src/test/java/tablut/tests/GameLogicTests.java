@@ -25,32 +25,27 @@ public class GameLogicTests {
     @Test
     void testMoveFigureValidMove() {
         Board b = createBoard();
+        Move m = new Move(4, 1, 4, 2);
 
-        int fromX = 4;
-        int fromY = 1;
-        int toX = 4;
-        int toY = 2;
+        MoveFactory.moveFigure(b, m);
 
-        GameLogic.moveFigure(b, fromX, fromY, toX, toY);
-
-        assertEquals(Board.EMPTY, b.playingBoard[fromX][fromY]);
-        assertEquals(Board.BLACK, b.playingBoard[toX][toY]);
+        assertEquals(Board.EMPTY, b.playingBoard[m.fromX][m.fromY]);
+        assertEquals(Board.BLACK, b.playingBoard[m.toX][m.toY]);
     }
 
-//   @Test
-//   void testIllegalCornerMove() {
-//      Board b = createBoard();
-
-//      GameLogic.moveFigure(b, 4, 1, 1, 1); // Ecke
-
-//     assertEquals(Board.BLACK, b.playingBoard[4][1]);
-// }
+//    @Test
+//    void testIllegalCornerMove() {
+//        Board b = createBoard();
+//        Move m = new Move(4, 1, 1, 1); // Ecke
+//
+//        assertEquals(Board.BLACK, b.playingBoard[4][1]);
+//    }
 
     @Test
     void testMoveFromEmptyField() {
         Board b = createBoard();
 
-        GameLogic.moveFigure(b, 1, 2, 3, 2);
+        MoveFactory.moveFigure(b, new Move(1, 2, 3, 2));
 
         assertEquals(Board.EMPTY, b.playingBoard[1][2]);
         assertEquals(Board.EMPTY, b.playingBoard[3][2]);
@@ -60,7 +55,7 @@ public class GameLogicTests {
     void testMoveFromBorderField() {
         Board b = createBoard();
 
-        GameLogic.moveFigure(b, 0, 1, 3, 1);
+        MoveFactory.moveFigure(b, new Move(0, 1, 3, 1));
 
         assertEquals(Board.BORDER, b.playingBoard[0][1]);
         assertEquals(Board.EMPTY, b.playingBoard[3][1]);
@@ -70,7 +65,7 @@ public class GameLogicTests {
     void testMoveBlackPiece() {
         Board b = createBoard();
 
-        GameLogic.moveFigure(b, 1, 4, 4, 4);
+        MoveFactory.moveFigure(b, new Move(1, 4, 4, 4));
 
         assertEquals(Board.EMPTY, b.playingBoard[1][4]);
         assertEquals(Board.BLACK, b.playingBoard[4][4]);
@@ -80,7 +75,7 @@ public class GameLogicTests {
     void testMoveWhitePiece() {
         Board b = createBoard();
 
-        GameLogic.moveFigure(b, 3, 5, 3, 7);
+        MoveFactory.moveFigure(b, new Move(3, 5, 3, 7));
 
         assertEquals(Board.EMPTY, b.playingBoard[3][5]);
         assertEquals(Board.WHITE, b.playingBoard[3][7]);
@@ -90,8 +85,8 @@ public class GameLogicTests {
     void testMoveKing() {
         Board b = createBoard();
 
-        GameLogic.moveFigure(b, 5, 7, 3, 7);
-        GameLogic.moveFigure(b, 5, 5, 5, 7);
+        MoveFactory.moveFigure(b, new Move(5, 7, 3, 7));
+        MoveFactory.moveFigure(b, new Move(5, 5, 5, 7));
 
         assertEquals(Board.EMPTY, b.playingBoard[5][5]);
         assertEquals(Board.KING, b.playingBoard[5][7]);
@@ -171,16 +166,10 @@ public class GameLogicTests {
     }
 
     @Test
-    void testKingTower() {
-        assertTrue(GameLogic.isKingTower(5, 5));
-        assertFalse(GameLogic.isKingTower(4, 5));
-    }
-
-    @Test
     void testIllegalFieldCorner() {
         Board b = createBoard();
 
-        boolean result = GameLogic.islegalField(b, 1, 1, 1,2);
+        boolean result = GameLogic.islegalField(b, 1, 1, 1, 2);
 
         assertFalse(result);
     }
@@ -400,7 +389,7 @@ public class GameLogicTests {
     @Test
     void testCornerIsIllegal() {
         Board b = emptyBoard();
-        boolean result = GameLogic.islegalField(b, 1, 1,1,2);
+        boolean result = GameLogic.islegalField(b, 1, 1, 1, 2);
         assertFalse(result);
     }
 
@@ -415,7 +404,7 @@ public class GameLogicTests {
     @Test
     void testBorderIsIllegal() {
         Board b = emptyBoard();
-        boolean result = GameLogic.islegalField(b, 0, 5,0,0); // Border
+        boolean result = GameLogic.islegalField(b, 0, 5, 0, 0); // Border
         assertFalse(result);
     }
 
@@ -425,7 +414,7 @@ public class GameLogicTests {
 
         b.playingBoard[4][4] = Board.BLACK;
 
-        boolean result = GameLogic.islegalField(b, 4, 4,0,0);
+        boolean result = GameLogic.islegalField(b, 4, 4, 0, 0);
 
         assertFalse(result);
     }
@@ -434,42 +423,42 @@ public class GameLogicTests {
     void testEmptyFieldIsLegal() {
         Board b = emptyBoard();
 
-        boolean result = GameLogic.islegalField(b, 4, 4,0,0);
+        boolean result = GameLogic.islegalField(b, 4, 4, 0, 0);
 
         assertTrue(result);
     }
+
     @Test
     void testWhiteMoveOverThrone() {
         Board b = emptyBoard();
         b.playingBoard[3][5] = Board.BLACK;
 
-        GameLogic.moveFigure(b, 3, 5, 7, 5);
+        MoveFactory.moveFigure(b, 3, 5, 7, 5);
 
         assertEquals(Board.EMPTY, b.playingBoard[3][5]);
         assertEquals(Board.BLACK, b.playingBoard[7][5]);
     }
-   @Test
-void testWhiteMoveOverThroneMoveFactory() {
-    Board b = emptyBoard();
 
-    b.playingBoard[5][3] = Board.WHITE;
+    @Test
+    void testWhiteMoveOverThroneMoveFactory() {
+        Board b = emptyBoard();
 
-    b.playBlackTurn = false;
+        b.playingBoard[5][3] = Board.WHITE;
 
-    MoveFactory m = new MoveFactory();
-    List<Move> moves = m.getAllMoves(b);
+        b.playBlackTurn = false;
 
-    // Prüfen ob Move nach (7,3) existiert
-    boolean found = false;
+        MoveFactory m = new MoveFactory();
+        List<Move> moves = m.getAllMoves(b);
 
-    for (Move move : moves) {
-        if (move.toX == 7 && move.toY == 3) {
-            found = true;
-            break;
+        // Prüfen ob Move nach (7,3) existiert
+        boolean found = false;
+
+        for (Move move : moves) {
+            if (move.toX == 7 && move.toY == 3) {
+                found = true;
+                break;
+            }
         }
+        assertTrue(found);
     }
-
-    assertTrue(found);
-}
-
 }

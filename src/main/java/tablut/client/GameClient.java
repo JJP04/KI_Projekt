@@ -162,7 +162,7 @@ public class GameClient {
 
         if (response.startsWith("time")) {
             // jz Board aktualisieren
-            GameLogic.moveFigure(board, move.fromX, move.fromY, move.toX, move.toY);
+            MoveFactory.moveFigure(board, move);
             System.out.println("Zug akzeptiert, Zeit: " + response.split(" ")[1] + "s");
             System.out.println("Mein Zug: (" + move.fromX + "," + move.fromY + ") -> (" + move.toX + "," + move.toY + ")");
             board.printBoard();

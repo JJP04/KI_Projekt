@@ -88,10 +88,10 @@ public class SearchMoves {
             //int score = miniMaxStanard(copy, depth - 1, alpha, beta, deadline);
 
             //Alpha Beta:
-         //  int score = alphaBeta(copy, depth - 1, alpha, beta, deadline, 1);
+            //  int score = alphaBeta(copy, depth - 1, alpha, beta, deadline, 1);
 
             //PVS:
-          int score = pvs(copy, depth - 1, alpha, beta, deadline, 1);
+            int score = pvs(copy, depth - 1, alpha, beta, deadline, 1);
 
             if (score == Integer.MIN_VALUE) return false;
 
@@ -128,7 +128,7 @@ public class SearchMoves {
      * Führt die Alpha-Beta-Suche durch und bewertet die Positionen auf der angegebenen Tiefe
      * Gibt den besten Score zurück
      */
-    public static int alphaBeta(Board board, int depth, int alpha, int beta, long deadline, int ply ) {
+    public static int alphaBeta(Board board, int depth, int alpha, int beta, long deadline, int ply) {
         nodes++;
 
         //Nur bei jedem 4. Knoten ZeitCheck => Rechnerzeitsparen
@@ -151,7 +151,7 @@ public class SearchMoves {
                 Board copy = board.copy();
                 MoveFactory.moveFigure(copy, move);
 
-                int childScore = alphaBeta(copy, depth - 1, alpha, beta, deadline, ply+1);
+                int childScore = alphaBeta(copy, depth - 1, alpha, beta, deadline, ply + 1);
                 if (childScore == Integer.MIN_VALUE) return Integer.MIN_VALUE;
 
                 score = Math.max(score, childScore);
@@ -165,7 +165,7 @@ public class SearchMoves {
                 Board copy = board.copy();
                 MoveFactory.moveFigure(copy, move);
 
-                int childScore = alphaBeta(copy, depth - 1, alpha, beta, deadline, ply+1);
+                int childScore = alphaBeta(copy, depth - 1, alpha, beta, deadline, ply + 1);
                 if (childScore == Integer.MIN_VALUE) return Integer.MIN_VALUE;
 
                 score = Math.min(score, childScore);
@@ -272,6 +272,7 @@ public class SearchMoves {
 
             for (int i = 0; i < moves.size(); i++) {
                 Move move = moves.get(i);
+                Board copy = board.copy();
                 MoveFactory.moveFigure(copy, move);
 
                 int childScore;
