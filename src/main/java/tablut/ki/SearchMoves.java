@@ -80,9 +80,8 @@ public class SearchMoves {
 
         for (Move move : moves) {
             if (System.currentTimeMillis() >= deadline) return false;
-            //Führt den Zug auf einer Kopie des Boards aus
-            Board copy = board.copy();
-            MoveFactory.moveFigure(copy, move);
+            //MakeMove
+            Move.makeMove(board, move);
 
             //Minimax:
             //int score = miniMaxStanard(copy, depth - 1, alpha, beta, deadline);
@@ -91,7 +90,9 @@ public class SearchMoves {
             //  int score = alphaBeta(copy, depth - 1, alpha, beta, deadline, 1);
 
             //PVS:
-            int score = pvs(copy, depth - 1, alpha, beta, deadline, 1);
+            int score = pvs(board, depth - 1, alpha, beta, deadline, 1);
+
+            Move.unmakeMove(board, move);
 
             if (score == Integer.MIN_VALUE) return false;
 
@@ -272,22 +273,23 @@ public class SearchMoves {
 
             for (int i = 0; i < moves.size(); i++) {
                 Move move = moves.get(i);
-                Board copy = board.copy();
-                MoveFactory.moveFigure(copy, move);
+                Move.makeMove(board, move);
 
                 int childScore;
                 if (i == 0) {
                     // Erster Zug: volles Fenster
-                    childScore = pvs(copy, depth - 1, alpha, beta, deadline, ply + 1);
+                    childScore = pvs(board, depth - 1, alpha, beta, deadline, ply + 1);
                 } else {
                     // Alle anderen: Nullfenster
-                    childScore = pvs(copy, depth - 1, alpha, alpha + 1, deadline, ply + 1);
+                    childScore = pvs(board, depth - 1, alpha, alpha + 1, deadline, ply + 1);
                     if (childScore == Integer.MIN_VALUE) return Integer.MIN_VALUE;
                     // Fail-high: Zug ist besser als alpha, genauen Wert holen
                     if (childScore > alpha && childScore < beta) {
-                        childScore = pvs(copy, depth - 1, alpha, beta, deadline, ply + 1);
+                        childScore = pvs(board, depth - 1, alpha, beta, deadline, ply + 1);
                     }
                 }
+
+                Move.unmakeMove(board, move);
 
                 if (childScore == Integer.MIN_VALUE) return Integer.MIN_VALUE;
 
@@ -320,22 +322,23 @@ public class SearchMoves {
             int score = infinity;
             for (int i = 0; i < moves.size(); i++) {
                 Move move = moves.get(i);
-                Board copy = board.copy();
-                MoveFactory.moveFigure(copy, move);
+                Move.makeMove(board, move);
 
                 int childScore;
                 if (i == 0) {
                     // Erster Zug: volles Fenster
-                    childScore = pvs(copy, depth - 1, alpha, beta, deadline, ply + 1);
+                    childScore = pvs(board, depth - 1, alpha, beta, deadline, ply + 1);
                 } else {
                     // Alle anderen: Nullfenster
-                    childScore = pvs(copy, depth - 1, beta - 1, beta, deadline, ply + 1);
+                    childScore = pvs(board, depth - 1, beta - 1, beta, deadline, ply + 1);
                     if (childScore == Integer.MIN_VALUE) return Integer.MIN_VALUE;
                     // Fail-low: Zug ist schlechter als beta, genauen Wert holen
                     if (childScore > alpha && childScore < beta) {
-                        childScore = pvs(copy, depth - 1, alpha, beta, deadline, ply + 1);
+                        childScore = pvs(board, depth - 1, alpha, beta, deadline, ply + 1);
                     }
                 }
+
+                Move.unmakeMove(board, move);
 
                 if (childScore == Integer.MIN_VALUE) return Integer.MIN_VALUE;
 

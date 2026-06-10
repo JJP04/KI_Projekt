@@ -65,7 +65,7 @@ public class GameLogic {
             //1. Feld ist nicht Rand und 2. Feld ist nicht Rand
             if (board.playingBoard[field1[0]][field1[1]] != Board.BORDER && board.playingBoard[field2[0]][field2[1]] != Board.BORDER) {
                 //2. Feld ist Thron und König auf Thron
-                if (field2 == Board.throne && board.kingPos == Board.throne) {
+                if ((Board.throne[0] == field2[0] && Board.throne[1] == field2[1]) && (Board.throne[0] == board.kingPos[0] && Board.throne[1] == board.kingPos[1])) {
                     int countBlack = 0;
                     int counterWhite = 0;
                     for (int[] t : Board.throneNeighbor) {
@@ -192,15 +192,15 @@ public class GameLogic {
     public static boolean islegalField(Board board, int nx, int ny, int x, int y) { //Julian
 
         //Zielfeld = Ecke
-        if (!(board.playingBoard[x][y] == board.KING) && ((nx == 1 && ny == 1) || (nx == 1 && ny == 9) || (nx == 9 && ny == 1) || (nx == 9 && ny == 9))) {
+        if (!(board.playingBoard[x][y] == Board.KING) && ((nx == 1 && ny == 1) || (nx == 1 && ny == 9) || (nx == 9 && ny == 1) || (nx == 9 && ny == 9))) {
             return false;
         }
         //Zielfeld = Außerhalb des Spielfelds
-        if (board.playingBoard[nx][ny] == board.BORDER) {
+        if (board.playingBoard[nx][ny] == Board.BORDER) {
             return false;
         }
         //Feld ist besetzt
-        if (!(board.playingBoard[nx][ny] == board.EMPTY)) {
+        if (!(board.playingBoard[nx][ny] == Board.EMPTY)) {
             return false;
         }
         return true; //Wenn keine der Sonderfälle und Feld frei, dann legal

@@ -15,6 +15,9 @@ public class MoveFactory {
 
         int figure = board.playingBoard[move.fromX][move.fromY];
 
+        int x = move.fromX;
+        int y = move.fromY;
+
         if (figure == Board.EMPTY || figure == Board.BORDER) {
             System.out.println("Keine Figur auf Feld");
             return;
@@ -39,7 +42,7 @@ public class MoveFactory {
         }
 
         //Schlagen Methode aufrufen
-        GameLogic.toCapture(board, move, move.fromX, move.fromY);
+        GameLogic.toCapture(board, move, x, y);
 
         //Hash aktualisieren
         board.hash = ZobristHashing.updateHash(board.hash, figure, move.fromX, move.fromY, move.toX, move.toY);
