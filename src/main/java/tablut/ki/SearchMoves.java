@@ -87,10 +87,10 @@ public class SearchMoves {
             //int score = miniMaxStanard(copy, depth - 1, alpha, beta, deadline);
 
             //Alpha Beta:
-            //  int score = alphaBeta(copy, depth - 1, alpha, beta, deadline, 1);
+            int score = alphaBeta(board, depth - 1, alpha, beta, deadline, 1);
 
             //PVS:
-            int score = pvs(board, depth - 1, alpha, beta, deadline, 1);
+            //int score = pvs(board, depth - 1, alpha, beta, deadline, 1);
 
             Move.unmakeMove(board, move);
 
@@ -149,24 +149,29 @@ public class SearchMoves {
         if (maxScore) {
             int score = -infinity;
             for (Move move : moves) {
-                Board copy = board.copy();
-                MoveFactory.moveFigure(copy, move);
 
-                int childScore = alphaBeta(copy, depth - 1, alpha, beta, deadline, ply + 1);
+                Move.makeMove(board, move);
+
+                int childScore = alphaBeta(board, depth - 1, alpha, beta, deadline, ply + 1);
+
+                Move.unmakeMove(board, move);
                 if (childScore == Integer.MIN_VALUE) return Integer.MIN_VALUE;
 
                 score = Math.max(score, childScore);
                 alpha = Math.max(alpha, score);
                 if (alpha >= beta) break;
             }
+
             return score;
         } else {
             int score = infinity;
             for (Move move : moves) {
-                Board copy = board.copy();
-                MoveFactory.moveFigure(copy, move);
 
-                int childScore = alphaBeta(copy, depth - 1, alpha, beta, deadline, ply + 1);
+                Move.makeMove(board, move);
+
+                int childScore = alphaBeta(board, depth - 1, alpha, beta, deadline, ply + 1);
+
+                Move.unmakeMove(board, move);
                 if (childScore == Integer.MIN_VALUE) return Integer.MIN_VALUE;
 
                 score = Math.min(score, childScore);

@@ -34,6 +34,8 @@ public class Move {
 
         board.hash ^= ZobristHashing.zobristTable[figureIndex][fromIndex];
         board.hash ^= ZobristHashing.zobristTable[figureIndex][toIndex];
+
+        board.playBlackTurn = !board.playBlackTurn;
     }
 
     public static void unmakeMove(Board board, Move move) {
@@ -59,6 +61,8 @@ public class Move {
         // Hash zurück
         board.hash ^= ZobristHashing.zobristTable[pieceIndex][toIndex];
         board.hash ^= ZobristHashing.zobristTable[pieceIndex][fromIndex];
+
+        board.playBlackTurn = !board.playBlackTurn;
     }
 
     @Override

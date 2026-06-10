@@ -188,10 +188,9 @@ public class GameLogicTests {
         b.playingBoard[5][6] = Board.WHITE;
         b.playingBoard[5][7] = Board.BLACK;
 
-        int x = 5;
-        int y = 7;
+        Move m = new Move(5, 7, 5, 7);
 
-        GameLogic.basicThroneCapture(b, x, y);
+        GameLogic.basicThroneCapture(b, m, m.fromX, m.fromY);
 
         assertEquals(Board.EMPTY, b.playingBoard[5][6]);
     }
@@ -206,12 +205,11 @@ public class GameLogicTests {
         b.playingBoard[5][4] = Board.WHITE;
         b.playingBoard[5][6] = Board.WHITE;
 
-        int x = 4;
-        int y = 5;
+        Move m = new Move(4, 5, 4, 5);
 
-        GameLogic.basicThroneCapture(b, x, y);
+        GameLogic.basicThroneCapture(b, m, 4, 5);
 
-        assertEquals(Board.BLACK, b.playingBoard[x][y]);
+        assertEquals(Board.BLACK, b.playingBoard[4][5]);
     }
 
     @Test
@@ -225,12 +223,11 @@ public class GameLogicTests {
         b.playingBoard[4][4] = Board.BLACK;
         b.playingBoard[4][6] = Board.WHITE;
 
-        int x = 3;
-        int y = 5;
+        Move m = new Move(3, 5, 5, 5);
 
-        GameLogic.basicThroneCapture(b, x, y);
+        GameLogic.basicThroneCapture(b, m, 3, 5);
 
-        assertEquals(Board.BLACK, b.playingBoard[x][y]);
+        assertEquals(Board.BLACK, b.playingBoard[3][5]);
     }
 
     @Test
@@ -242,7 +239,9 @@ public class GameLogicTests {
         b.playingBoard[5][7] = Board.WHITE;
         b.playingBoard[5][6] = Board.BLACK;
 
-        GameLogic.basicCapture(b, 5, 8, Board.BLACK, Board.BLACK, Board.WHITE);
+        Move m = new Move(5, 8, 5, 8);
+
+        GameLogic.basicCapture(b, m, 5, 8, Board.BLACK, Board.BLACK, Board.WHITE);
 
         assertEquals(Board.EMPTY, b.playingBoard[5][7]);
     }
@@ -254,8 +253,9 @@ public class GameLogicTests {
         b.playingBoard[5][5] = Board.BLACK;
         b.playingBoard[5][6] = Board.WHITE;
         // kein zweiter BLACK dahinter
+        Move m = new Move(5, 5, 5, 5);
 
-        GameLogic.basicCapture(b, 5, 5, Board.BLACK, Board.BLACK, Board.WHITE);
+        GameLogic.basicCapture(b, m, 5, 5, Board.BLACK, Board.BLACK, Board.WHITE);
 
         assertEquals(Board.WHITE, b.playingBoard[5][6]);
     }
@@ -267,7 +267,9 @@ public class GameLogicTests {
         b.playingBoard[1][8] = Board.BLACK;
         b.playingBoard[1][9] = Board.WHITE;
         // dahinter ist BORDER (Rand)
-        GameLogic.basicCapture(b, 1, 5, Board.BLACK, Board.BLACK, Board.WHITE);
+        Move m = new Move(1, 5, 1, 5);
+
+        GameLogic.basicCapture(b, m, 1, 5, Board.BLACK, Board.BLACK, Board.WHITE);
 
         assertEquals(Board.WHITE, b.playingBoard[1][9]);
     }
@@ -287,7 +289,8 @@ public class GameLogicTests {
         b.playingBoard[3][5] = Board.BLACK;
         b.playingBoard[7][5] = Board.BLACK;
 
-        GameLogic.basicCapture(b, 5, 5, Board.BLACK, Board.BLACK, Board.WHITE);
+        Move m = new Move(5, 5, 5, 5);
+        GameLogic.basicCapture(b, m, 5, 5, Board.BLACK, Board.BLACK, Board.WHITE);
 
         assertEquals(Board.EMPTY, b.playingBoard[4][5]);
         assertEquals(Board.EMPTY, b.playingBoard[6][5]);
@@ -299,7 +302,9 @@ public class GameLogicTests {
         b.playingBoard[5][7] = Board.BLACK;
         b.playingBoard[5][5] = Board.EMPTY; // Thron bleibt „leer“
         b.playingBoard[5][6] = Board.WHITE;
-        GameLogic.basicCapture(b, 5, 7, Board.BLACK, Board.BLACK, Board.WHITE);
+
+        Move m = new Move(5, 7, 5, 7);
+        GameLogic.basicCapture(b, m, 5, 7, Board.BLACK, Board.BLACK, Board.WHITE);
         assertEquals(Board.EMPTY, b.playingBoard[5][6]);
     }
 
@@ -314,7 +319,9 @@ public class GameLogicTests {
         b.playingBoard[5][4] = Board.BLACK;
         b.playingBoard[5][6] = Board.BLACK;
 
-        GameLogic.toCaputureKing(b, 5, 5);
+        Move m = new Move(5, 5, 5, 5);
+
+        GameLogic.toCaputureKing(b,m, 5, 5);
 
         assertEquals(Board.EMPTY, b.playingBoard[5][5]);
     }
@@ -330,8 +337,9 @@ public class GameLogicTests {
         b.playingBoard[6][5] = Board.BLACK;
         b.playingBoard[5][4] = Board.BLACK;
         // rechts fehlt
+        Move m = new Move(5, 5, 5, 5);
 
-        GameLogic.toCaputureKing(b, 5, 5);
+        GameLogic.toCaputureKing(b, m,5, 5);
 
         assertEquals(Board.KING, b.playingBoard[5][5]);
     }
@@ -350,7 +358,9 @@ public class GameLogicTests {
         b.playingBoard[4][4] = Board.BLACK;
         b.playingBoard[4][6] = Board.BLACK;
 
-        GameLogic.toCaputureKing(b, 3, 5);
+        Move m = new Move(3, 5, 3, 5);
+
+        GameLogic.toCaputureKing(b, m,3, 5);
 
         assertEquals(Board.EMPTY, b.playingBoard[4][5]);
     }
@@ -364,8 +374,9 @@ public class GameLogicTests {
         b.playingBoard[3][5] = Board.BLACK;
         b.playingBoard[4][4] = Board.BLACK;
         // einer fehlt
+        Move m = new Move(4, 5, 4, 5);
 
-        GameLogic.toCaputureKing(b, 4, 5);
+        GameLogic.toCaputureKing(b, m,4, 5);
 
         assertEquals(Board.KING, b.playingBoard[4][5]);
     }
@@ -433,7 +444,9 @@ public class GameLogicTests {
         Board b = emptyBoard();
         b.playingBoard[3][5] = Board.BLACK;
 
-        MoveFactory.moveFigure(b, 3, 5, 7, 5);
+        Move m = new Move(3, 5, 7, 5);
+
+        MoveFactory.moveFigure(b, m);
 
         assertEquals(Board.EMPTY, b.playingBoard[3][5]);
         assertEquals(Board.BLACK, b.playingBoard[7][5]);
