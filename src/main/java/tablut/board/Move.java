@@ -39,7 +39,6 @@ public class Move {
         Move m = (Move) o;
         return fromX == m.fromX && fromY == m.fromY && toX == m.toX && toY == m.toY;
     }
-
     @Override
     public int hashCode() {
         return fromX * 1000 + fromY * 100 + toX * 10 + toY;

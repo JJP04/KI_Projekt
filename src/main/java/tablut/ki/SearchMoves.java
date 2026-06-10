@@ -12,8 +12,8 @@ import java.util.Random;
 
 public class SearchMoves {
 
-    public static int maxDepth = 10;
-    public static int depth = 1;
+    //SuchTiefe
+    public static int maxDepth = 4;    public static int depth = 1;
     private static final int infinity = Integer.MAX_VALUE / 2;
     private static final long buffer = 50;
     private static Move bestMoveFound = null;
@@ -88,10 +88,10 @@ public class SearchMoves {
             //int score = miniMaxStanard(copy, depth - 1, alpha, beta, deadline);
 
             //Alpha Beta:
-         //  int score = alphaBeta(copy, depth - 1, alpha, beta, deadline, 1);
+            //  int score = alphaBeta(copy, depth - 1, alpha, beta, deadline, 1);
 
             //PVS:
-          int score = pvs(copy, depth - 1, alpha, beta, deadline, 1);
+            int score = pvs(copy, depth - 1, alpha, beta, deadline, 1);
 
             if (score == Integer.MIN_VALUE) return false;
 

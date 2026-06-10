@@ -125,8 +125,7 @@ public class Board {
         b.countMoves = this.countMoves;
         b.kingPos = this.kingPos.clone();
         b.isSearchCopy = true;
-        //Boardhistory wird mit gegben
-        b.boardHistory = new ArrayList<>();  // ← neu
+        b.boardHistory = this.boardHistory; // Suche liest echte Spielhistory
 
         b.hash = this.hash; // Hash-Wert wird mit kopiert, da die Position identisch ist
         return b;
