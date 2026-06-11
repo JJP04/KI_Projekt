@@ -1,5 +1,6 @@
 package tablut.board;
 
+import tablut.game.GameLogic;
 import tablut.ki.ZobristHashing;
 
 public class Move {
@@ -19,16 +20,27 @@ public class Move {
     }
 
     public static void makeMove(Board board, Move move) {
+
+        move.caputreCount = 0;
+        move.capturedFigures[0] = null;
+        move.capturedFigures[1] = null;
+
         // Board update
         int figure = board.playingBoard[move.fromX][move.fromY];
 
         board.playingBoard[move.toX][move.toY] = figure;
         board.playingBoard[move.fromX][move.fromY] = Board.EMPTY;
 
+        if (figure == Board.KING) {
+            board.kingPos[0] = move.toX;
+            board.kingPos[1] = move.toY;
+        }
+
+        GameLogic.toCapture(board, move, move.fromX, move.fromY);
+
         //Hash update
         int fromIndex = (move.fromX - 1) * 9 + (move.fromY - 1);
         int toIndex = (move.toX - 1) * 9 + (move.toY - 1);
-
 
         int figureIndex = ZobristHashing.pieceToIndex(figure);
 
@@ -45,24 +57,41 @@ public class Move {
         board.playingBoard[move.fromX][move.fromY] = figure;
         board.playingBoard[move.toX][move.toY] = Board.EMPTY;
 
+        if (figure == Board.KING) {
+            board.kingPos[0] = move.fromX;
+            board.kingPos[1] = move.fromY;
+        }
+
         if (move.capturedFigures[0] != null) {
             board.playingBoard[move.capturedFigures[0].x][move.capturedFigures[0].y] = move.capturedFigures[0].figure;
+
+            //Hash geschlagene Figur zurück
+            hashCapturedFigurBack(board, move, 0);
         }
         if (move.capturedFigures[1] != null) {
             board.playingBoard[move.capturedFigures[1].x][move.capturedFigures[1].y] = move.capturedFigures[1].figure;
+
+            //Hash geschlagene Figur zurück
+            hashCapturedFigurBack(board, move, 1);
         }
 
         //Hash Update
+        int pieceIndex = ZobristHashing.pieceToIndex(figure);
         int fromIndex = (move.fromX - 1) * 9 + (move.fromY - 1);
         int toIndex = (move.toX - 1) * 9 + (move.toY - 1);
-
-        int pieceIndex = ZobristHashing.pieceToIndex(figure);
 
         // Hash zurück
         board.hash ^= ZobristHashing.zobristTable[pieceIndex][toIndex];
         board.hash ^= ZobristHashing.zobristTable[pieceIndex][fromIndex];
 
         board.playBlackTurn = !board.playBlackTurn;
+    }
+
+    public static void hashCapturedFigurBack(Board board, Move move, int index) {
+        //Hash geschlagene Figur zurück
+        int capturedFigure = ZobristHashing.pieceToIndex(move.capturedFigures[index].figure);
+        int field = (move.capturedFigures[index].x - 1) * 9 + (move.capturedFigures[index].y - 1);
+        board.hash ^= ZobristHashing.zobristTable[capturedFigure][field];
     }
 
     @Override
