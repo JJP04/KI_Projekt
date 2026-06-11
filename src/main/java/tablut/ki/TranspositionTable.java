@@ -10,10 +10,10 @@ import java.util.HashMap;
 public class TranspositionTable {
 
     public static class Entry {
-        int depth; // Tiefe der Suche, die zu diesem Eintrag geführt hat
-        int score; // Bewertung des Spielzustands
-        int type; // 0 = exakt, -1 = Alpha-Cutoff, 1 = Betha-Cutoff
-        Move move; // Der beste Zug, der zu diesem Eintrag geführt hat
+        public int depth; // Tiefe der Suche, die zu diesem Eintrag geführt hat
+        public int score; // Bewertung des Spielzustands
+        public int type; // 0 = exakt, -1 = Alpha-Cutoff, 1 = Betha-Cutoff
+        public Move move; // Der beste Zug, der zu diesem Eintrag geführt hat
 
         public Entry(int depth, int score, int type, Move move) {
             this.depth = depth;

@@ -24,6 +24,8 @@ public class Move {
         move.caputreCount = 0;
         move.capturedFigures[0] = null;
         move.capturedFigures[1] = null;
+        int x = move.fromX;
+        int y = move.fromY;
 
         // Board update
         int figure = board.playingBoard[move.fromX][move.fromY];
@@ -36,7 +38,7 @@ public class Move {
             board.kingPos[1] = move.toY;
         }
 
-        GameLogic.toCapture(board, move, move.fromX, move.fromY);
+        GameLogic.toCapture(board, move, x, y);
 
         //Hash update
         int fromIndex = (move.fromX - 1) * 9 + (move.fromY - 1);
