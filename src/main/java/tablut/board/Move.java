@@ -8,7 +8,7 @@ public class Move {
     public int toX, toY;
 
     //Undo Data
-    public Capture[] capturedFigures = new Capture[2]; //Values: capturedX, capturedY, capturedFigure
+    public Capture[] capturedFigures = new Capture[3]; //Values: capturedX, capturedY, capturedFigure
     public int caputreCount = 0;
 
 
@@ -24,8 +24,8 @@ public class Move {
         move.caputreCount = 0;
         move.capturedFigures[0] = null;
         move.capturedFigures[1] = null;
-        int x = move.fromX;
-        int y = move.fromY;
+        int x = move.toX;
+        int y = move.toY;
 
         // Board update
         int figure = board.playingBoard[move.fromX][move.fromY];
@@ -75,6 +75,13 @@ public class Move {
 
             //Hash geschlagene Figur zurück
             hashCapturedFigurBack(board, move, 1);
+        }
+
+        if (move.capturedFigures[2] != null) {
+            board.playingBoard[move.capturedFigures[2].x][move.capturedFigures[2].y] = move.capturedFigures[2].figure;
+
+            //Hash geschlagene Figur zurücks
+            hashCapturedFigurBack(board, move, 2);
         }
 
         //Hash Update

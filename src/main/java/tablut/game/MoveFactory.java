@@ -15,8 +15,8 @@ public class MoveFactory {
 
         int figure = board.playingBoard[move.fromX][move.fromY];
 
-        int x = move.fromX;
-        int y = move.fromY;
+        int x = move.toX;
+        int y = move.toY;
 
         if (figure == Board.EMPTY || figure == Board.BORDER) {
             System.out.println("Keine Figur auf Feld");

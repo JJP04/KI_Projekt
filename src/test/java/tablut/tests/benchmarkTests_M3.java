@@ -16,15 +16,15 @@ public class benchmarkTests_M3 {
 
     public static void main(String[] args) {
         System.out.println("Benchmark Tests für unsere Tablut KI... \n");
-        //System.out.println("Startstellung:");
-        //String startstellung = "3rrr3/4r4/4R4/r3R3r/rrRRKRRrr/r3R3r/4R4/4r4/3rrr3 s 0 1";
-        //benchmarktests(startstellung);
+        System.out.println("Startstellung:");
+        String startstellung = "3rrr3/4r4/4R4/r3R3r/rrRRKRRrr/r3R3r/4R4/4r4/3rrr3 s 0 1";
+        benchmarktests(startstellung);
 
-        System.out.println("Weiß gewinnt in 2:");
-        String whiteWins = "4rr3/4r4/5R3/r4r3/rr1r2Rrr/r3R3r/2R2K1R1/4r4/4r4 w 0 12";
-        benchmarktests(whiteWins);
-
-//        System.out.println("Schwarz gewinnt in 2:");
+//        System.out.println("Weiß gewinnt in 2:");
+//        String whiteWins = "4rr3/4r4/5R3/r4r3/rr1r2Rrr/r3R3r/2R2K1R1/4r4/4r4 w 0 12";
+//        benchmarktests(whiteWins);
+//
+////        System.out.println("Schwarz gewinnt in 2:");
 //        String blackWins = "4r4/1r2r4/2r1Kr3/3rRr3/9/2R1r2R1/9/4r4/9 w 0 1";
 //        benchmarktests(blackWins);
     }
@@ -42,7 +42,7 @@ public class benchmarkTests_M3 {
 
     public static void depthInOneSec(Board board) {
 
-        Move move = MainBenchmarkTest.findBestMoveAlphaBeta(board, 1000, false, true, false, true, true);
+        Move move = MainBenchmarkTest.findBestMoveAlphaBeta(board, 10000, false, true, false, true, true);
         System.out.println("Tiefe erreicht: " + MainBenchmarkTest.depth);
 
         System.out.println("Bester Zug: ");
