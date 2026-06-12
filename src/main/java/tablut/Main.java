@@ -1,5 +1,10 @@
 package tablut;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.List;
 import java.util.Scanner;
 
@@ -17,8 +22,8 @@ public class Main {
 
     private static final String host = "localhost";
     private static final int port = 5000;
-    private static final String token = "";
     private static final String lobby = "F";
+    private static final String TOKEN_FILE = "token.txt";
 
     public static void main(String[] args) throws Exception {
 
@@ -45,17 +50,47 @@ public class Main {
         }
     }
 
-    public static void gameserver() throws Exception {
+    private static String loadToken() {
+        try (BufferedReader br = new BufferedReader(new FileReader(TOKEN_FILE))) {
+            String t = br.readLine();
+            if (t != null && !t.trim().isEmpty()) return t.trim();
+        } catch (IOException ignored) {}
+        return null;
+    }
 
+    private static void saveToken(String token) {
+        try (PrintWriter pw = new PrintWriter(new FileWriter(TOKEN_FILE))) {
+            pw.println(token);
+        } catch (IOException e) {
+            System.out.println("Token konnte nicht gespeichert werden: " + e.getMessage());
+        }
+    }
+
+    public static void gameserver() throws Exception {
         System.out.println("Verbinde mit GameServer!");
-        GameClient client = new GameClient(host, port);
+        String savedToken = loadToken();
+        if (savedToken != null) {
+            System.out.println("Token geladen: " + savedToken);
+        } else {
+            System.out.println("Kein Token gefunden, registriere neu...");
+        }
+
         Scanner scanner = new Scanner(System.in);
-        System.out.print("Token eingeben: ");
-        String token1 = scanner.nextLine();
-        System.out.print("Lobby-Name eingeben (z.B. F): ");
+
+        System.out.print("Lobby erstellen (c) oder beitreten (j)? ");
+        boolean create = scanner.nextLine().trim().equalsIgnoreCase("c");
+
+        System.out.print("Lobby-Name (Enter für \"" + lobby + "\"): ");
         String lobbyName = scanner.nextLine().trim();
         if (lobbyName.isEmpty()) lobbyName = lobby;
-        client.runConnection(token1, lobbyName);
+
+        GameClient client = new GameClient(host, port);
+        client.runConnection(savedToken, lobbyName, create);
+
+        if (savedToken == null && client.getLastRegisteredToken() != null) {
+            saveToken(client.getLastRegisteredToken());
+            System.out.println("Token gespeichert: " + client.getLastRegisteredToken());
+        }
     }
 
     public static void kiVsKi(Board board) {

@@ -12,7 +12,7 @@ import java.util.Random;
 
 public class SearchMoves {
 
-    public static int maxDepth = 4;
+    public static int maxDepth = 5;
     public static int depth = 1;
     private static final int infinity = Integer.MAX_VALUE / 2;
     private static final long buffer = 50;

@@ -11,7 +11,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.util.Scanner;
 
 public class GameClient {
 
@@ -20,6 +19,11 @@ public class GameClient {
     private PrintWriter write;
     private Board board;
     private int colorGame = -1;
+    private String lastRegisteredToken = null;
+
+    public String getLastRegisteredToken() {
+        return lastRegisteredToken;
+    }
 
     public GameClient(String host, int port) throws IOException {
         board = new Board();
@@ -28,30 +32,51 @@ public class GameClient {
         receive = new BufferedReader(new InputStreamReader(socket.getInputStream()));
     }
 
-    public void runConnection(String token, String lobby) throws IOException {
+    public void runConnection(String token, String lobby, boolean create) throws IOException {
         sendMessage("gspy");
         String msg = receiveMessage();
         if (!msg.equals("ok")) throw new IOException("Handshake fehlgeschlagen: " + msg);
+
+        if (token == null) {
+            sendMessage("register");
+            token = receiveMessage();
+            lastRegisteredToken = token;
+            System.out.println("Registriert, Token: " + token);
+        }
 
         sendMessage("login " + token);
         msg = receiveMessage();
         if (!msg.equals("ok")) throw new IOException("login fehlgeschlagen: " + msg);
 
-        sendMessage("join " + lobby);
-        msg = receiveMessage();
-        if (!msg.equals("ok")) throw new IOException("join fehlgeschlagen: " + msg);
-
-        System.out.println("Bist du Ersteller? (yes/no)");
-        Scanner scanner = new Scanner(System.in);
-        String ans = scanner.nextLine().trim().toLowerCase();
-        if (ans.equals("yes") || ans.equals("j") || ans.equals("ja")) {
+        if (create) {
+            sendMessage("create " + lobby);
+            msg = receiveMessage();
+            if (!msg.equals("ok")) throw new IOException("create fehlgeschlagen: " + msg);
+            sendLobbyConfig();
+            System.out.println("Warte auf zweiten Spieler... (Enter drücken zum Starten)");
+            new java.util.Scanner(System.in).nextLine();
             sendMessage("start");
+        } else {
+            sendMessage("join " + lobby);
+            msg = receiveMessage();
+            if (!msg.equals("ok")) throw new IOException("join fehlgeschlagen: " + msg);
         }
 
         waitForConfig();
         gameConfig();
         runGame();
         socket.close();
+    }
+
+    private void sendLobbyConfig() throws IOException {
+        sendMessage("set game.type tablut");
+        receiveMessage();
+        sendMessage("set min_players 2");
+        receiveMessage();
+        sendMessage("set max_players 2");
+        receiveMessage();
+        sendMessage("set game.time_account 300");
+        receiveMessage();
     }
 
     private void waitForConfig() throws IOException {
@@ -68,7 +93,7 @@ public class GameClient {
         while (!msg.equals("ok")) {
             System.out.println("Config: " + msg);
             if (msg.startsWith("set start_pos ")) {
-                String startPos = msg.substring("set start_pos ".length()).trim();
+                String startPos = msg.substring("set start_pos ".length()).trim().replaceAll("^['\"]|['\"]$", "");
                 if (!startPos.isEmpty()) {
                     board = FenParser.serverFenparse(startPos);
                     System.out.println("Startposition gesetzt.");
@@ -144,7 +169,7 @@ public class GameClient {
     }
 
     public void kiMakeMove() throws IOException {
-        Move move = SearchMoves.findBestMoveAlphaBeta(board, 5000);
+        Move move = SearchMoves.findBestMoveAlphaBeta(board, 15000);
         if (move == null) {
             System.out.println("Kein Zug möglich!");
             return;
