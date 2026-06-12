@@ -49,6 +49,7 @@ public class Move {
 
         board.hash ^= ZobristHashing.zobristTable[figureIndex][fromIndex];
         board.hash ^= ZobristHashing.zobristTable[figureIndex][toIndex];
+        board.hash ^= ZobristHashing.blackToMoveKey;
 
         board.playBlackTurn = !board.playBlackTurn;
     }
@@ -101,6 +102,7 @@ public class Move {
         // Hash zurück
         board.hash ^= ZobristHashing.zobristTable[pieceIndex][toIndex];
         board.hash ^= ZobristHashing.zobristTable[pieceIndex][fromIndex];
+        board.hash ^= ZobristHashing.blackToMoveKey;
 
         board.playBlackTurn = !board.playBlackTurn;
     }

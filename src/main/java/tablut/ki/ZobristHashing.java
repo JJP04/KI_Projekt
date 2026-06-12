@@ -11,6 +11,9 @@ public class ZobristHashing {
     public static int Anzahl_Figuren = 3;
     public static int Anzahl_Felder = 81;
     public static final long[][] zobristTable = new long[Anzahl_Figuren][Anzahl_Felder];
+    //Zugrecht muss in den Hash, sonst teilen sich gleiche Stellungen mit
+    //unterschiedlichem Spieler am Zug denselben TT-Eintrag
+    public static long blackToMoveKey;
 
     /**
      * Initialisiert die Zobrist-Tabellen mit zufälligen Werten.
@@ -22,6 +25,7 @@ public class ZobristHashing {
                 zobristTable[figur][feld] = rand.nextLong();
             }
         }
+        blackToMoveKey = rand.nextLong();
     }
 
     public static int pieceToIndex(int piece) {
@@ -45,6 +49,9 @@ public class ZobristHashing {
                     hash ^= zobristTable[pieceIndex][fieldIndex];
                 }
             }
+        }
+        if (board.playBlackTurn) {
+            hash ^= blackToMoveKey;
         }
         return hash;
     }

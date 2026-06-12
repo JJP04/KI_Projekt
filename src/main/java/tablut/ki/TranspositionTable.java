@@ -29,6 +29,10 @@ public class TranspositionTable {
         return table.size();
     }
 
+    public void clear() {
+        table.clear();
+    }
+
     public Entry get(long hash) {
         return table.get(hash);
     }

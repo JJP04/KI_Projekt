@@ -42,6 +42,8 @@ public class MainBenchmarkTest {
         List<Move> moves = MoveFactory.getAllMoves(board);
         KillerHeuristik.sortMoves(moves, 0);
         totalNodes = 0;
+        //TT leeren, damit jeder Benchmark unabhängig misst
+        tt.clear();
         if (moves.isEmpty()) return null;
         long deadline = System.currentTimeMillis() + timeLimitMs - buffer;
 
@@ -228,9 +230,15 @@ public class MainBenchmarkTest {
 
         if (transpositionTable) {
             // TT-Zug hat höchste Priorität → nach Sortierung an erste Stelle setzen
+            // Wichtig: das Objekt aus der eigenen Zugliste verwenden, nicht entry.move!
+            // entry.move ist ein geteiltes Objekt aus der TT — makeMove würde dessen
+            // Undo-Daten (capturedFigures) überschreiben. Außerdem wird so geprüft,
+            // dass der TT-Zug in dieser Stellung überhaupt legal ist (Hash-Kollision).
             if (entry != null && entry.move != null) {
-                moves.remove(entry.move);
-                moves.addFirst(entry.move);
+                int ttIndex = moves.indexOf(entry.move);
+                if (ttIndex > 0) {
+                    moves.addFirst(moves.remove(ttIndex));
+                }
             }
         }
 
@@ -256,7 +264,10 @@ public class MainBenchmarkTest {
                 } else {
                     // Alle anderen: Nullfenster
                     childScore = pvs(board, depth - 1, alpha, alpha + 1, deadline, ply + 1);
-                    if (childScore == Integer.MIN_VALUE) return Integer.MIN_VALUE;
+                    if (childScore == Integer.MIN_VALUE) {
+                        Move.unmakeMove(board, move);
+                        return Integer.MIN_VALUE;
+                    }
                     // Fail-high: Zug ist besser als alpha, genauen Wert holen
                     if (childScore > alpha && childScore < beta) {
                         childScore = pvs(board, depth - 1, alpha, beta, deadline, ply + 1);
@@ -309,7 +320,10 @@ public class MainBenchmarkTest {
                 } else {
                     // Alle anderen: Nullfenster
                     childScore = pvs(board, depth - 1, beta - 1, beta, deadline, ply + 1);
-                    if (childScore == Integer.MIN_VALUE) return Integer.MIN_VALUE;
+                    if (childScore == Integer.MIN_VALUE) {
+                        Move.unmakeMove(board, move);
+                        return Integer.MIN_VALUE;
+                    }
                     // Fail-low: Zug ist schlechter als beta, genauen Wert holen
                     if (childScore > alpha && childScore < beta) {
                         childScore = pvs(board, depth - 1, alpha, beta, deadline, ply + 1);
