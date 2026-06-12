@@ -11,15 +11,13 @@ public class ZobristHashing {
     public static int Anzahl_Figuren = 3;
     public static int Anzahl_Felder = 81;
     public static final long[][] zobristTable = new long[Anzahl_Figuren][Anzahl_Felder];
-    //Zugrecht muss in den Hash, sonst teilen sich gleiche Stellungen mit
-    //unterschiedlichem Spieler am Zug denselben TT-Eintrag
     public static long blackToMoveKey;
 
     /**
      * Initialisiert die Zobrist-Tabellen mit zufälligen Werten.
      */
     public static void initializeZobristTable() {
-        Random rand = new Random(12345); // Fester Seed für reproduzierbare Ergebnisse
+        Random rand = new Random(12345);
         for (int figur = 0; figur < Anzahl_Figuren; figur++) {
             for (int feld = 0; feld < Anzahl_Felder; feld++) {
                 zobristTable[figur][feld] = rand.nextLong();
