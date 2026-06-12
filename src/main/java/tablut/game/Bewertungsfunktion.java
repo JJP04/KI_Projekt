@@ -14,15 +14,14 @@ public class Bewertungsfunktion {
      * + Material Weiß (Anzahl Figuren *5)
      * - Material Schwarz (Anzahl Figuren *3)
      */
-
     public static int ratePosition(Board board) {
-        int win = winStatus(board);
-        int escape = escapeKing(board);
-        int pressure = pressureKing(board);
-        int distance = distanceCorner(board);
-        int mat = material(board);
-
-        return win + escape + pressure + distance + mat;
+        int win         = winStatus(board);
+        int escape      = escapeKing(board);
+        int pressure    = pressureKing(board);
+        int distance    = distanceCorner(board);
+        int mat         = material(board);
+        int rep         = checkBoardRepetition(board);
+        return win + escape + pressure + distance + mat + rep;
     }
 
     public static int winStatus(Board board) {
@@ -48,31 +47,92 @@ public class Bewertungsfunktion {
      */
     public static int pressureKing(Board board) {
         int pressure = 0;
+        int kx = board.kingPos[0];
+        int ky = board.kingPos[1];
+
         for (int[] dir : Board.directions) {
-            int[] field = GameLogic.moveXFields(board.kingPos[0], board.kingPos[1], dir, 1);
-            if (board.playingBoard[field[0]][field[1]] == Board.BLACK) {
-                pressure++;
+            int nx = kx + dir[0];
+            int ny = ky + dir[1];
+            int distance = 1;
+
+            while (board.playingBoard[nx][ny] != Board.BORDER) {
+                if (board.playingBoard[nx][ny] == Board.BLACK) {
+                    if (distance <= 3) {
+                        pressure += (4 - distance);  // Dist 1→3, Dist 2→2, Dist 3→1
+                    }
+                    break; // dahinter abgeschirmt
+                }
+                if (board.playingBoard[nx][ny] == Board.WHITE) {
+                    break; // eigene Figur schirmt ab
+                }
+                nx += dir[0];
+                ny += dir[1];
+                distance++;
             }
         }
-        return pressure * -20;
+        return pressure * -10;
     }
-
     /**
      * Abstand zur Ecke (-80 * Distanz):
      * Misst Entfernung zur nächsten Ecke, je näher König an Ecke desto besser, desto kleiner der Minus Wert
      */
     public static int distanceCorner(Board board) {
-        int kingX = board.kingPos[0];
-        int kingY = board.kingPos[1];
+        int kx = board.kingPos[0];
+        int ky = board.kingPos[1];
 
-        int[][] cornsers = Board.corners;
+        int bestScore = Integer.MIN_VALUE;
 
-        int minDistance = Integer.MAX_VALUE;
-        for (int[] corner : cornsers) {
-            int distance = Math.abs(kingX - corner[0]) + Math.abs(kingY - corner[1]);
-            minDistance = Math.min(minDistance, distance);
+        for (int[] corner : Board.corners) {
+            int cx = corner[0];
+            int cy = corner[1];
+
+            if (kx == cx && ky == cy) {
+                return 10000; // König steht bereits auf Ecke — Sieg
+            }
+
+            if (kx == cx) {
+                // gleiche Reihe
+                int blockers = countBlockers(board, kx, ky, cx, cy, false);
+                bestScore = Math.max(bestScore, evalEscapeLine(blockers));
+
+            } else if (ky == cy) {
+                // gleiche Spalte
+                int blockers = countBlockers(board, kx, ky, cx, cy, true);
+                bestScore = Math.max(bestScore, evalEscapeLine(blockers));
+
+            } else {
+                // nicht auf gleicher Linie — Manhattan als Fallback
+                int dist = Math.abs(kx - cx) + Math.abs(ky - cy);
+                bestScore = Math.max(bestScore, dist * -30);
+            }
         }
-        return minDistance * -100;
+        return bestScore;
+    }
+
+    //Zählt schwarze figuren zwischen König und Ecke auf einer Linie
+    private static int countBlockers(Board board, int kx, int ky,
+                                     int cx, int cy, boolean scanRow) {
+        int blockers = 0;
+        if (scanRow) {
+            // gleiche Spalte (ky == cy)
+            int step = (cx > kx) ? 1 : -1;
+            for (int x = kx + step; x != cx; x += step) {
+                if (board.playingBoard[x][ky] == Board.BLACK) blockers++;
+            }
+        } else {
+            // gleiche Reihe (kx == cx)
+            int step = (cy > ky) ? 1 : -1;
+            for (int y = ky + step; y != cy; y += step) {
+                if (board.playingBoard[kx][y] == Board.BLACK) blockers++;
+            }
+        }
+        return blockers;
+    }
+
+    //Bewertun Blockaden durch Schearfz
+    private static int evalEscapeLine(int blockers) {
+        if (blockers == 0) return 150;
+        return blockers * -40;
     }
 
 
@@ -96,7 +156,7 @@ public class Bewertungsfunktion {
                 }
             }
         }
-        return (whiteCount * 30) - (blackCount * 10);
+        return (whiteCount * 30) - (blackCount * 15);
     }
 
     /**
@@ -105,11 +165,9 @@ public class Bewertungsfunktion {
     public static int checkBoardRepetition(Board board) {
         for (int[][] past : board.boardHistory) {
             if (Arrays.deepEquals(past, board.playingBoard)) {
-                // Stellung schon mal vorgekommen?
-                return board.playBlackTurn ? 9000 : -9000;
+                return -50;
             }
         }
-        return 0; // noch nie vorgekommen
+        return 0;
     }
 }
-
