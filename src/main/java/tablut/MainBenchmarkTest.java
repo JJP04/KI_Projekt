@@ -20,59 +20,30 @@ public class MainBenchmarkTest {
     private static final long buffer = 50;
     private static Move bestMoveFound = null;
     private static int bestScoreFound = 0;
-    public static int knotenZaehler = 0;
-    public static long nodes = 0;
+    public static long totalNodes;
+    public static long depthNodes;
+    public static long timeLimitMs;
 
-    public boolean alphaBeta = false;
-    public boolean pvs = false;
-    public boolean makeUnmake = false;
-    public boolean transpositionTable = false;
-    public boolean killerHeuristik = false;
-
-
-    public static void main(String[] args) throws Exception {
-        System.out.println("Tablut KI vs KI");
-
-        Board board = new Board();
-        kiVsKi(board);
-    }
-
-    public static void kiVsKi(Board board) {
-        System.out.println("kiVsKi");
-        board.printBoard();
-
-        while (!GameLogic.isGameOver(board)) {
-
-            Move move = SearchMoves.findBestMoveAlphaBeta(board, 10000000);
-
-            String farbe = board.playBlackTurn ? "Schwarz" : "Weiß";
-            if (move == null) {
-                System.out.println("Kein Zug möglich!" + farbe + " hat verloren!");
-                break;
-            }
-            MoveFactory.moveFigure(board, move);
-            System.out.println(farbe + " Zug: " + move.fromX + "," + move.fromY + "---> " + move.toX + "," + move.toY);
-
-            board.printBoard();
-
-            System.out.println("TT Einträge: " + SearchMoves.tt.size());
-            ;
-
-        }
-        System.out.println("Das Spiel ist vorbei!");
-        GameLogic.gameEnd(board);
-    }
+    public static boolean alphaBeta = false;
+    public static boolean pvs = false;
+    public static boolean makeUnmake = false;
+    public static boolean transpositionTable = false;
+    public static boolean killerHeuristik = false;
 
     public static TranspositionTable tt = new TranspositionTable();
+    
+    public static Move findBestMoveAlphaBeta(Board board, long timeLimitMs, boolean alphaBeta, boolean pvs, boolean makeUnmake, boolean transpositionTable, boolean killerHeuristik) {
 
-    /**
-     * Findet den besten Zug für die aktuelle Spielsituation auf dem Board unter Verwendung von Alpha-Beta-Suche.
-     */
-    public static Move findBestMoveAlphaBeta(Board board, long timeLimitMs) {
-        //TODO Muss erstzet werden duch die "Sotierten" Züge
+        MainBenchmarkTest.timeLimitMs = timeLimitMs;
+        MainBenchmarkTest.alphaBeta = alphaBeta;
+        MainBenchmarkTest.pvs = pvs;
+        MainBenchmarkTest.makeUnmake = makeUnmake;
+        MainBenchmarkTest.transpositionTable = transpositionTable;
+        MainBenchmarkTest.killerHeuristik = killerHeuristik;
+
         List<Move> moves = MoveFactory.getAllMoves(board);
         KillerHeuristik.sortMoves(moves, 0);
-        nodes = 0;
+        totalNodes = 0;
         if (moves.isEmpty()) return null;
         long deadline = System.currentTimeMillis() + timeLimitMs - buffer;
 
@@ -87,13 +58,21 @@ public class MainBenchmarkTest {
         for (int currentDepth = 1; currentDepth <= maxDepth; currentDepth++) {
             if (System.currentTimeMillis() >= deadline) break;
 
+            depthNodes = 0;
+
             boolean completed = startSearchAlg(board, moves, currentDepth, deadline);
             //Wenn Zeitlimit erreicht
             if (!completed) break;
             //Abbruch bei Gewinn oder Verlust
             if (bestScoreFound >= 9000 || bestScoreFound <= -9000) break;
+
+            System.out.println("Nodes at depth " + currentDepth + ": " + depthNodes);
+            totalNodes += depthNodes;
+
             depth = currentDepth;
         }
+        System.out.println("Total Nodes: " + totalNodes);
+
         return bestMoveFound;
     }
 
@@ -101,7 +80,10 @@ public class MainBenchmarkTest {
      * Bewertet ALLE Züge auf einer bestimmten Tiefe
      */
     public static boolean startSearchAlg(Board board, List<Move> moves, int depth, long deadline) {
+        depthNodes++;
+
         boolean isMax = !board.playBlackTurn;
+        int score = 0;
 
         int bestScore = isMax ? -infinity : infinity;
         Move bestMove = null;
@@ -113,14 +95,14 @@ public class MainBenchmarkTest {
             //MakeMove
             Move.makeMove(board, move);
 
-            //Minimax:
-            //int score = miniMaxStanard(copy, depth - 1, alpha, beta, deadline);
-
             //Alpha Beta:
-            int score = alphaBeta(board, depth - 1, alpha, beta, deadline, 1);
-
+            if (alphaBeta) {
+                score = alphaBeta(board, depth - 1, alpha, beta, deadline, 1);
+            }
             //PVS:
-            //int score = pvs(board, depth - 1, alpha, beta, deadline, 1);
+            if (pvs) {
+                score = pvs(board, depth - 1, alpha, beta, deadline, 1);
+            }
 
             Move.unmakeMove(board, move);
 
@@ -160,7 +142,7 @@ public class MainBenchmarkTest {
      * Gibt den besten Score zurück
      */
     public static int alphaBeta(Board board, int depth, int alpha, int beta, long deadline, int ply) {
-        nodes++;
+        depthNodes++;
 
         //Nur bei jedem 4. Knoten ZeitCheck => Rechnerzeitsparen
         if ((depth & 0x3) == 0 && System.currentTimeMillis() >= deadline) {
@@ -213,14 +195,19 @@ public class MainBenchmarkTest {
     }
 
     public static int pvs(Board board, int depth, int alpha, int beta, long deadline, int ply) {
-        nodes++;
+        depthNodes++;
 
         //Überprüfung, ob Spielzustand bereits in Transposition Table gespeichert ist
-        TranspositionTable.Entry entry = tt.get(board.hash);
-        if (entry != null && entry.depth >= depth) {
-            if (entry.type == 0) return entry.score;
-            if (entry.type == -1 && entry.score <= alpha) return entry.score;
-            if (entry.type == 1 && entry.score >= beta) return entry.score;
+
+        TranspositionTable.Entry entry = new TranspositionTable.Entry(depth, 0, 0, null);
+
+        if (transpositionTable) {
+            entry = tt.get(board.hash);
+            if (entry != null && entry.depth >= depth) {
+                if (entry.type == 0) return entry.score;
+                if (entry.type == -1 && entry.score <= alpha) return entry.score;
+                if (entry.type == 1 && entry.score >= beta) return entry.score;
+            }
         }
 
         if ((depth & 0x3) == 0 && System.currentTimeMillis() >= deadline) {
@@ -236,13 +223,17 @@ public class MainBenchmarkTest {
             return 0;
         }
 
-        // Killer-Heuristik sortiert Züge nach Ply
-        KillerHeuristik.sortMoves(moves, ply);
+        if (killerHeuristik) {
+            // Killer-Heuristik sortiert Züge nach Ply
+            KillerHeuristik.sortMoves(moves, ply);
+        }
 
-        // TT-Zug hat höchste Priorität → nach Sortierung an erste Stelle setzen
-        if (entry != null && entry.move != null) {
-            moves.remove(entry.move);
-            moves.addFirst(entry.move);
+        if (transpositionTable) {
+            // TT-Zug hat höchste Priorität → nach Sortierung an erste Stelle setzen
+            if (entry != null && entry.move != null) {
+                moves.remove(entry.move);
+                moves.addFirst(entry.move);
+            }
         }
 
         int alphaOrig = alpha;
@@ -284,10 +275,12 @@ public class MainBenchmarkTest {
 
                 score = Math.max(score, childScore);
                 alpha = Math.max(alpha, score);
-                if (alpha >= beta) {
-                    KillerHeuristik.storeKiller(move, ply);
-                    KillerHeuristik.addHistory(move, depth);
-                    break;
+                if (killerHeuristik) {
+                    if (alpha >= beta) {
+                        KillerHeuristik.storeKiller(move, ply);
+                        KillerHeuristik.addHistory(move, depth);
+                        break;
+                    }
                 }
             }
 
@@ -300,7 +293,9 @@ public class MainBenchmarkTest {
                 type = 0; // EXACT
             }
 
-            tt.put(board.hash, new TranspositionTable.Entry(depth, score, type, bestMove));
+            if (transpositionTable) {
+                tt.put(board.hash, new TranspositionTable.Entry(depth, score, type, bestMove));
+            }
             return score;
 
         } else {
@@ -333,10 +328,12 @@ public class MainBenchmarkTest {
 
                 score = Math.min(score, childScore);
                 beta = Math.min(beta, score);
-                if (alpha >= beta) {
-                    KillerHeuristik.storeKiller(move, ply);
-                    KillerHeuristik.addHistory(move, depth);
-                    break;
+                if (killerHeuristik) {
+                    if (alpha >= beta) {
+                        KillerHeuristik.storeKiller(move, ply);
+                        KillerHeuristik.addHistory(move, depth);
+                        break;
+                    }
                 }
             }
             int type;
@@ -348,7 +345,9 @@ public class MainBenchmarkTest {
                 type = 0; // EXACT
             }
 
-            tt.put(board.hash, new TranspositionTable.Entry(depth, score, type, bestMove));
+            if (transpositionTable) {
+                tt.put(board.hash, new TranspositionTable.Entry(depth, score, type, bestMove));
+            }
             return score;
         }
     }
