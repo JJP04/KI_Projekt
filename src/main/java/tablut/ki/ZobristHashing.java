@@ -23,6 +23,7 @@ public class ZobristHashing {
             }
         }
     }
+
     public static int pieceToIndex(int piece) {
         if (piece == Board.BLACK) return 0;
         if (piece == Board.WHITE) return 1;

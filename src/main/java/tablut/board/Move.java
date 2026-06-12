@@ -3,12 +3,14 @@ package tablut.board;
 import tablut.game.GameLogic;
 import tablut.ki.ZobristHashing;
 
+import java.util.Arrays;
+
 public class Move {
     public int fromX, fromY;
     public int toX, toY;
 
     //Undo Data
-    public Capture[] capturedFigures = new Capture[3]; //Values: capturedX, capturedY, capturedFigure
+    public Capture[] capturedFigures = new Capture[4]; //Values: capturedX, capturedY, capturedFigure
     public int caputreCount = 0;
 
 
@@ -22,8 +24,7 @@ public class Move {
     public static void makeMove(Board board, Move move) {
 
         move.caputreCount = 0;
-        move.capturedFigures[0] = null;
-        move.capturedFigures[1] = null;
+        Arrays.fill(move.capturedFigures, null);
         int x = move.toX;
         int y = move.toY;
 
@@ -83,6 +84,14 @@ public class Move {
             //Hash geschlagene Figur zurücks
             hashCapturedFigurBack(board, move, 2);
         }
+
+        if (move.capturedFigures[3] != null) {
+            board.playingBoard[move.capturedFigures[3].x][move.capturedFigures[3].y] = move.capturedFigures[3].figure;
+
+            //Hash geschlagene Figur zurücks
+            hashCapturedFigurBack(board, move, 3);
+        }
+
 
         //Hash Update
         int pieceIndex = ZobristHashing.pieceToIndex(figure);

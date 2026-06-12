@@ -26,18 +26,16 @@ public class MainBenchmarkTest {
 
     public static boolean alphaBeta = false;
     public static boolean pvs = false;
-    public static boolean makeUnmake = false;
     public static boolean transpositionTable = false;
     public static boolean killerHeuristik = false;
 
     public static TranspositionTable tt = new TranspositionTable();
-    
-    public static Move findBestMoveAlphaBeta(Board board, long timeLimitMs, boolean alphaBeta, boolean pvs, boolean makeUnmake, boolean transpositionTable, boolean killerHeuristik) {
+
+    public static Move findBestMoveAlphaBeta(Board board, long timeLimitMs, boolean alphaBeta, boolean pvs, boolean transpositionTable, boolean killerHeuristik) {
 
         MainBenchmarkTest.timeLimitMs = timeLimitMs;
         MainBenchmarkTest.alphaBeta = alphaBeta;
         MainBenchmarkTest.pvs = pvs;
-        MainBenchmarkTest.makeUnmake = makeUnmake;
         MainBenchmarkTest.transpositionTable = transpositionTable;
         MainBenchmarkTest.killerHeuristik = killerHeuristik;
 
@@ -71,7 +69,7 @@ public class MainBenchmarkTest {
 
             depth = currentDepth;
         }
-        System.out.println("Total Nodes: " + totalNodes);
+        System.out.println("Total Nodes (mit Cutoffs): " + totalNodes);
 
         return bestMoveFound;
     }

@@ -12,7 +12,7 @@ import java.util.Random;
 
 public class SearchMoves {
 
-    public static int maxDepth = 10;
+    public static int maxDepth = 4;
     public static int depth = 1;
     private static final int infinity = Integer.MAX_VALUE / 2;
     private static final long buffer = 50;
@@ -87,10 +87,10 @@ public class SearchMoves {
             //int score = miniMaxStanard(copy, depth - 1, alpha, beta, deadline);
 
             //Alpha Beta:
-            int score = alphaBeta(board, depth - 1, alpha, beta, deadline, 1);
+            //int score = alphaBeta(board, depth - 1, alpha, beta, deadline, 1);
 
             //PVS:
-            //int score = pvs(board, depth - 1, alpha, beta, deadline, 1);
+            int score = pvs(board, depth - 1, alpha, beta, deadline, 1);
 
             Move.unmakeMove(board, move);
 
@@ -287,7 +287,7 @@ public class SearchMoves {
                 } else {
                     // Alle anderen: Nullfenster
                     childScore = pvs(board, depth - 1, alpha, alpha + 1, deadline, ply + 1);
-                    if (childScore == Integer.MIN_VALUE) return Integer.MIN_VALUE;
+
                     // Fail-high: Zug ist besser als alpha, genauen Wert holen
                     if (childScore > alpha && childScore < beta) {
                         childScore = pvs(board, depth - 1, alpha, beta, deadline, ply + 1);
@@ -336,7 +336,7 @@ public class SearchMoves {
                 } else {
                     // Alle anderen: Nullfenster
                     childScore = pvs(board, depth - 1, beta - 1, beta, deadline, ply + 1);
-                    if (childScore == Integer.MIN_VALUE) return Integer.MIN_VALUE;
+
                     // Fail-low: Zug ist schlechter als beta, genauen Wert holen
                     if (childScore > alpha && childScore < beta) {
                         childScore = pvs(board, depth - 1, alpha, beta, deadline, ply + 1);

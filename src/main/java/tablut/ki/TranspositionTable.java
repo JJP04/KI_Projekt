@@ -29,10 +29,6 @@ public class TranspositionTable {
         return table.size();
     }
 
-    public boolean contains(long hash) {
-        return table.containsKey(hash);
-    }
-
     public Entry get(long hash) {
         return table.get(hash);
     }
