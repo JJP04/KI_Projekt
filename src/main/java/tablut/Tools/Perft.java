@@ -1,13 +1,14 @@
-package tablut.game;
+package tablut.Tools;
 
 import tablut.board.Board;
 import tablut.board.Move;
+import tablut.game.GameLogic;
+import tablut.game.MoveFactory;
 
 import java.util.List;
 
 public class Perft {
 
-    static MoveFactory moveFactory = new MoveFactory();
     public static long deadline;
 
     public static long perft(Board b, int depth) {
@@ -18,7 +19,7 @@ public class Perft {
             return 0;
         }
 
-        List<Move> moves = moveFactory.getAllMoves(b);
+        List<Move> moves = MoveFactory.getAllMoves(b);
         long nodes = 0;
 
         for (Move move : moves) {

@@ -3,13 +3,13 @@ package tablut.tests;
 import org.junit.jupiter.api.Test;
 import tablut.board.Board;
 import tablut.client.FenParser;
-import tablut.game.Perft;
+import tablut.Tools.Perft;
 
 public class benchmarkTests_M1 {
 
-    static String start = "3rrr3/4r4/4R4/r3R3r/rrRRKRRrr/r3R3r/4R4/4r4/3rrr3 s 0 1";
-    String mitte = "3rrr3/9/4R4/r3R3r/rrR1KRR1r/r3R3r/3R5/4r4/3rrr3 s 4 7";
-    String ende = "7r1/R8/9/9/9/K8/9/1r7/9 s 0 39";
+    static final String start = "3rrr3/4r4/4R4/r3R3r/rrRRKRRrr/r3R3r/4R4/4r4/3rrr3 s 0 1";
+    final String mitte = "3rrr3/9/4R4/r3R3r/rrR1KRR1r/r3R3r/3R5/4r4/3rrr3 s 4 7";
+    final String ende = "7r1/R8/9/9/9/K8/9/1r7/9 s 0 39";
 
     @Test
     void benchmarkTestStart() {

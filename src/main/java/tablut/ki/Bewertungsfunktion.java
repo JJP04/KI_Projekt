@@ -1,6 +1,8 @@
-package tablut.game;
+package tablut.ki;
 
 import tablut.board.Board;
+import tablut.game.GameLogic;
+import tablut.game.MoveFactory;
 
 import java.util.Arrays;
 
@@ -27,7 +29,6 @@ public class Bewertungsfunktion {
     public static int winStatus(Board board) {
         if (GameLogic.whiteWin(board)) return 10000;
         if (GameLogic.blackWin(board)) return -10000;
-        if (GameLogic.isTie(board)) return 0;
         return 0;
     }
 

@@ -1,14 +1,12 @@
-package tablut;
+package tablut.Tools;
 
 import java.util.List;
 
 import tablut.board.Board;
 import tablut.board.Move;
 import tablut.client.FenParser;
-import tablut.game.Bewertungsfunktion;
-import tablut.game.GameLogic;
+import tablut.ki.Bewertungsfunktion;
 import tablut.game.MoveFactory;
-import tablut.game.Perft;
 import tablut.ki.SearchMoves;
 
 public class TestMain {
@@ -57,8 +55,7 @@ public class TestMain {
         Board board = FenParser.parse(fen);
         board.printBoard();
 
-        MoveFactory m = new MoveFactory();
-        List<Move> moves = m.getAllMoves(board);
+        List<Move> moves = MoveFactory.getAllMoves(board);
         System.out.println(moves.size());
 
         for (Move move : moves) {

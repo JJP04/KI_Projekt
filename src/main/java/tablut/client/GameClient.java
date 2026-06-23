@@ -2,7 +2,6 @@ package tablut.client;
 
 import tablut.board.Board;
 import tablut.board.Move;
-import tablut.game.GameLogic;
 import tablut.game.MoveFactory;
 import tablut.ki.SearchMoves;
 

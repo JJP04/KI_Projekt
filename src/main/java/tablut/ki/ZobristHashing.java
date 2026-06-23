@@ -8,8 +8,8 @@ import java.util.Random;
  * Erzeugt einen Hash für eine Stellung
  */
 public class ZobristHashing {
-    public static int Anzahl_Figuren = 3;
-    public static int Anzahl_Felder = 81;
+    public static final int Anzahl_Figuren = 3;
+    public static final int Anzahl_Felder = 81;
     public static final long[][] zobristTable = new long[Anzahl_Figuren][Anzahl_Felder];
     public static long blackToMoveKey;
 

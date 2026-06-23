@@ -139,8 +139,7 @@ public class GameLogic {
         if (board.playingBoard[1][1] == Board.KING) return true;
         if (board.playingBoard[1][9] == Board.KING) return true;
         if (board.playingBoard[9][1] == Board.KING) return true;
-        if (board.playingBoard[9][9] == Board.KING) return true;
-        return false;
+        return board.playingBoard[9][9] == Board.KING;
     }
 
     public static boolean blackWin(Board board) {
@@ -200,10 +199,7 @@ public class GameLogic {
             return false;
         }
         //Feld ist besetzt
-        if (!(board.playingBoard[nx][ny] == Board.EMPTY)) {
-            return false;
-        }
-        return true; //Wenn keine der Sonderfälle und Feld frei, dann legal
+        return board.playingBoard[nx][ny] == Board.EMPTY;//Wenn keine der Sonderfälle und Feld frei, dann legal
     }
 
     public static boolean isThroneNeighbor(int x, int y) {

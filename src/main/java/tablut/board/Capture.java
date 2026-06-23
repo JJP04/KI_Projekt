@@ -1,9 +1,9 @@
 package tablut.board;
 
 public class Capture {
-    int x;
-    int y;
-    int figure;
+    final int x;
+    final int y;
+    final int figure;
 
     public Capture(int x, int y, int figure) {
         this.x = x;

@@ -87,24 +87,20 @@ public class MoveFactory {
 
     //Überprüfung ob die Figur zum Spieler gehört, der am Zug ist
     private static boolean isOwnFigure(Board board, int x, int y) {
+        //weiße Figur oder König
         if (board.playingBoard[x][y] == 1 && board.playBlackTurn) {
             return true; //schwarzer Zug
-        } else if ((board.playingBoard[x][y] == -1 || board.playingBoard[x][y] == board.KING) && !board.playBlackTurn) { //weiße Figur oder König
-            return true; //weißer Zug
-        }
-        return false;
+        } else
+            return (board.playingBoard[x][y] == -1 || board.playingBoard[x][y] == Board.KING) && !board.playBlackTurn; //weißer Zug
     }
 
     //Zum Testen: Zufälligen Zug generieren
     public static Move makeRandomMove(Board b) {
         //Optimieren als Array Später
-        MoveFactory m = new MoveFactory();
-        List<Move> moves = m.getAllMoves(b);
+        List<Move> moves = getAllMoves(b);
         if (moves.isEmpty()) return null;
         Random rand = new Random();
-        Move randomMove = moves.get(rand.nextInt(moves.size()));
 
-        return randomMove;
+        return moves.get(rand.nextInt(moves.size()));
     }
-
 }

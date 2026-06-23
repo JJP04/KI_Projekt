@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 import tablut.board.Board;
 import tablut.board.Move;
 import tablut.client.FenParser;
-import tablut.game.Bewertungsfunktion;
+import tablut.ki.Bewertungsfunktion;
 import tablut.ki.SearchMoves;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -12,10 +12,10 @@ import static org.junit.jupiter.api.Assertions.*;
 public class BewertungsfunktionTests {
 
 
-    String whiteWins1 = "4rr3/4r4/5R3/r4r3/rr1r2Rrr/r3R3r/2R2K1R1/4r4/4r4 w 0 12";
-    String blackWins1 = "9/9/4r4/9/3rKr3/4r4/9/9/9 s 0 1";
-    String blackWins2 ="9/1r7/3r1r3/3rKr3/9/2R3R2/9/4r4/9 s 0 1";
-    String start ="3rrr3/4r4/4R4/r3R3r/rrRRKRRrr/r3R3r/4R4/4r4/3rrr3 s 0 1";
+    final String whiteWins1 = "4rr3/4r4/5R3/r4r3/rr1r2Rrr/r3R3r/2R2K1R1/4r4/4r4 w 0 12";
+    final String blackWins1 = "9/9/4r4/9/3rKr3/4r4/9/9/9 s 0 1";
+    final String blackWins2 ="9/1r7/3r1r3/3rKr3/9/2R3R2/9/4r4/9 s 0 1";
+    final String start ="3rrr3/4r4/4R4/r3R3r/rrRRKRRrr/r3R3r/4R4/4r4/3rrr3 s 0 1";
 
     @Test
     void whiteWins1() {

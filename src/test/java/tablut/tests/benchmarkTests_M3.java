@@ -1,11 +1,10 @@
 package tablut.tests;
 
-import tablut.MainBenchmarkTest;
+import tablut.Tools.MainBenchmarkTest;
 import tablut.board.Board;
 import tablut.board.Move;
 import tablut.client.FenParser;
-import tablut.game.Bewertungsfunktion;
-import tablut.game.Perft;
+import tablut.ki.Bewertungsfunktion;
 
 public class benchmarkTests_M3 {
 

@@ -1,12 +1,11 @@
-package tablut;
+package tablut.Tools;
 
 import tablut.board.Board;
 import tablut.board.Move;
-import tablut.game.Bewertungsfunktion;
+import tablut.ki.Bewertungsfunktion;
 import tablut.game.GameLogic;
 import tablut.game.MoveFactory;
 import tablut.ki.KillerHeuristik;
-import tablut.ki.SearchMoves;
 import tablut.ki.TranspositionTable;
 import tablut.ki.ZobristHashing;
 
@@ -29,7 +28,7 @@ public class MainBenchmarkTest {
     public static boolean transpositionTable = false;
     public static boolean killerHeuristik = false;
 
-    public static TranspositionTable tt = new TranspositionTable();
+    public static final TranspositionTable tt = new TranspositionTable();
 
     public static Move findBestMoveAlphaBeta(Board board, long timeLimitMs, boolean alphaBeta, boolean pvs, boolean transpositionTable, boolean killerHeuristik) {
 
@@ -118,13 +117,13 @@ public class MainBenchmarkTest {
                     bestScore = score;
                     bestMove = move;
                 }
-                alpha = Math.max(alpha, bestScore);
+                alpha = bestScore;
             } else {
                 if (score < bestScore) {
                     bestScore = score;
                     bestMove = move;
                 }
-                beta = Math.min(beta, bestScore);
+                beta = bestScore;
             }
         }
         if (bestMove != null) {
@@ -158,8 +157,9 @@ public class MainBenchmarkTest {
         boolean maxScore = !board.playBlackTurn;
 
         //Kindknoten rekursiv bewerten
+        int score;
         if (maxScore) {
-            int score = -infinity;
+            score = -infinity;
             for (Move move : moves) {
 
                 Move.makeMove(board, move);
@@ -174,9 +174,8 @@ public class MainBenchmarkTest {
                 if (alpha >= beta) break;
             }
 
-            return score;
         } else {
-            int score = infinity;
+            score = infinity;
             for (Move move : moves) {
 
                 Move.makeMove(board, move);
@@ -190,8 +189,8 @@ public class MainBenchmarkTest {
                 beta = Math.min(beta, score);
                 if (alpha >= beta) break;
             }
-            return score;
         }
+        return score;
     }
 
     public static int pvs(Board board, int depth, int alpha, int beta, long deadline, int ply) {
@@ -249,9 +248,10 @@ public class MainBenchmarkTest {
 
         boolean maxScore = !board.playBlackTurn;
 
+        int score;
         if (maxScore) {
 
-            int score = -infinity;
+            score = -infinity;
 
             for (int i = 0; i < moves.size(); i++) {
                 Move move = moves.get(i);
@@ -305,10 +305,9 @@ public class MainBenchmarkTest {
             if (transpositionTable) {
                 tt.put(board.hash, new TranspositionTable.Entry(depth, score, type, bestMove));
             }
-            return score;
 
         } else {
-            int score = infinity;
+            score = infinity;
             for (int i = 0; i < moves.size(); i++) {
                 Move move = moves.get(i);
                 Move.makeMove(board, move);
@@ -360,7 +359,7 @@ public class MainBenchmarkTest {
             if (transpositionTable) {
                 tt.put(board.hash, new TranspositionTable.Entry(depth, score, type, bestMove));
             }
-            return score;
         }
+        return score;
     }
 }

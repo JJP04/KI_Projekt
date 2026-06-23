@@ -460,8 +460,7 @@ public class GameLogicTests {
 
         b.playBlackTurn = false;
 
-        MoveFactory m = new MoveFactory();
-        List<Move> moves = m.getAllMoves(b);
+        List<Move> moves = MoveFactory.getAllMoves(b);
 
         // Prüfen ob Move nach (7,3) existiert
         boolean found = false;

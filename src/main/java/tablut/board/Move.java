@@ -6,11 +6,13 @@ import tablut.ki.ZobristHashing;
 import java.util.Arrays;
 
 public class Move {
-    public int fromX, fromY;
-    public int toX, toY;
+    public final int fromX;
+    public final int fromY;
+    public final int toX;
+    public final int toY;
 
     //Undo Data
-    public Capture[] capturedFigures = new Capture[4]; //Values: capturedX, capturedY, capturedFigure
+    public final Capture[] capturedFigures = new Capture[4]; //Values: capturedX, capturedY, capturedFigure
     public int caputreCount = 0;
 
 
@@ -116,8 +118,7 @@ public class Move {
 
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof Move)) return false;
-        Move m = (Move) o;
+        if (!(o instanceof Move m)) return false;
         return fromX == m.fromX && fromY == m.fromY && toX == m.toX && toY == m.toY;
     }
     @Override
