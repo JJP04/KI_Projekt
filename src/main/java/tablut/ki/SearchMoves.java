@@ -12,7 +12,7 @@ import java.util.Random;
 
 public class SearchMoves {
 
-    public static int maxDepth = 5;
+    public static int maxDepth = 10;
     public static int depth = 1;
     private static final int infinity = Integer.MAX_VALUE / 2;
     private static final long buffer = 50;
@@ -137,7 +137,7 @@ public class SearchMoves {
             return Integer.MIN_VALUE;
         }
         if (depth == 0 || GameLogic.isGameOver(board)) {
-            return Bewertungsfunktion.ratePosition(board);
+            return Bewertungsfunktion.ratePosition(board, ply);
         }
         List<Move> moves = MoveFactory.getAllMoves(board);
         if (moves.isEmpty()) {
@@ -248,7 +248,7 @@ public class SearchMoves {
         }
 
         if (depth == 0 || GameLogic.isGameOver(board)) {
-            return Bewertungsfunktion.ratePosition(board);
+            return Bewertungsfunktion.ratePosition(board, ply);
         }
 
         List<Move> moves = MoveFactory.getAllMoves(board);

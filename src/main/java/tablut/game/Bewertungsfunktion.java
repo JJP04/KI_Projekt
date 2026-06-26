@@ -7,42 +7,81 @@ import java.util.Arrays;
 public class Bewertungsfunktion {
     /**
      * Bewertungsfunktion (weiß will max. und schwarz will min.)
-     * Gewinnstatus weiß (+/-10000)
-     * + Fluchtmöglichkeiten des Königs (mögliche Züge vom König * 10)
-     * - Druck auf König  (100* Anzahl besetzer Felder um den König)
+     * Gewinnstatus weiß (+/-(10000 - ply)) -- schnellere Siege werden bevorzugt
+     * + Offene Fluchtlinien des Königs zur Ecke (2 Linien: +8000, 1 Linie + Weiß am Zug: +5000, sonst +300)
+     * + Fluchtmöglichkeiten des Königs (mögliche Züge vom König * 5)
+     * - Druck auf König  (gestaffelt nach Distanz der schwarzen Figuren zum König)
      * - Distanz zur Ecke (-10 * Distanz) -- je näher König an Ecke desto besser, desto kleiner der Minus Wert
-     * + Material Weiß (Anzahl Figuren *5)
-     * - Material Schwarz (Anzahl Figuren *3)
+     * + Material Weiß (Anzahl Figuren *100)
+     * - Material Schwarz (Anzahl Figuren *50)
+     * - Eck-Blockaden durch Schwarz (-25 pro besetztem Blockadefeld)
      */
     public static int ratePosition(Board board) {
-        int win         = winStatus(board);
+        return ratePosition(board, 0);
+    }
+
+    public static int ratePosition(Board board, int ply) {
+        int win = winStatus(board, ply);
+        //Spielende: keine weiteren Terme mehr nötig
+        if (win != 0) return win;
+
+        //Offene Fluchtlinien dominieren alles außer dem Spielende
+        int openLines = countOpenEscapeLines(board);
+        if (openLines >= 2) return 8000 - ply;          //Schwarz kann nur eine Linie blocken --> praktisch gewonnen
+        if (openLines == 1 && !board.playBlackTurn) {
+            return 5000 - ply;                          //Weiß am Zug läuft direkt in die Ecke
+        }
+
         int escape      = escapeKing(board);
         int pressure    = pressureKing(board);
         int distance    = distanceCorner(board);
         int mat         = material(board);
+        int blockade    = cornerBlockade(board);
         int rep         = checkBoardRepetition(board);
-        return win + escape + pressure + distance + mat + rep;
+
+        int score = escape + pressure + distance + mat + blockade + rep;
+        if (openLines == 1) score += 300;               //Schwarz am Zug muss die Linie erst blocken
+        return score;
     }
 
     public static int winStatus(Board board) {
-        if (GameLogic.whiteWin(board)) return 10000;
-        if (GameLogic.blackWin(board)) return -10000;
-        if (GameLogic.isTie(board)) return 0;
+        return winStatus(board, 0);
+    }
+
+    public static int winStatus(Board board, int ply) {
+        if (GameLogic.whiteWin(board)) return 10000 - ply;
+        //König geschlagen: das Feld an kingPos ist dann nicht mehr der König
+        if (board.playingBoard[board.kingPos[0]][board.kingPos[1]] != Board.KING) return -(10000 - ply);
         return 0;
     }
 
     /**
-     * Fluchtmöglichkeiten des Königs (Anzahl * 20):
+     * Fluchtmöglichkeiten des Königs (Anzahl * 5):
      * Wenn König durch Zug mehr felder hat, die er betreten kann, dann besser.
      * Vergleich der Anzahl an möglichen Felder des Königs vorher und nachher
      */
     public static int escapeKing(Board board) {
-        int moves = MoveFactory.getFigurMoves(board, board.kingPos[0], board.kingPos[1]).size();
-        return moves * 10;
+        int kx = board.kingPos[0];
+        int ky = board.kingPos[1];
+        int moves = 0;
+
+        for (int[] dir : Board.directions) {
+            int nx = kx + dir[0];
+            int ny = ky + dir[1];
+            while (board.playingBoard[nx][ny] == Board.EMPTY) {
+                //leerer Thron darf übersprungen, aber nicht betreten werden
+                if (!(nx == Board.throne[0] && ny == Board.throne[1])) {
+                    moves++;
+                }
+                nx += dir[0];
+                ny += dir[1];
+            }
+        }
+        return moves * 5;
     }
 
     /**
-     * Druck auf König (-100):
+     * Druck auf König:
      * Wenn durch Zug mehr schwarze Figuren um den König sind, dann schlechter für weiß.
      */
     public static int pressureKing(Board board) {
@@ -70,76 +109,93 @@ public class Bewertungsfunktion {
                 distance++;
             }
         }
-        return pressure * -10;
+        return pressure * -15;
     }
+
     /**
-     * Abstand zur Ecke (-80 * Distanz):
+     * Abstand zur Ecke (-10 * Distanz):
      * Misst Entfernung zur nächsten Ecke, je näher König an Ecke desto besser, desto kleiner der Minus Wert
      */
     public static int distanceCorner(Board board) {
         int kx = board.kingPos[0];
         int ky = board.kingPos[1];
 
-        int bestScore = Integer.MIN_VALUE;
+        int bestDist = Integer.MAX_VALUE;
+
+        for (int[] corner : Board.corners) {
+            int dist = Math.abs(kx - corner[0]) + Math.abs(ky - corner[1]);
+            bestDist = Math.min(bestDist, dist);
+        }
+        if (bestDist == 0) return 10000; // König steht bereits auf Ecke — Sieg
+
+        return bestDist * -10;
+    }
+
+    /**
+     * Zählt die Ecken, zu denen der König eine komplett freie Turm-Linie hat.
+     * Frei heißt: alle Felder zwischen König und Ecke sind leer (weiße UND schwarze Figuren blockieren).
+     */
+    public static int countOpenEscapeLines(Board board) {
+        int kx = board.kingPos[0];
+        int ky = board.kingPos[1];
+        int open = 0;
 
         for (int[] corner : Board.corners) {
             int cx = corner[0];
             int cy = corner[1];
 
-            if (kx == cx && ky == cy) {
-                return 10000; // König steht bereits auf Ecke — Sieg
-            }
+            if (kx == cx && ky == cy) continue; // steht schon drauf — winStatus deckt das ab
 
             if (kx == cx) {
                 // gleiche Reihe
-                int blockers = countBlockers(board, kx, ky, cx, cy, false);
-                bestScore = Math.max(bestScore, evalEscapeLine(blockers));
-
+                if (isLineFree(board, kx, ky, cy, false)) open++;
             } else if (ky == cy) {
                 // gleiche Spalte
-                int blockers = countBlockers(board, kx, ky, cx, cy, true);
-                bestScore = Math.max(bestScore, evalEscapeLine(blockers));
-
-            } else {
-                // nicht auf gleicher Linie — Manhattan als Fallback
-                int dist = Math.abs(kx - cx) + Math.abs(ky - cy);
-                bestScore = Math.max(bestScore, dist * -30);
+                if (isLineFree(board, kx, ky, cx, true)) open++;
             }
         }
-        return bestScore;
+        return open;
     }
 
-    //Zählt schwarze figuren zwischen König und Ecke auf einer Linie
-    private static int countBlockers(Board board, int kx, int ky,
-                                     int cx, int cy, boolean scanRow) {
-        int blockers = 0;
-        if (scanRow) {
+    //Prüft ob alle Felder zwischen König und Ecke auf einer Linie leer sind
+    private static boolean isLineFree(Board board, int kx, int ky, int target, boolean scanColumn) {
+        if (scanColumn) {
             // gleiche Spalte (ky == cy)
-            int step = (cx > kx) ? 1 : -1;
-            for (int x = kx + step; x != cx; x += step) {
-                if (board.playingBoard[x][ky] == Board.BLACK) blockers++;
+            int step = (target > kx) ? 1 : -1;
+            for (int x = kx + step; x != target; x += step) {
+                if (board.playingBoard[x][ky] != Board.EMPTY) return false;
             }
         } else {
             // gleiche Reihe (kx == cx)
-            int step = (cy > ky) ? 1 : -1;
-            for (int y = ky + step; y != cy; y += step) {
-                if (board.playingBoard[kx][y] == Board.BLACK) blockers++;
+            int step = (target > ky) ? 1 : -1;
+            for (int y = ky + step; y != target; y += step) {
+                if (board.playingBoard[kx][y] != Board.EMPTY) return false;
             }
         }
-        return blockers;
+        return true;
     }
 
-    //Bewertun Blockaden durch Schearfz
-    private static int evalEscapeLine(int blockers) {
-        if (blockers == 0) return 150;
-        return blockers * -40;
-    }
+    //Bewertun Blockaden durch Schearfz:
+    //Schwarze Steine auf den Zugangsfeldern der Ecken riegeln die Fluchtwege dauerhaft ab (gut für Schwarz --> negativ)
+    private static final int[][] blockadeFields = {
+            {1, 3}, {3, 1}, {2, 2},   // Ecke (1,1)
+            {1, 7}, {3, 9}, {2, 8},   // Ecke (1,9)
+            {9, 3}, {7, 1}, {8, 2},   // Ecke (9,1)
+            {9, 7}, {7, 9}, {8, 8}    // Ecke (9,9)
+    };
 
+    public static int cornerBlockade(Board board) {
+        int count = 0;
+        for (int[] f : blockadeFields) {
+            if (board.playingBoard[f[0]][f[1]] == Board.BLACK) count++;
+        }
+        return count * -25;
+    }
 
     /**
      * Berechnet Anzahl der Figuren (aktuell gleichwertigkeit von weiß und schwarzer Figur:
-     * schwarz = 16x3 = 48 Punkte
-     * weiß = 8x5 = 40 Punkte
+     * schwarz = 16x50 = 800 Punkte
+     * weiß = 8x100 = 800 Punkte
      * Wenn eine Figur geschlagen werden würde, wäre eben + oder -
      */
     public static int material(Board board) {
@@ -156,11 +212,11 @@ public class Bewertungsfunktion {
                 }
             }
         }
-        return (whiteCount * 30) - (blackCount * 15);
+        return (whiteCount * 100) - (blackCount * 50);
     }
 
     /**
-     * Stellung Wiederholung (+5000 / -5000):
+     * Stellung Wiederholung:
      */
     public static int checkBoardRepetition(Board board) {
         for (int[][] past : board.boardHistory) {

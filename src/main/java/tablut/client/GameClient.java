@@ -169,7 +169,7 @@ public class GameClient {
     }
 
     public void kiMakeMove() throws IOException {
-        Move move = SearchMoves.findBestMoveAlphaBeta(board, 15000);
+        Move move = SearchMoves.findBestMoveAlphaBeta(board, 10000);
         if (move == null) {
             System.out.println("Kein Zug möglich!");
             return;
