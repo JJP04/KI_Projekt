@@ -6,7 +6,7 @@ import tablut.board.Move;
 public class KillerHeuristik {
 
     public static final int MAX_PLY = 64;
-    public static Move[][] killerMoves = new Move[MAX_PLY][2];
+    public static final Move[][] killerMoves = new Move[MAX_PLY][2];
 
     // History-Tabelle: historyTable[from][to] = Anzahl gewichteter Cutoffs
     public static final int[][] historyTable = new int[82][82];

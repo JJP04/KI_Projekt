@@ -5,7 +5,6 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.List;
 import java.util.Scanner;
 
 import tablut.board.Board;
@@ -15,8 +14,6 @@ import tablut.client.GameClient;
 import tablut.game.GameLogic;
 import tablut.game.MoveFactory;
 import tablut.ki.SearchMoves;
-import tablut.ki.TranspositionTable;
-import tablut.ki.ZobristHashing;
 
 public class Main {
 
@@ -113,7 +110,6 @@ public class Main {
             board.printBoard();
 
             System.out.println("TT Einträge: " + SearchMoves.tt.size());
-            ;
 
         }
         System.out.println("Das Spiel ist vorbei!");

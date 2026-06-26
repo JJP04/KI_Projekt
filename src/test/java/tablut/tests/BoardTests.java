@@ -83,10 +83,10 @@ void kingIsOnThrone() {
     void testIsCorner_TrueCases() {
         Board b = new Board();
         b.setUpBoard();
-        assertTrue(b.isCorner(1, 1));
-        assertTrue(b.isCorner(1, 9));
-        assertTrue(b.isCorner(9, 1));
-        assertTrue(b.isCorner(9, 9));
+        assertTrue(Board.isCorner(1, 1));
+        assertTrue(Board.isCorner(1, 9));
+        assertTrue(Board.isCorner(9, 1));
+        assertTrue(Board.isCorner(9, 9));
     }
 
     // keine Ecken
@@ -94,23 +94,23 @@ void kingIsOnThrone() {
     void testIsCorner_FalseCases() {
         Board b = new Board();
         b.setUpBoard();
-        assertFalse(b.isCorner(5, 5));
-        assertFalse(b.isCorner(1, 5)); 
-        assertFalse(b.isCorner(5, 1)); 
-        assertFalse(b.isCorner(4, 4)); 
+        assertFalse(Board.isCorner(5, 5));
+        assertFalse(Board.isCorner(1, 5));
+        assertFalse(Board.isCorner(5, 1));
+        assertFalse(Board.isCorner(4, 4));
     }
         // ✅ Corner + Thron
     @Test
     void testIsRestricted_TrueCases() {
         Board b = new Board();
         b.setUpBoard();
-        assertTrue(b.isRestricted(1, 1));
-        assertTrue(b.isRestricted(1, 9));
-        assertTrue(b.isRestricted(9, 1));
-        assertTrue(b.isRestricted(9, 9));
+        assertTrue(Board.isRestricted(1, 1));
+        assertTrue(Board.isRestricted(1, 9));
+        assertTrue(Board.isRestricted(9, 1));
+        assertTrue(Board.isRestricted(9, 9));
 
         // Thron
-        assertTrue(b.isRestricted(5, 5));
+        assertTrue(Board.isRestricted(5, 5));
     }
 
     // ❌ normale Felder
@@ -118,10 +118,10 @@ void kingIsOnThrone() {
     void testIsRestricted_FalseCases() {
         Board b = new Board();
         b.setUpBoard();
-        assertFalse(b.isRestricted(5, 4));
-        assertFalse(b.isRestricted(4, 5));
-        assertFalse(b.isRestricted(6, 6));
-        assertFalse(b.isRestricted(2, 2));
+        assertFalse(Board.isRestricted(5, 4));
+        assertFalse(Board.isRestricted(4, 5));
+        assertFalse(Board.isRestricted(6, 6));
+        assertFalse(Board.isRestricted(2, 2));
     }
 
 }

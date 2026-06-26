@@ -1,7 +1,5 @@
 package tablut.board;
 
-import tablut.ki.ZobristHashing;
-
 import java.util.ArrayList;
 import java.util.List;
 //Erstellt Spielfeld mit Figuren
@@ -25,10 +23,10 @@ public class Board {
     public final boolean[][] whiteSoldersPos = new boolean[11][11];
 
     //Spezialfelder
-    public static int[][] directions = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
-    public static int[][] corners = {{1, 1}, {1, 9}, {9, 1}, {9, 9}};
-    public static int[] throne = {5, 5};
-    public static int[][] throneNeighbor = {{4, 5}, {6, 5}, {5, 4}, {5, 6}}; //Thron angrenzende Felder als Sonderfelder
+    public static final int[][] directions = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
+    public static final int[][] corners = {{1, 1}, {1, 9}, {9, 1}, {9, 9}};
+    public static final int[] throne = {5, 5};
+    public static final int[][] throneNeighbor = {{4, 5}, {6, 5}, {5, 4}, {5, 6}}; //Thron angrenzende Felder als Sonderfelder
 
     //aktuelle Position des Königs
     public int[] kingPos = {5, 5};

@@ -1,11 +1,10 @@
 package tablut.tests;
 
-import org.junit.jupiter.api.Test;
 import tablut.board.Board;
 import tablut.board.Move;
 import tablut.client.FenParser;
-import tablut.game.Bewertungsfunktion;
-import tablut.game.Perft;
+import tablut.ki.Bewertungsfunktion;
+import tablut.Tools.Perft;
 import tablut.ki.SearchMoves;
 
 public class benchmarkTests_M2 {

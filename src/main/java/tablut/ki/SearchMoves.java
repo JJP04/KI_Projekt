@@ -2,13 +2,11 @@ package tablut.ki;
 
 import tablut.board.Board;
 import tablut.board.Move;
-import tablut.game.Bewertungsfunktion;
 import tablut.game.GameLogic;
 import tablut.game.MoveFactory;
-import tablut.game.Perft;
+import tablut.Tools.Perft;
 
 import java.util.List;
-import java.util.Random;
 
 public class SearchMoves {
 
@@ -21,19 +19,7 @@ public class SearchMoves {
     public static int knotenZaehler = 0;
     public static long nodes = 0;
 
-    public static TranspositionTable tt = new TranspositionTable();
-
-
-    public static Move makeRandomMove(Board b) {
-        //Optimieren als Array Später
-        MoveFactory m = new MoveFactory();
-        List<Move> moves = m.getAllMoves(b);
-        if (moves.isEmpty()) return null;
-        Random rand = new Random();
-        Move randomMove = moves.get(rand.nextInt(moves.size()));
-
-        return randomMove;
-    }
+    public static final TranspositionTable tt = new TranspositionTable();
 
     /**
      * Findet den besten Zug für die aktuelle Spielsituation auf dem Board unter Verwendung von Alpha-Beta-Suche.
@@ -106,13 +92,13 @@ public class SearchMoves {
                     bestScore = score;
                     bestMove = move;
                 }
-                alpha = Math.max(alpha, bestScore);
+                alpha = bestScore;
             } else {
                 if (score < bestScore) {
                     bestScore = score;
                     bestMove = move;
                 }
-                beta = Math.min(beta, bestScore);
+                beta = bestScore;
             }
         }
         if (bestMove != null) {
@@ -146,8 +132,9 @@ public class SearchMoves {
         boolean maxScore = !board.playBlackTurn;
 
         //Kindknoten rekursiv bewerten
+        int score;
         if (maxScore) {
-            int score = -infinity;
+            score = -infinity;
             for (Move move : moves) {
 
                 Move.makeMove(board, move);
@@ -162,9 +149,8 @@ public class SearchMoves {
                 if (alpha >= beta) break;
             }
 
-            return score;
         } else {
-            int score = infinity;
+            score = infinity;
             for (Move move : moves) {
 
                 Move.makeMove(board, move);
@@ -178,8 +164,8 @@ public class SearchMoves {
                 beta = Math.min(beta, score);
                 if (alpha >= beta) break;
             }
-            return score;
         }
+        return score;
     }
 
     /**
@@ -204,8 +190,9 @@ public class SearchMoves {
 
         boolean maxScore = !board.playBlackTurn;
 
+        int score;
         if (maxScore) {
-            int score = -infinity;
+            score = -infinity;
             for (Move move : moves) {
                 Board copy = board.copy();
                 MoveFactory.moveFigure(copy, move);
@@ -216,9 +203,8 @@ public class SearchMoves {
 
                 score = Math.max(score, childScore);
             }
-            return score;
         } else {
-            int score = infinity;
+            score = infinity;
             for (Move move : moves) {
                 Board copy = board.copy();
                 MoveFactory.moveFigure(copy, move);
@@ -228,8 +214,8 @@ public class SearchMoves {
 
                 score = Math.min(score, childScore);
             }
-            return score;
         }
+        return score;
     }
 
     public static int pvs(Board board, int depth, int alpha, int beta, long deadline, int ply) {
@@ -272,9 +258,10 @@ public class SearchMoves {
 
         boolean maxScore = !board.playBlackTurn;
 
+        int score;
         if (maxScore) {
 
-            int score = -infinity;
+            score = -infinity;
 
             for (int i = 0; i < moves.size(); i++) {
                 Move move = moves.get(i);
@@ -321,10 +308,9 @@ public class SearchMoves {
             }
 
             tt.put(board.hash, new TranspositionTable.Entry(depth, score, type, bestMove));
-            return score;
 
         } else {
-            int score = infinity;
+            score = infinity;
             for (int i = 0; i < moves.size(); i++) {
                 Move move = moves.get(i);
                 Move.makeMove(board, move);
@@ -369,8 +355,8 @@ public class SearchMoves {
             }
 
             tt.put(board.hash, new TranspositionTable.Entry(depth, score, type, bestMove));
-            return score;
         }
+        return score;
     }
 
     /**

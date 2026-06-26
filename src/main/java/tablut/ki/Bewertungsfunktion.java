@@ -1,6 +1,8 @@
-package tablut.game;
+package tablut.ki;
 
 import tablut.board.Board;
+import tablut.game.GameLogic;
+import tablut.game.MoveFactory;
 
 import java.util.Arrays;
 
@@ -191,6 +193,7 @@ public class Bewertungsfunktion {
         }
         return count * -25;
     }
+
 
     /**
      * Berechnet Anzahl der Figuren (aktuell gleichwertigkeit von weiß und schwarzer Figur:
