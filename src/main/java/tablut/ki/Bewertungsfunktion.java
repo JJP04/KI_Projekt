@@ -24,30 +24,22 @@ public class Bewertungsfunktion {
 
     public static int ratePosition(Board board, int ply) {
         int win = winStatus(board, ply);
-        //Spielende: keine weiteren Terme mehr nötig
+        //Spielende
         if (win != 0) return win;
 
-        //Offene Fluchtlinien dominieren alles außer dem Spielende
+        //Flucht möglichkeiten
         int openLines = countOpenEscapeLines(board);
-        if (openLines >= 2) return 8000 - ply;          //Schwarz kann nur eine Linie blocken --> praktisch gewonnen
+        if (openLines >= 2) return 8000 - ply;          //Schwarz kann nur eine Linie blocken,dominant
         if (openLines == 1 && !board.playBlackTurn) {
-            return 5000 - ply;                          //Weiß am Zug läuft direkt in die Ecke
+            return 5000 - ply;                          //nur eine ecke frei und weiß am zug
         }
 
-        int escape      = escapeKing(board);
-        int pressure    = pressureKing(board);
-        int distance    = distanceCorner(board);
-        int mat         = material(board);
-        int blockade    = cornerBlockade(board);
-        int rep         = checkBoardRepetition(board);
 
-        int score = escape + pressure + distance + mat + blockade + rep;
-        if (openLines == 1) score += 300;               //Schwarz am Zug muss die Linie erst blocken
+
+        int score = escapeKing(board) + pressureKing(board) + distanceCorner(board) + material(board) +  cornerBlockade(board) + checkBoardRepetition(board);
+
+        if (openLines == 1) score += 300;               //Schwarz, linie wird evetl geblocjkt
         return score;
-    }
-
-    public static int winStatus(Board board) {
-        return winStatus(board, 0);
     }
 
     public static int winStatus(Board board, int ply) {
@@ -71,7 +63,7 @@ public class Bewertungsfunktion {
             int nx = kx + dir[0];
             int ny = ky + dir[1];
             while (board.playingBoard[nx][ny] == Board.EMPTY) {
-                //leerer Thron darf übersprungen, aber nicht betreten werden
+                //leerer Thron darf übersprungen  nicht betreten
                 if (!(nx == Board.throne[0] && ny == Board.throne[1])) {
                     moves++;
                 }
@@ -99,7 +91,7 @@ public class Bewertungsfunktion {
             while (board.playingBoard[nx][ny] != Board.BORDER) {
                 if (board.playingBoard[nx][ny] == Board.BLACK) {
                     if (distance <= 3) {
-                        pressure += (4 - distance);  // Dist 1→3, Dist 2→2, Dist 3→1
+                        pressure += (4 - distance);
                     }
                     break; // dahinter abgeschirmt
                 }
@@ -196,7 +188,7 @@ public class Bewertungsfunktion {
 
 
     /**
-     * Berechnet Anzahl der Figuren (aktuell gleichwertigkeit von weiß und schwarzer Figur:
+     * Berechnet Anzahl der Figuren  gleichwertigkeit von weiß und schwarzer Figur:
      * schwarz = 16x50 = 800 Punkte
      * weiß = 8x100 = 800 Punkte
      * Wenn eine Figur geschlagen werden würde, wäre eben + oder -
