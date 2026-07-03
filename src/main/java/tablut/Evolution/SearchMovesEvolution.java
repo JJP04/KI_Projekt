@@ -11,7 +11,7 @@ import tablut.ki.ZobristHashing;
 
 import java.util.List;
 
-public class SearchMoves {
+public class SearchMovesEvolution {
 
     public static int maxDepth = 10;
     public static int depth = 1;
