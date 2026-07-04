@@ -22,13 +22,17 @@ public class SearchMovesEvolution {
     public static int knotenZaehler = 0;
     public static long nodes = 0;
 
-    public static final TranspositionTable tt = new TranspositionTable();
+   // public static final TranspositionTable tt = new TranspositionTable();
+   public static TranspositionTable tt;
+
+    
 
     /**
      * Findet den besten Zug für die aktuelle Spielsituation auf dem Board unter Verwendung von Alpha-Beta-Suche.
      */
     public static Move findBestMoveAlphaBeta(Board board, long timeLimitMs, BewertungsfunktionEvolution eval) {
         //TODO Muss erstzet werden duch die "Sotierten" Züge
+        tt = new TranspositionTable();
         List<Move> moves = MoveFactory.getAllMoves(board);
         KillerHeuristik.sortMoves(moves, 0);
         nodes = 0;
