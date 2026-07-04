@@ -13,7 +13,7 @@ public class benchmarkTests_M4 {
 
         //Tests für TubCloud:
         //System.out.println("Startstellung:");
-        String startstellung = "3rrr3/4r4/4R4/r3R3r/rrRRKRRrr/r3R3r/4R4/4r4/3rrr3 s 0 1";
+        String startstellung = "2r1rr3/2RRr4/R8/4R3r/r2rKRRrr/r3R3r/4R4/3rrr3/4r4 w 08";
         //benchmarktests_TubCloud(startstellung);
 
 //        System.out.println("Weiß gewinnt in 2:");
@@ -27,6 +27,8 @@ public class benchmarkTests_M4 {
         //Tests für Designentscheidungen:
         System.out.println("Tests für Designentscheidungen (Startstellung):");
         Board board = FenParser.parse(startstellung);
+        board.printBoard();
+        //depth4in2Minuits(board);
         depthXin1Minuits(board);
     }
 
@@ -55,7 +57,7 @@ public class benchmarkTests_M4 {
 
     public static void depthInOneSec(Board board) {
 
-        Move move = MainBenchmarkTest.findBestMoveAlphaBeta(board, 10000, false, true, true, true, false,0 ,0);
+        Move move = MainBenchmarkTest.findBestMoveAlphaBeta(board, 10000, false, true, true, true, false, 0, 0);
         System.out.println("Tiefe erreicht: " + MainBenchmarkTest.depth);
 
         System.out.println("Bester Zug: ");
@@ -65,7 +67,7 @@ public class benchmarkTests_M4 {
     public static void depth4in2Minuits(Board board) {
         MainBenchmarkTest.maxDepth = 4;
         long start = System.nanoTime();
-        Move move = MainBenchmarkTest.findBestMoveAlphaBeta(board, 120_000, false, true, true, true, false,0 ,0);
+        Move move = MainBenchmarkTest.findBestMoveAlphaBeta(board, 120_000, false, true, true, true, true, 3, 3);
         long end = System.nanoTime();
         System.out.println("Zeit: " + (end - start) / 1_000_000.0 + " ms");
 
@@ -75,7 +77,7 @@ public class benchmarkTests_M4 {
 
     public static void depthXin2Minuits(Board board) {
         MainBenchmarkTest.maxDepth = 15;
-        Move move = MainBenchmarkTest.findBestMoveAlphaBeta(board, 120_000, false, true, true, true, false,0 ,0);
+        Move move = MainBenchmarkTest.findBestMoveAlphaBeta(board, 120_000, false, true, true, true, false, 0, 0);
 
         System.out.println("Bester Zug: ");
         System.out.println(move.fromX + "," + move.fromY + "--> " + move.toX + "," + move.toY);
@@ -99,16 +101,16 @@ public class benchmarkTests_M4 {
 //        Move move3 = MainBenchmarkTest.findBestMoveAlphaBeta(board, 60_000, false, true, false, true, false,0 ,0);
 //        System.out.println("Best Move:" + move3.fromX + "," + move3.fromY + "--> " + move3.toX + "," + move3.toY);
 
-        System.out.println("\n PSV + TT + KH");
-        Move move4 = MainBenchmarkTest.findBestMoveAlphaBeta(board, 120_000, false, true, true, true, false,0 ,0);
-        System.out.println("Best Move:" + move4.fromX + "," + move4.fromY + "--> " + move4.toX + "," + move4.toY);
+//        System.out.println("\n PSV + TT + KH");
+//        Move move4 = MainBenchmarkTest.findBestMoveAlphaBeta(board, 120_000, false, true, true, true, false,0 ,0);
+//        System.out.println("Best Move:" + move4.fromX + "," + move4.fromY + "--> " + move4.toX + "," + move4.toY);
 
         System.out.println("\n PSV + TT + KH + LMR");
-        Move move5 = MainBenchmarkTest.findBestMoveAlphaBeta(board, 120_000, false, true, true, true, true,4 ,4);
+        Move move5 = MainBenchmarkTest.findBestMoveAlphaBeta(board, 120_000, false, true, true, true, true, 4, 4);
         System.out.println("Best Move:" + move5.fromX + "," + move5.fromY + "--> " + move5.toX + "," + move5.toY);
 
         System.out.println("\n PSV + TT + KH + LMR");
-        Move move6 = MainBenchmarkTest.findBestMoveAlphaBeta(board, 120_000, false, true, true, true, true,3 ,3);
+        Move move6 = MainBenchmarkTest.findBestMoveAlphaBeta(board, 120_000, false, true, true, true, true, 3, 3);
         System.out.println("Best Move:" + move6.fromX + "," + move6.fromY + "--> " + move6.toX + "," + move6.toY);
     }
 }

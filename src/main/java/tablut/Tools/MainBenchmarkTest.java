@@ -67,13 +67,13 @@ public class MainBenchmarkTest {
             depthNodes = 0;
 
             boolean completed = startSearchAlg(board, moves, currentDepth, deadline);
+
+            System.out.println("Nodes at depth " + currentDepth + ": " + depthNodes);
+            totalNodes += depthNodes;
             //Wenn Zeitlimit erreicht
             if (!completed) break;
             //Abbruch bei Gewinn oder Verlust
             if (bestScoreFound >= 9000 || bestScoreFound <= -9000) break;
-
-            System.out.println("Nodes at depth " + currentDepth + ": " + depthNodes);
-            totalNodes += depthNodes;
 
             depth = currentDepth;
         }
@@ -346,7 +346,7 @@ public class MainBenchmarkTest {
                     childScore = pvs(board, reducedDepth, beta - 1, beta, deadline, ply + 1);
 
                     //LMR-Re-Search (Falls Zug besser als alpha, dann volle Tiefe suchen)
-                    if (reduce && childScore > alpha) {
+                    if (reduce && childScore < beta) {
                         childScore = pvs(board, depth - 1, beta - 1, beta, deadline, ply + 1);
                     }
                     //PVS-Re-Search (Falls Zug besser als alpha, dann volle Tiefe suchen)

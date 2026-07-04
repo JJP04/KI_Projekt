@@ -270,7 +270,7 @@ public class SearchMoves {
 
                 boolean reduce = false;
 
-                if(depth >= 4 && i > 3) {
+                if (depth >= 4 && i > 3) {
                     reduce = true; // Reduziere Tiefe für tiefe Knoten und viele Züge
                 }
 
@@ -334,7 +334,7 @@ public class SearchMoves {
 
                 boolean reduce = false;
 
-                if(depth >= 4 && i > 3) {
+                if (depth >= 4 && i > 3) {
                     reduce = true; // Reduziere Tiefe für tiefe Knoten und viele Züge
                 }
 
@@ -351,7 +351,7 @@ public class SearchMoves {
                     childScore = pvs(board, reducedDepth, beta - 1, beta, deadline, ply + 1);
 
                     //LMR-Re-Search (Falls Zug besser als alpha, dann volle Tiefe suchen)
-                    if(reduce && childScore > alpha) {
+                    if (reduce && childScore < beta) {
                         childScore = pvs(board, depth - 1, beta - 1, beta, deadline, ply + 1);
                     }
                     //PVS-Re-Search (Falls Zug besser als alpha, dann volle Tiefe suchen)
