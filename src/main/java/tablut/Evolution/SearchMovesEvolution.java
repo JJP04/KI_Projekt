@@ -9,7 +9,10 @@ import tablut.ki.KillerHeuristik;
 import tablut.ki.TranspositionTable;
 import tablut.ki.ZobristHashing;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 
 public class SearchMovesEvolution {
 
@@ -22,8 +25,13 @@ public class SearchMovesEvolution {
     public static int knotenZaehler = 0;
     public static long nodes = 0;
 
+
+    // besten 5% der Züge nehmen und, sofern deren Bewertung eng beieinander liegt,
+    public static int closeMargin = 25;
+    private static final Random rootRandom = new Random();
+
    // public static final TranspositionTable tt = new TranspositionTable();
-   public static TranspositionTable tt;
+
 
     
 
@@ -32,7 +40,7 @@ public class SearchMovesEvolution {
      */
     public static Move findBestMoveAlphaBeta(Board board, long timeLimitMs, BewertungsfunktionEvolution eval) {
         //TODO Muss erstzet werden duch die "Sotierten" Züge
-        tt = new TranspositionTable();
+        TranspositionTable tt = new TranspositionTable();
         List<Move> moves = MoveFactory.getAllMoves(board);
         KillerHeuristik.sortMoves(moves, 0);
         nodes = 0;
@@ -50,7 +58,7 @@ public class SearchMovesEvolution {
         for (int currentDepth = 1; currentDepth <= maxDepth; currentDepth++) {
             if (System.currentTimeMillis() >= deadline) break;
 
-            boolean completed = startSearchAlg(board, moves, currentDepth, deadline, eval);
+            boolean completed = startSearchAlg(board, moves, currentDepth, deadline, eval,tt);
             //Wenn Zeitlimit erreicht
             if (!completed) break;
             //Abbruch bei Gewinn oder Verlust
@@ -63,58 +71,51 @@ public class SearchMovesEvolution {
     /**
      * Bewertet ALLE Züge auf einer bestimmten Tiefe
      */
-    public static boolean startSearchAlg(Board board, List<Move> moves, int depth, long deadline, BewertungsfunktionEvolution eval) {
+    public static boolean startSearchAlg(Board board, List<Move> moves, int depth, long deadline, BewertungsfunktionEvolution eval, TranspositionTable tt) {
         boolean isMax = !board.playBlackTurn;
 
+        //  alle Wurzelzüge mit vollem Fenster bewerten
+        int[] scores = new int[moves.size()];
         int bestScore = isMax ? -infinity : infinity;
-        Move bestMove = null;
-        int alpha = -infinity;
-        int beta = infinity;
 
-        for (Move move : moves) {
+        for (int i = 0; i < moves.size(); i++) {
             if (System.currentTimeMillis() >= deadline) return false;
-            //MakeMove
+            Move move = moves.get(i);
             Move.makeMove(board, move);
-
-            //Minimax:
-            //int score = miniMaxStanard(copy, depth - 1, alpha, beta, deadline);
-
-            //Alpha Beta:
-            //int score = alphaBeta(board, depth - 1, alpha, beta, deadline, 1);
-
-            //PVS:
-            int score = pvs(board, depth - 1, alpha, beta, deadline, 1, eval);
-
+            int score = pvs(board, depth - 1, -infinity, infinity, deadline, 1, eval, tt);
             Move.unmakeMove(board, move);
+            if (score == Integer.MIN_VALUE) return false;   // Zeitlimit erreicht
+            scores[i] = score;
+            if (isMax ? score > bestScore : score < bestScore) bestScore = score;
+        }
 
-            if (score == Integer.MIN_VALUE) return false;
+        // zug sortieren (bester zuerst)
+        Integer[] order = new Integer[moves.size()];
+        for (int i = 0; i < order.length; i++) order[i] = i;
+        if (isMax) Arrays.sort(order, (a, b) -> Integer.compare(scores[b], scores[a]));
+        else       Arrays.sort(order, (a, b) -> Integer.compare(scores[a], scores[b]));
 
-            //Zug + Score ausgeben:
-            //System.out.printf("Zug: %d,%d --> %d,%d  Score: %d%n",
-            //move.fromX, move.fromY, move.toX, move.toY, score);
-
-            //MAX --> höchster Score, MIN --> niedrigster Score
-            if (isMax) {
-                if (score > bestScore) {
-                    bestScore = score;
-                    bestMove = move;
-                }
-                alpha = bestScore;
-            } else {
-                if (score < bestScore) {
-                    bestScore = score;
-                    bestMove = move;
-                }
-                beta = bestScore;
+        // Besten 5% der Züge nehmen
+        int topCount = Math.max(1, (int) Math.ceil(moves.size() * 0.05));
+        List<Move> candidates = new ArrayList<>();
+        for (int r = 0; r < topCount; r++) {
+            if (Math.abs(scores[order[r]] - bestScore) <= closeMargin) {
+                candidates.add(moves.get(order[r]));
             }
         }
-        if (bestMove != null) {
-            bestMoveFound = bestMove;
-            bestScoreFound = bestScore;
-            //System.out.println("→ Bester Zug: " + bestMove.fromX + "," + bestMove.fromY
-            //        + " --> " + bestMove.toX + "," + bestMove.toY
-            //        + "  Score: " + bestScoreFound);
+
+        // Auswahl: klaren Sieg/Verlust nie ignoerien
+        boolean decisive = bestScore >= 9000 || bestScore <= -9000;
+        Move chosen;
+        if (!decisive && candidates.size() > 1) {
+            chosen = candidates.get(rootRandom.nextInt(candidates.size()));
+        } else {
+            // bester Zug
+            chosen = moves.get(order[0]);
         }
+
+        bestMoveFound = chosen;
+        bestScoreFound = bestScore;
         return true;
     }
 
@@ -225,7 +226,7 @@ public class SearchMovesEvolution {
         return score;
     }
 
-    public static int pvs(Board board, int depth, int alpha, int beta, long deadline, int ply, BewertungsfunktionEvolution eval) {
+    public static int pvs(Board board, int depth, int alpha, int beta, long deadline, int ply, BewertungsfunktionEvolution eval, TranspositionTable tt) {
         nodes++;
 
         //Überprüfung, ob Spielzustand bereits in Transposition Table gespeichert ist
@@ -277,14 +278,14 @@ public class SearchMovesEvolution {
                 int childScore;
                 if (i == 0) {
                     // Erster Zug: volles Fenster
-                    childScore = pvs(board, depth - 1, alpha, beta, deadline, ply + 1, eval);
+                    childScore = pvs(board, depth - 1, alpha, beta, deadline, ply + 1, eval,tt);
                 } else {
                     // Alle anderen: Nullfenster
-                    childScore = pvs(board, depth - 1, alpha, alpha + 1, deadline, ply + 1, eval);
+                    childScore = pvs(board, depth - 1, alpha, alpha + 1, deadline, ply + 1, eval,tt);
 
                     // Fail-high: Zug ist besser als alpha, genauen Wert holen
                     if (childScore > alpha && childScore < beta) {
-                        childScore = pvs(board, depth - 1, alpha, beta, deadline, ply + 1, eval);
+                        childScore = pvs(board, depth - 1, alpha, beta, deadline, ply + 1, eval,tt);
                     }
                 }
 
@@ -325,14 +326,14 @@ public class SearchMovesEvolution {
                 int childScore;
                 if (i == 0) {
                     // Erster Zug: volles Fenster
-                    childScore = pvs(board, depth - 1, alpha, beta, deadline, ply + 1, eval);
+                    childScore = pvs(board, depth - 1, alpha, beta, deadline, ply + 1, eval,tt);
                 } else {
                     // Alle anderen: Nullfenster
-                    childScore = pvs(board, depth - 1, beta - 1, beta, deadline, ply + 1, eval);
+                    childScore = pvs(board, depth - 1, beta - 1, beta, deadline, ply + 1, eval,tt);
 
                     // Fail-low: Zug ist schlechter als beta, genauen Wert holen
                     if (childScore > alpha && childScore < beta) {
-                        childScore = pvs(board, depth - 1, alpha, beta, deadline, ply + 1, eval);
+                        childScore = pvs(board, depth - 1, alpha, beta, deadline, ply + 1, eval,tt);
                     }
                 }
 
