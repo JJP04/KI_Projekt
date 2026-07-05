@@ -9,10 +9,7 @@ import tablut.ki.KillerHeuristik;
 import tablut.ki.TranspositionTable;
 import tablut.ki.ZobristHashing;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 public class SearchMovesEvolution {
 
@@ -93,7 +90,7 @@ public class SearchMovesEvolution {
         Integer[] order = new Integer[moves.size()];
         for (int i = 0; i < order.length; i++) order[i] = i;
         if (isMax) Arrays.sort(order, (a, b) -> Integer.compare(scores[b], scores[a]));
-        else       Arrays.sort(order, (a, b) -> Integer.compare(scores[a], scores[b]));
+        else       Arrays.sort(order, Comparator.comparingInt(a -> scores[a]));
 
         // Besten 5% der Züge nehmen
         int topCount = Math.max(1, (int) Math.ceil(moves.size() * 0.05));
