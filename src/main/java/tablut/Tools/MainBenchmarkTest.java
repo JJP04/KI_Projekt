@@ -5,7 +5,7 @@ import tablut.board.Move;
 import tablut.ki.Bewertungsfunktion;
 import tablut.game.GameLogic;
 import tablut.game.MoveFactory;
-import tablut.ki.KillerHeuristik;
+import tablut.ki.MoveOrder;
 import tablut.ki.TranspositionTable;
 import tablut.ki.ZobristHashing;
 
@@ -46,7 +46,7 @@ public class MainBenchmarkTest {
         MainBenchmarkTest.lmrMoves = lmrMoves;
 
         List<Move> moves = MoveFactory.getAllMoves(board);
-        KillerHeuristik.sortMoves(moves, 0);
+        MoveOrder.sortMoves(board, moves, 0);
         totalNodes = 0;
         //TT leeren, damit jeder Benchmark unabhängig misst
         tt.clear();
@@ -231,7 +231,7 @@ public class MainBenchmarkTest {
 
         if (killerHeuristik) {
             // Killer-Heuristik sortiert Züge nach Ply
-            KillerHeuristik.sortMoves(moves, ply);
+            MoveOrder.sortMoves(board, moves, ply);
         }
 
         if (transpositionTable) {
@@ -304,8 +304,8 @@ public class MainBenchmarkTest {
                 score = Math.max(score, childScore);
                 alpha = Math.max(alpha, score);
                 if (alpha >= beta) {
-                    KillerHeuristik.storeKiller(move, ply);
-                    KillerHeuristik.addHistory(move, depth);
+                    MoveOrder.storeKiller(move, ply);
+                    MoveOrder.addHistory(move, depth);
                     break;
                 }
             }
@@ -366,8 +366,8 @@ public class MainBenchmarkTest {
                 score = Math.min(score, childScore);
                 beta = Math.min(beta, score);
                 if (alpha >= beta) {
-                    KillerHeuristik.storeKiller(move, ply);
-                    KillerHeuristik.addHistory(move, depth);
+                    MoveOrder.storeKiller(move, ply);
+                    MoveOrder.addHistory(move, depth);
                     break;
                 }
             }

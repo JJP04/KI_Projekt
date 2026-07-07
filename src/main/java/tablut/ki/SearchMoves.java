@@ -27,7 +27,7 @@ public class SearchMoves {
     public static Move findBestMoveAlphaBeta(Board board, long timeLimitMs) {
         //TODO Muss erstzet werden duch die "Sotierten" Züge
         List<Move> moves = MoveFactory.getAllMoves(board);
-        KillerHeuristik.sortMoves(moves, 0);
+        MoveOrder.sortMoves(board, moves, 0);
         nodes = 0;
         if (moves.isEmpty()) return null;
         long deadline = System.currentTimeMillis() + timeLimitMs - buffer;
@@ -243,7 +243,7 @@ public class SearchMoves {
         }
 
         // Killer-Heuristik sortiert Züge nach Ply
-        KillerHeuristik.sortMoves(moves, ply);
+        MoveOrder.sortMoves(board, moves, ply);
 
         // TT-Zug hat höchste Priorität → nach Sortierung an erste Stelle setzen
         if (entry != null && entry.move != null) {
@@ -270,7 +270,7 @@ public class SearchMoves {
 
                 boolean reduce = false;
 
-                if (depth >= 4 && i > 3) {
+                if (depth >= 3 && i >= 3) {
                     reduce = true; // Reduziere Tiefe für tiefe Knoten und viele Züge
                 }
 
@@ -308,8 +308,8 @@ public class SearchMoves {
                 score = Math.max(score, childScore);
                 alpha = Math.max(alpha, score);
                 if (alpha >= beta) {
-                    KillerHeuristik.storeKiller(move, ply);
-                    KillerHeuristik.addHistory(move, depth);
+                    MoveOrder.storeKiller(move, ply);
+                    MoveOrder.addHistory(move, depth);
                     break;
                 }
             }
@@ -334,7 +334,7 @@ public class SearchMoves {
 
                 boolean reduce = false;
 
-                if (depth >= 4 && i > 3) {
+                if (depth >= 3 && i >= 3) {
                     reduce = true; // Reduziere Tiefe für tiefe Knoten und viele Züge
                 }
 
@@ -371,8 +371,8 @@ public class SearchMoves {
                 score = Math.min(score, childScore);
                 beta = Math.min(beta, score);
                 if (alpha >= beta) {
-                    KillerHeuristik.storeKiller(move, ply);
-                    KillerHeuristik.addHistory(move, depth);
+                    MoveOrder.storeKiller(move, ply);
+                    MoveOrder.addHistory(move, depth);
                     break;
                 }
             }
