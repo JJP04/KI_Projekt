@@ -27,7 +27,7 @@ public class SearchMoves {
     public static Move findBestMoveAlphaBeta(Board board, long timeLimitMs) {
         //TODO Muss erstzet werden duch die "Sotierten" Züge
         List<Move> moves = MoveFactory.getAllMoves(board);
-        KillerHeuristik.sortMoves(moves, 0);
+        MoveOrder.sortMoves(board, moves, 0);
         nodes = 0;
         if (moves.isEmpty()) return null;
         long deadline = System.currentTimeMillis() + timeLimitMs - buffer;
@@ -243,7 +243,7 @@ public class SearchMoves {
         }
 
         // Killer-Heuristik sortiert Züge nach Ply
-        KillerHeuristik.sortMoves(moves, ply);
+        MoveOrder.sortMoves(board, moves, ply);
 
         // TT-Zug hat höchste Priorität → nach Sortierung an erste Stelle setzen
         if (entry != null && entry.move != null) {
@@ -265,6 +265,17 @@ public class SearchMoves {
 
             for (int i = 0; i < moves.size(); i++) {
                 Move move = moves.get(i);
+
+                int searchDepth = depth - 1;
+
+                boolean reduce = false;
+
+                if (depth >= 3 && i >= 3) {
+                    reduce = true; // Reduziere Tiefe für tiefe Knoten und viele Züge
+                }
+
+                int reducedDepth = reduce ? searchDepth - 1 : searchDepth;
+
                 Move.makeMove(board, move);
 
                 int childScore;
@@ -272,10 +283,15 @@ public class SearchMoves {
                     // Erster Zug: volles Fenster
                     childScore = pvs(board, depth - 1, alpha, beta, deadline, ply + 1);
                 } else {
-                    // Alle anderen: Nullfenster
-                    childScore = pvs(board, depth - 1, alpha, alpha + 1, deadline, ply + 1);
+                    // Alle anderen: Nullfenster (ohne LMR) für ersten i Züge, danach mit LMR
+                    childScore = pvs(board, reducedDepth, alpha, alpha + 1, deadline, ply + 1);
 
-                    // Fail-high: Zug ist besser als alpha, genauen Wert holen
+                    //LMR-Re-Search (Falls Zug besser als alpha, dann volle Tiefe suchen)
+                    if (reduce && childScore > alpha) {
+                        childScore = pvs(board, depth - 1, alpha, alpha + 1, deadline, ply + 1);
+                    }
+
+                    //PVS-Re-Search (Falls Zug besser als alpha, dann volle Tiefe suchen)
                     if (childScore > alpha && childScore < beta) {
                         childScore = pvs(board, depth - 1, alpha, beta, deadline, ply + 1);
                     }
@@ -292,8 +308,8 @@ public class SearchMoves {
                 score = Math.max(score, childScore);
                 alpha = Math.max(alpha, score);
                 if (alpha >= beta) {
-                    KillerHeuristik.storeKiller(move, ply);
-                    KillerHeuristik.addHistory(move, depth);
+                    MoveOrder.storeKiller(move, ply);
+                    MoveOrder.addHistory(move, depth);
                     break;
                 }
             }
@@ -313,6 +329,17 @@ public class SearchMoves {
             score = infinity;
             for (int i = 0; i < moves.size(); i++) {
                 Move move = moves.get(i);
+
+                int searchDepth = depth - 1;
+
+                boolean reduce = false;
+
+                if (depth >= 3 && i >= 3) {
+                    reduce = true; // Reduziere Tiefe für tiefe Knoten und viele Züge
+                }
+
+                int reducedDepth = reduce ? searchDepth - 1 : searchDepth;
+
                 Move.makeMove(board, move);
 
                 int childScore;
@@ -320,10 +347,14 @@ public class SearchMoves {
                     // Erster Zug: volles Fenster
                     childScore = pvs(board, depth - 1, alpha, beta, deadline, ply + 1);
                 } else {
-                    // Alle anderen: Nullfenster
-                    childScore = pvs(board, depth - 1, beta - 1, beta, deadline, ply + 1);
+                    // Alle anderen: Nullfenster (ohne LMR) für ersten i Züge, danach mit LMR
+                    childScore = pvs(board, reducedDepth, beta - 1, beta, deadline, ply + 1);
 
-                    // Fail-low: Zug ist schlechter als beta, genauen Wert holen
+                    //LMR-Re-Search (Falls Zug besser als alpha, dann volle Tiefe suchen)
+                    if (reduce && childScore < beta) {
+                        childScore = pvs(board, depth - 1, beta - 1, beta, deadline, ply + 1);
+                    }
+                    //PVS-Re-Search (Falls Zug besser als alpha, dann volle Tiefe suchen)
                     if (childScore > alpha && childScore < beta) {
                         childScore = pvs(board, depth - 1, alpha, beta, deadline, ply + 1);
                     }
@@ -340,8 +371,8 @@ public class SearchMoves {
                 score = Math.min(score, childScore);
                 beta = Math.min(beta, score);
                 if (alpha >= beta) {
-                    KillerHeuristik.storeKiller(move, ply);
-                    KillerHeuristik.addHistory(move, depth);
+                    MoveOrder.storeKiller(move, ply);
+                    MoveOrder.addHistory(move, depth);
                     break;
                 }
             }

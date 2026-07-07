@@ -5,7 +5,7 @@ import tablut.board.Move;
 import tablut.ki.Bewertungsfunktion;
 import tablut.game.GameLogic;
 import tablut.game.MoveFactory;
-import tablut.ki.KillerHeuristik;
+import tablut.ki.MoveOrder;
 import tablut.ki.TranspositionTable;
 import tablut.ki.ZobristHashing;
 
@@ -27,19 +27,26 @@ public class MainBenchmarkTest {
     public static boolean pvs = false;
     public static boolean transpositionTable = false;
     public static boolean killerHeuristik = false;
+    public static boolean lateMoveReductions = false;
+    public static int lmrDepth;
+    public static int lmrMoves;
+
 
     public static final TranspositionTable tt = new TranspositionTable();
 
-    public static Move findBestMoveAlphaBeta(Board board, long timeLimitMs, boolean alphaBeta, boolean pvs, boolean transpositionTable, boolean killerHeuristik) {
+    public static Move findBestMoveAlphaBeta(Board board, long timeLimitMs, boolean alphaBeta, boolean pvs, boolean transpositionTable, boolean killerHeuristik, boolean LateMoveReductions, int lmrDepth, int lmrMoves) {
 
         MainBenchmarkTest.timeLimitMs = timeLimitMs;
         MainBenchmarkTest.alphaBeta = alphaBeta;
         MainBenchmarkTest.pvs = pvs;
         MainBenchmarkTest.transpositionTable = transpositionTable;
         MainBenchmarkTest.killerHeuristik = killerHeuristik;
+        MainBenchmarkTest.lateMoveReductions = LateMoveReductions;
+        MainBenchmarkTest.lmrDepth = lmrDepth;
+        MainBenchmarkTest.lmrMoves = lmrMoves;
 
         List<Move> moves = MoveFactory.getAllMoves(board);
-        KillerHeuristik.sortMoves(moves, 0);
+        MoveOrder.sortMoves(board, moves, 0);
         totalNodes = 0;
         //TT leeren, damit jeder Benchmark unabhängig misst
         tt.clear();
@@ -60,13 +67,13 @@ public class MainBenchmarkTest {
             depthNodes = 0;
 
             boolean completed = startSearchAlg(board, moves, currentDepth, deadline);
+
+            System.out.println("Nodes at depth " + currentDepth + ": " + depthNodes);
+            totalNodes += depthNodes;
             //Wenn Zeitlimit erreicht
             if (!completed) break;
             //Abbruch bei Gewinn oder Verlust
             if (bestScoreFound >= 9000 || bestScoreFound <= -9000) break;
-
-            System.out.println("Nodes at depth " + currentDepth + ": " + depthNodes);
-            totalNodes += depthNodes;
 
             depth = currentDepth;
         }
@@ -224,7 +231,7 @@ public class MainBenchmarkTest {
 
         if (killerHeuristik) {
             // Killer-Heuristik sortiert Züge nach Ply
-            KillerHeuristik.sortMoves(moves, ply);
+            MoveOrder.sortMoves(board, moves, ply);
         }
 
         if (transpositionTable) {
@@ -255,6 +262,16 @@ public class MainBenchmarkTest {
 
             for (int i = 0; i < moves.size(); i++) {
                 Move move = moves.get(i);
+
+                int searchDepth = depth - 1;
+
+                boolean reduce = false;
+
+                if (lateMoveReductions && depth >= lmrDepth && i > lmrMoves) {
+                    reduce = true; // Reduziere Tiefe für tiefe Knoten und viele Züge
+                }
+                int reducedDepth = reduce ? searchDepth - 1 : searchDepth;
+
                 Move.makeMove(board, move);
 
                 int childScore;
@@ -262,13 +279,15 @@ public class MainBenchmarkTest {
                     // Erster Zug: volles Fenster
                     childScore = pvs(board, depth - 1, alpha, beta, deadline, ply + 1);
                 } else {
-                    // Alle anderen: Nullfenster
-                    childScore = pvs(board, depth - 1, alpha, alpha + 1, deadline, ply + 1);
-                    if (childScore == Integer.MIN_VALUE) {
-                        Move.unmakeMove(board, move);
-                        return Integer.MIN_VALUE;
+                    // Alle anderen: Nullfenster (ohne LMR) für ersten i Züge, danach mit LMR
+                    childScore = pvs(board, reducedDepth, alpha, alpha + 1, deadline, ply + 1);
+
+                    //LMR-Re-Search (Falls Zug besser als alpha, dann volle Tiefe suchen)
+                    if (reduce && childScore > alpha) {
+                        childScore = pvs(board, depth - 1, alpha, alpha + 1, deadline, ply + 1);
                     }
-                    // Fail-high: Zug ist besser als alpha, genauen Wert holen
+
+                    //PVS-Re-Search (Falls Zug besser als alpha, dann volle Tiefe suchen)
                     if (childScore > alpha && childScore < beta) {
                         childScore = pvs(board, depth - 1, alpha, beta, deadline, ply + 1);
                     }
@@ -284,12 +303,10 @@ public class MainBenchmarkTest {
 
                 score = Math.max(score, childScore);
                 alpha = Math.max(alpha, score);
-                if (killerHeuristik) {
-                    if (alpha >= beta) {
-                        KillerHeuristik.storeKiller(move, ply);
-                        KillerHeuristik.addHistory(move, depth);
-                        break;
-                    }
+                if (alpha >= beta) {
+                    MoveOrder.storeKiller(move, ply);
+                    MoveOrder.addHistory(move, depth);
+                    break;
                 }
             }
 
@@ -302,14 +319,22 @@ public class MainBenchmarkTest {
                 type = 0; // EXACT
             }
 
-            if (transpositionTable) {
-                tt.put(board.hash, new TranspositionTable.Entry(depth, score, type, bestMove));
-            }
+            tt.put(board.hash, new TranspositionTable.Entry(depth, score, type, bestMove));
 
         } else {
             score = infinity;
             for (int i = 0; i < moves.size(); i++) {
                 Move move = moves.get(i);
+
+                int searchDepth = depth - 1;
+
+                boolean reduce = false;
+
+                if (lateMoveReductions && depth >= 4 && i > 3) {
+                    reduce = true; // Reduziere Tiefe für tiefe Knoten und viele Züge
+                }
+                int reducedDepth = reduce ? searchDepth - 1 : searchDepth;
+
                 Move.makeMove(board, move);
 
                 int childScore;
@@ -317,13 +342,14 @@ public class MainBenchmarkTest {
                     // Erster Zug: volles Fenster
                     childScore = pvs(board, depth - 1, alpha, beta, deadline, ply + 1);
                 } else {
-                    // Alle anderen: Nullfenster
-                    childScore = pvs(board, depth - 1, beta - 1, beta, deadline, ply + 1);
-                    if (childScore == Integer.MIN_VALUE) {
-                        Move.unmakeMove(board, move);
-                        return Integer.MIN_VALUE;
+                    // Alle anderen: Nullfenster (ohne LMR) für ersten i Züge, danach mit LMR
+                    childScore = pvs(board, reducedDepth, beta - 1, beta, deadline, ply + 1);
+
+                    //LMR-Re-Search (Falls Zug besser als alpha, dann volle Tiefe suchen)
+                    if (reduce && childScore < beta) {
+                        childScore = pvs(board, depth - 1, beta - 1, beta, deadline, ply + 1);
                     }
-                    // Fail-low: Zug ist schlechter als beta, genauen Wert holen
+                    //PVS-Re-Search (Falls Zug besser als alpha, dann volle Tiefe suchen)
                     if (childScore > alpha && childScore < beta) {
                         childScore = pvs(board, depth - 1, alpha, beta, deadline, ply + 1);
                     }
@@ -339,12 +365,10 @@ public class MainBenchmarkTest {
 
                 score = Math.min(score, childScore);
                 beta = Math.min(beta, score);
-                if (killerHeuristik) {
-                    if (alpha >= beta) {
-                        KillerHeuristik.storeKiller(move, ply);
-                        KillerHeuristik.addHistory(move, depth);
-                        break;
-                    }
+                if (alpha >= beta) {
+                    MoveOrder.storeKiller(move, ply);
+                    MoveOrder.addHistory(move, depth);
+                    break;
                 }
             }
             int type;
@@ -356,9 +380,7 @@ public class MainBenchmarkTest {
                 type = 0; // EXACT
             }
 
-            if (transpositionTable) {
-                tt.put(board.hash, new TranspositionTable.Entry(depth, score, type, bestMove));
-            }
+            tt.put(board.hash, new TranspositionTable.Entry(depth, score, type, bestMove));
         }
         return score;
     }

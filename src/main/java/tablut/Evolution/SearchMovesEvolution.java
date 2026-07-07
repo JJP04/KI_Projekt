@@ -5,7 +5,7 @@ import tablut.board.Move;
 import tablut.game.GameLogic;
 import tablut.game.MoveFactory;
 import tablut.Tools.Perft;
-import tablut.ki.KillerHeuristik;
+import tablut.ki.MoveOrder;
 import tablut.ki.TranspositionTable;
 import tablut.ki.ZobristHashing;
 
@@ -39,7 +39,7 @@ public class SearchMovesEvolution {
         //TODO Muss erstzet werden duch die "Sotierten" Züge
         TranspositionTable tt = new TranspositionTable();
         List<Move> moves = MoveFactory.getAllMoves(board);
-        KillerHeuristik.sortMoves(moves, 0);
+        MoveOrder.sortMoves(board, moves, 0);
         nodes = 0;
         if (moves.isEmpty()) return null;
         long deadline = System.currentTimeMillis() + timeLimitMs - buffer;
@@ -248,7 +248,7 @@ public class SearchMovesEvolution {
         }
 
         // Killer-Heuristik sortiert Züge nach Ply
-        KillerHeuristik.sortMoves(moves, ply);
+        MoveOrder.sortMoves(board, moves, ply);
 
         // TT-Zug hat höchste Priorität → nach Sortierung an erste Stelle setzen
         if (entry != null && entry.move != null) {
@@ -297,8 +297,8 @@ public class SearchMovesEvolution {
                 score = Math.max(score, childScore);
                 alpha = Math.max(alpha, score);
                 if (alpha >= beta) {
-                    KillerHeuristik.storeKiller(move, ply);
-                    KillerHeuristik.addHistory(move, depth);
+                    MoveOrder.storeKiller(move, ply);
+                    MoveOrder.addHistory(move, depth);
                     break;
                 }
             }
@@ -345,8 +345,8 @@ public class SearchMovesEvolution {
                 score = Math.min(score, childScore);
                 beta = Math.min(beta, score);
                 if (alpha >= beta) {
-                    KillerHeuristik.storeKiller(move, ply);
-                    KillerHeuristik.addHistory(move, depth);
+                    MoveOrder.storeKiller(move, ply);
+                    MoveOrder.addHistory(move, depth);
                     break;
                 }
             }

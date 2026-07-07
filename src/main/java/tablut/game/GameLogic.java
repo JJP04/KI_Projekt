@@ -29,8 +29,21 @@ public class GameLogic {
         }
     }
 
+    public static int countCaptures(Board board, Move move) {
+
+        boolean blackturn = board.playBlackTurn;
+        Move.makeMove(board, move);
+
+        int captures = move.caputreCount;
+
+        Move.unmakeMove(board, move);
+
+        return captures;
+    }
+
     //Klassisches schlagen
-    public static void basicCapture(Board board, Move move, int x, int y, int ownFigure1, int ownFigure2, int opponentFigure) {
+    public static void basicCapture(Board board, Move move, int x, int y, int ownFigure1, int ownFigure2,
+                                    int opponentFigure) {
         for (int[] direction : Board.directions) {
             int[] field1 = moveXFields(x, y, direction, 1);
             int[] field2 = moveXFields(x, y, direction, 2);
