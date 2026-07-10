@@ -11,9 +11,11 @@ import tablut.game.GameLogic;
 
 public class EvolutionTrainer {
   
-public static final int POPULATION_SIZE =4;
+public static final int POPULATION_SIZE =10;
+public static final int GENERATIONS =1;
+private static final long MOVE_TIME = 50;
 
-private static final double mutationRate = 0.10;  // Wahrscheinlichkeit pro Gen
+private static final double mutationRate = 1.00;  // Wahrscheinlichkeit pro Gen
 private static final double mutationStrength = 0.10;  // Schrittweite
 private static final double elitismus = 0.10; // besten 10% unverändert behalten
 
@@ -31,23 +33,32 @@ public static void main(String[] args) {
     List<TabultKi> population = trainer.createInitialPopulation(POPULATION_SIZE);
 
     System.out.println("Anzahl an KIs:"+population.size());
-    trainer.playTournament(population);
 
-    population.sort(Comparator.comparingInt(TabultKi::getFitness).reversed());
+    for (int generation = 1; generation <= GENERATIONS; generation++) {
 
+        System.out.println("\n===== Generation " + generation + " =====");
+        trainer.playTournament(population);
+        population.sort(Comparator.comparingInt(TabultKi::getFitness).reversed());
 
-    for (int i = 0; i < 5; i++) {
-
-    TabultKi ki = population.get(i);
-
-    System.out.println(
-        "Platz " + (i + 1)
-        + " Fitness: " + ki.getFitness()
-        + " Siege: " + ki.getWins()
-        + " Niederlagen: " + ki.getLosses()
-        + " Unentschieden: " + ki.getDraws()
+        for (int i = 0; i < 10; i++) {
+        TabultKi ki = population.get(i);
+        System.out.printf(
+        "%2d: Fitness=%3d  W=%2d D=%2d L=%2d%n",
+        i,
+        ki.getFitness(),
+        ki.getWins(),
+        ki.getDraws(),
+        ki.getLosses()
     );
-  }
+}
+
+        
+        trainer.printBestKi(population.getFirst(), generation);
+        trainer.printBestKi(population.getLast(), generation);
+        population = trainer.nextGeneration(population);
+      
+    }
+
 
 
 }
@@ -96,13 +107,13 @@ public List<TabultKi> createInitialPopulation(int size) {
         if (!board.playBlackTurn) {
             move = SearchMovesEvolution.findBestMoveAlphaBeta(
                     board,
-                    1000,
+                    MOVE_TIME,
                     ki1.getEval()
             );
         } else {
             move = SearchMovesEvolution.findBestMoveAlphaBeta(
                     board,
-                    1000,
+                    MOVE_TIME,
                     ki2.getEval()
             );
         }
@@ -114,12 +125,15 @@ public List<TabultKi> createInitialPopulation(int size) {
         Move.makeMove(board, move);
 
         if (GameLogic.whiteWin(board)) {
+            System.out.println("Weiß gewinnt");
             ki1.addWin();
             ki2.addLoss();
             return;
         }
 
         if (GameLogic.blackWin(board)) {
+            System.out.println("Schwarz gewinnt");
+
             ki1.addLoss();
             ki2.addWin();
             return;
@@ -127,8 +141,14 @@ public List<TabultKi> createInitialPopulation(int size) {
     }
 
     // Unentschieden
+    System.out.println("Remis");
     ki1.addDraw();
     ki2.addDraw();
+
+
+
+
+
 }
 
 
@@ -143,10 +163,10 @@ public void playTournament(List<TabultKi> population) {
 
         for (int j = i + 1; j < population.size(); j++) {
 
-            System.out.println("Spiel: " + i + " gegen " + j);
+            //System.out.println("Spiel: " + i + " gegen " + j);
             playGame(population.get(i),population.get(j));
-            //System.out.println("Spiel: " + j + " gegen " + i);
-            //playGame(population.get(j),population.get(i));
+           // System.out.println("Spiel: " + j + " gegen " + i);
+            playGame(population.get(j),population.get(i));
         }
     }
 
@@ -183,6 +203,8 @@ public void playTournament(List<TabultKi> population) {
     public void mutate(TabultKi ki) {
 
         BewertungsfunktionEvolution e = ki.getEval();
+        int before = e.getEscapeKingWeight();
+
 
         e.setTwoOpenLinesScore(         mutateParam(e.getTwoOpenLinesScore(),          3000, 10000));
         e.setOneOpenLineWhiteTurnScore( mutateParam(e.getOneOpenLineWhiteTurnScore(),  1000,  9000));
@@ -194,6 +216,8 @@ public void playTournament(List<TabultKi> population) {
         e.setMaterialWhiteWeight(       mutateParam(e.getMaterialWhiteWeight(),         20,   400));
         e.setMaterialBlackWeight(       mutateParam(e.getMaterialBlackWeight(),         10,   200));
         e.setRepetitionPenalty(         mutateParam(e.getRepetitionPenalty(),         -400,    -1));
+
+        System.out.println(before + " -> " + e.getEscapeKingWeight());
     }
 
 
@@ -228,17 +252,44 @@ public void playTournament(List<TabultKi> population) {
 
         // Elitismus
         for (int i = 0; i < eliteCount; i++) {
-            next.add(population.get(i));       // nicht mutieren -> bleiben erhalten
+            BewertungsfunktionEvolution eval = population.get(i).getEval();
+            // neue Bewertungsfunktion mit denselben Parametern erzeugen
+            BewertungsfunktionEvolution copy = new BewertungsfunktionEvolution(
+             10000,
+             eval.getTwoOpenLinesScore(),
+             eval.getOneOpenLineWhiteTurnScore(),
+             eval.getOneOpenLineScore(),
+             eval.getEscapeKingWeight(),
+             eval.getPressureWeight(),
+             10000,
+             eval.getDistanceCornerWeight(),
+             eval.getCornerBlockadeWeight(),
+             eval.getMaterialWhiteWeight(),
+             eval.getMaterialBlackWeight(),
+             eval.getRepetitionPenalty()
+            );
+
+             next.add(new TabultKi(copy));      // nicht mutieren -> bleiben erhalten
         }
 
         // crossover
         while (next.size() < size) {
             TabultKi p1 = selectParent(population);
             TabultKi p2 = selectParent(population);
+
+            System.out.println(
+                p1.getEval().getEscapeKingWeight()
+                + " | "
+                + p2.getEval().getEscapeKingWeight()
+);
+
+            
             TabultKi child = crossover(p1, p2);
             mutate(child);
             next.add(child);
         }
+
+
 
         return next;
     }
@@ -254,5 +305,26 @@ public void playTournament(List<TabultKi> population) {
         return best;
     }
 
+
+    public void printBestKi(TabultKi ki, int generation) {
+
+    BewertungsfunktionEvolution e = ki.getEval();
+
+    System.out.println("Generation " + generation);
+    System.out.println("Fitness: " + ki.getFitness());
+
+    System.out.println("twoOpenLinesScore = " + e.getTwoOpenLinesScore());
+    System.out.println("oneOpenLineWhiteTurnScore = " + e.getOneOpenLineWhiteTurnScore());
+    System.out.println("oneOpenLineScore = " + e.getOneOpenLineScore());
+    System.out.println("escapeKingWeight = " + e.getEscapeKingWeight());
+    System.out.println("pressureWeight = " + e.getPressureWeight());
+    System.out.println("distanceCornerWeight = " + e.getDistanceCornerWeight());
+    System.out.println("cornerBlockadeWeight = " + e.getCornerBlockadeWeight());
+    System.out.println("materialWhiteWeight = " + e.getMaterialWhiteWeight());
+    System.out.println("materialBlackWeight = " + e.getMaterialBlackWeight());
+    System.out.println("repetitionPenalty = " + e.getRepetitionPenalty());
+
+    System.out.println("--------------------------------");
+}
 }
 

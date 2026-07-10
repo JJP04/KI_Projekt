@@ -97,7 +97,7 @@ public class Main {
 
         while (!GameLogic.isGameOver(board)) {
 
-            Move move = SearchMoves.findBestMoveAlphaBeta(board, 5000);
+            Move move = SearchMoves.findBestMoveAlphaBeta(board, 1000);
 
             String farbe = board.playBlackTurn ? "Schwarz" : "Weiß";
             if (move == null) {
