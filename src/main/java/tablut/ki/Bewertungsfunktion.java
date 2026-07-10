@@ -36,7 +36,12 @@ public class Bewertungsfunktion {
 
 
 
-        int score = escapeKing(board) + pressureKing(board) + distanceCorner(board) + material(board) +  cornerBlockade(board) + checkBoardRepetition(board);
+        int score = escapeKing(board) +
+                pressureKing(board) +
+                distanceCorner(board) +
+                material(board) +
+                cornerBlockade(board)
+                + checkBoardRepetition(board);
 
         if (openLines == 1) score += 300;               //Schwarz, linie wird evetl geblocjkt
         return score;

@@ -14,7 +14,7 @@ import java.util.List;
 public class MainBenchmarkTest {
 
     public static int maxDepth = 10;
-    public static int depth = 1;
+    public static int depth = 0;
     private static final int infinity = Integer.MAX_VALUE / 2;
     private static final long buffer = 50;
     private static Move bestMoveFound = null;
@@ -68,7 +68,7 @@ public class MainBenchmarkTest {
 
             boolean completed = startSearchAlg(board, moves, currentDepth, deadline);
 
-            System.out.println("Nodes at depth " + currentDepth + ": " + depthNodes);
+            //System.out.println("Nodes at depth " + currentDepth + ": " + depthNodes);
             totalNodes += depthNodes;
             //Wenn Zeitlimit erreicht
             if (!completed) break;
@@ -304,8 +304,10 @@ public class MainBenchmarkTest {
                 score = Math.max(score, childScore);
                 alpha = Math.max(alpha, score);
                 if (alpha >= beta) {
-                    MoveOrder.storeKiller(move, ply);
-                    MoveOrder.addHistory(move, depth);
+                    if (killerHeuristik) {
+                        MoveOrder.storeKiller(move, ply);
+                        MoveOrder.addHistory(move, depth);
+                    }
                     break;
                 }
             }
@@ -318,9 +320,9 @@ public class MainBenchmarkTest {
             } else {
                 type = 0; // EXACT
             }
-
-            tt.put(board.hash, new TranspositionTable.Entry(depth, score, type, bestMove));
-
+            if (transpositionTable) {
+                tt.put(board.hash, new TranspositionTable.Entry(depth, score, type, bestMove));
+            }
         } else {
             score = infinity;
             for (int i = 0; i < moves.size(); i++) {
@@ -330,7 +332,7 @@ public class MainBenchmarkTest {
 
                 boolean reduce = false;
 
-                if (lateMoveReductions && depth >= 4 && i > 3) {
+                if (lateMoveReductions && depth >= lmrDepth && i > lmrMoves) {
                     reduce = true; // Reduziere Tiefe für tiefe Knoten und viele Züge
                 }
                 int reducedDepth = reduce ? searchDepth - 1 : searchDepth;
@@ -366,20 +368,23 @@ public class MainBenchmarkTest {
                 score = Math.min(score, childScore);
                 beta = Math.min(beta, score);
                 if (alpha >= beta) {
-                    MoveOrder.storeKiller(move, ply);
-                    MoveOrder.addHistory(move, depth);
+                    if (killerHeuristik) {
+                        MoveOrder.storeKiller(move, ply);
+                        MoveOrder.addHistory(move, depth);
+                    }
                     break;
                 }
             }
-            int type;
-            if (score <= alphaOrig) {
-                type = -1; // UPPERBOUND
-            } else if (score >= betaOrig) {
-                type = 1; // LOWERBOUND
-            } else {
-                type = 0; // EXACT
-            }
-
+        }
+        int type;
+        if (score <= alphaOrig) {
+            type = -1; // UPPERBOUND
+        } else if (score >= betaOrig) {
+            type = 1; // LOWERBOUND
+        } else {
+            type = 0; // EXACT
+        }
+        if (transpositionTable) {
             tt.put(board.hash, new TranspositionTable.Entry(depth, score, type, bestMove));
         }
         return score;

@@ -13,7 +13,7 @@ public class benchmarkTests_M4 {
 
         //Tests für TubCloud:
         //System.out.println("Startstellung:");
-        String startstellung = "2r1rr3/2RRr4/R8/4R3r/r2rKRRrr/r3R3r/4R4/3rrr3/4r4 w 08";
+        String startstellung = "3rrr3/4r4/4R4/r3R3r/rrRRKRRrr/r3R3r/4R4/4r4/3rrr3 s 0 1";
         //benchmarktests_TubCloud(startstellung);
 
 //        System.out.println("Weiß gewinnt in 2:");
