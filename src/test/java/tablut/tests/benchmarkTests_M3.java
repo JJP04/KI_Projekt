@@ -66,7 +66,7 @@ public class benchmarkTests_M3 {
     public static void depth4in2Minuits(Board board) {
         MainBenchmarkTest.maxDepth = 4;
         long start = System.nanoTime();
-        Move move = MainBenchmarkTest.findBestMoveAlphaBeta(board, 120_000, false, true, true, true, false,0,0);
+        Move move = MainBenchmarkTest.findBestMoveAlphaBeta(board, 120_000,false, true, true, true, false,0,0);
         long end = System.nanoTime();
         System.out.println("Zeit: " + (end - start) / 1_000_000.0 + " ms");
 

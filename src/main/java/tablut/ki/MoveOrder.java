@@ -1,5 +1,7 @@
 package tablut.ki;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import tablut.board.Board;
@@ -28,7 +30,25 @@ public class MoveOrder {
     }
 
     public static void sortMoves(Board board, List<Move> moves, int ply) {
-        moves.sort((a, b) -> Integer.compare(moveScore(board, b, ply), moveScore(board, a, ply)));
+        int n = moves.size();
+        if (n < 2) return;
+
+        // Score genau EINMAL pro Zug berechnen (statt O(n log n)-mal im Comparator)
+        int[] scores = new int[n];
+        Integer[] idx = new Integer[n];
+        for (int i = 0; i < n; i++) {
+            scores[i] = moveScore(board, moves.get(i), ply);
+            idx[i] = i;
+        }
+
+        // Indizes nach den vorberechneten Scores absteigend sortieren
+        Arrays.sort(idx, (a, b) -> Integer.compare(scores[b], scores[a]));
+
+        // Züge in die neue Reihenfolge bringen
+        List<Move> sorted = new ArrayList<>(n);
+        for (int i : idx) sorted.add(moves.get(i));
+        moves.clear();
+        moves.addAll(sorted);
     }
 
     public static int moveScore(Board board, Move move, int ply) {

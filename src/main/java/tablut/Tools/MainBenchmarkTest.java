@@ -20,6 +20,8 @@ public class MainBenchmarkTest {
     private static Move bestMoveFound = null;
     private static int bestScoreFound = 0;
     public static long totalNodes;
+    public static long completedDepth;
+    public static long nodesAtCompletedDepth;
     public static long depthNodes;
     public static long timeLimitMs;
 
@@ -68,10 +70,18 @@ public class MainBenchmarkTest {
 
             boolean completed = startSearchAlg(board, moves, currentDepth, deadline);
 
-            //System.out.println("Nodes at depth " + currentDepth + ": " + depthNodes);
+            //Wenn Zeitlimit erreicht;
+            if (!completed) {
+                break;
+            }
+            // Nur vollständig abgeschlossene Tiefe speichern
+            completedDepth = currentDepth;
+
             totalNodes += depthNodes;
-            //Wenn Zeitlimit erreicht
-            if (!completed) break;
+            nodesAtCompletedDepth = totalNodes;
+
+
+            depth = currentDepth;
             //Abbruch bei Gewinn oder Verlust
             if (bestScoreFound >= 9000 || bestScoreFound <= -9000) break;
 
@@ -98,10 +108,9 @@ public class MainBenchmarkTest {
 
         for (Move move : moves) {
             if (System.currentTimeMillis() >= deadline) return false;
-            //MakeMove
+
             Move.makeMove(board, move);
 
-            //Alpha Beta:
             if (alphaBeta) {
                 score = alphaBeta(board, depth - 1, alpha, beta, deadline, 1);
             }
@@ -111,6 +120,7 @@ public class MainBenchmarkTest {
             }
 
             Move.unmakeMove(board, move);
+
 
             if (score == Integer.MIN_VALUE) return false;
 
