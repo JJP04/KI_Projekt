@@ -2,6 +2,7 @@ package tablut.client;
 
 import tablut.board.Board;
 import tablut.board.Move;
+import tablut.game.GameLogic;
 import tablut.game.MoveFactory;
 import tablut.ki.SearchMoves;
 
@@ -17,8 +18,9 @@ public class GameClient {
     private BufferedReader receive;
     private PrintWriter write;
     private Board board;
-    private int colorGame = -1;
+    private int colorGame = -1;   // 0 = ich spiele SCHWARZ, 1 = ich spiele WEISS
     private String lastRegisteredToken = null;
+    private boolean resultPrinted = false;   // verhindert doppelte Ergebnisausgabe
 
     public String getLastRegisteredToken() {
         return lastRegisteredToken;
@@ -123,12 +125,18 @@ public class GameClient {
 
             if (msg.startsWith("over")) {
                 System.out.println("Spiel vorbei: " + msg);
+                printGameResult();
                 break;
             }
 
             if (msg.startsWith("move")) {
                 handleOpponentMove(msg);
                 board.printBoard();
+                // Hat der Gegner mit diesem Zug das Spiel beendet (König geschlagen / Ecke erreicht),
+                // dann NICHT mehr selbst ziehen — das "over" vom Server beendet gleich die Schleife.
+                if (GameLogic.isGameOver(board)) {
+                    continue;
+                }
                 kiMakeMove();
                 continue;
             }
@@ -168,7 +176,7 @@ public class GameClient {
     }
 
     public void kiMakeMove() throws IOException {
-        Move move = SearchMoves.findBestMoveAlphaBeta(board, 10000);
+        Move move = SearchMoves.findBestMoveAlphaBeta(board, 2000);
         if (move == null) {
             System.out.println("Kein Zug möglich!");
             return;
@@ -192,9 +200,42 @@ public class GameClient {
             board.printBoard();
         } else if (response.startsWith("over")) {
             System.out.println("Spiel vorbei: " + response);
+            printGameResult();
         } else {
             System.out.println("Zug abgelehnt: " + response);
         }
+    }
+
+    /**
+     * Gibt am Spielende aus, wer gewonnen bzw. verloren hat.
+     *
+     * Wichtig: Die "over"-Nachricht des Servers enthält KEINE Gewinnerinformation
+     * (siehe Gameserver message.py / game.py). Das Ergebnis wird deshalb aus dem
+     * finalen Brettzustand abgeleitet und mit der eigenen Farbe (colorGame) verglichen.
+     * Endet das Spiel ohne Brett-Entscheidung (Remis, Zeitüberschreitung oder
+     * Verbindungsabbruch), kann der Client den genauen Grund nicht kennen.
+     */
+    private void printGameResult() {
+        if (resultPrinted) return;   // nur einmal ausgeben
+        resultPrinted = true;
+
+        String meineFarbe = (colorGame == 0) ? "SCHWARZ" : (colorGame == 1) ? "WEISS" : "UNBEKANNT";
+
+        System.out.println("==================== SPIELENDE ====================");
+        System.out.println("Ich spielte: " + meineFarbe);
+        board.printBoard();
+
+        if (GameLogic.whiteWin(board)) {
+            System.out.println("Ergebnis: WEISS gewinnt (König hat eine Ecke erreicht).");
+            System.out.println(colorGame == 1 ? ">>> ICH HABE GEWONNEN <<<" : ">>> ICH HABE VERLOREN <<<");
+        } else if (GameLogic.blackWin(board)) {
+            System.out.println("Ergebnis: SCHWARZ gewinnt (König wurde geschlagen).");
+            System.out.println(colorGame == 0 ? ">>> ICH HABE GEWONNEN <<<" : ">>> ICH HABE VERLOREN <<<");
+        } else {
+            System.out.println("Ergebnis: Kein Sieg auf dem Brett erkennbar.");
+            System.out.println("(Remis, Zeitüberschreitung oder Verbindungsabbruch — der Server nennt den Grund nicht.)");
+        }
+        System.out.println("===================================================");
     }
 
     public void sendMessage(String msg) {

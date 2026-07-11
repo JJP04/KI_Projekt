@@ -67,12 +67,14 @@ public class Benchmarking_Poster {
         Move move6 = MainBenchmarkTest.findBestMoveAlphaBeta(board, time, false, true, false, true, true, 3, 3);
         end = System.nanoTime();
         System.out.println("Zeit: " + (end - start) / 1_000_000.0 + " ms");
+        System.out.println("Best Move:" + move6.fromX + "," + move6.fromY + "--> " + move6.toX + "," + move6.toY);
+
 
         System.out.println("\n PSV + TT + LMR(3,3)");
         start = System.nanoTime();
-        MainBenchmarkTest.findBestMoveAlphaBeta(board, time, false, true, true, false, true, 3, 3);
+        Move move7=MainBenchmarkTest.findBestMoveAlphaBeta(board, time, false, true, true, false, true, 3, 3);
         end = System.nanoTime();
         System.out.println("Zeit: " + (end - start) / 1_000_000.0 + " ms");
-        //System.out.println("Best Move:" + move6.fromX + "," + move6.fromY + "--> " + move6.toX + "," + move6.toY);
+        System.out.println("Best Move:" + move7.fromX + "," + move7.fromY + "--> " + move7.toX + "," + move7.toY);
     }
 }

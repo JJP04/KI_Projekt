@@ -9,14 +9,16 @@ import java.util.Arrays;
 public class Bewertungsfunktion {
     /**
      * Bewertungsfunktion (weiß will max. und schwarz will min.)
+     * Gewichte: evolutionär optimiert (EvolutionTrainer, Generation 15, Fitness 22)
      * Gewinnstatus weiß (+/-(10000 - ply)) -- schnellere Siege werden bevorzugt
-     * + Offene Fluchtlinien des Königs zur Ecke (2 Linien: +8000, 1 Linie + Weiß am Zug: +5000, sonst +300)
+     * + Offene Fluchtlinien des Königs zur Ecke (2 Linien: +7907, 1 Linie + Weiß am Zug: +3999, sonst +864)
      * + Fluchtmöglichkeiten des Königs (mögliche Züge vom König * 5)
-     * - Druck auf König  (gestaffelt nach Distanz der schwarzen Figuren zum König)
-     * - Distanz zur Ecke (-10 * Distanz) -- je näher König an Ecke desto besser, desto kleiner der Minus Wert
-     * + Material Weiß (Anzahl Figuren *100)
-     * - Material Schwarz (Anzahl Figuren *50)
-     * - Eck-Blockaden durch Schwarz (-25 pro besetztem Blockadefeld)
+     * - Druck auf König  (gestaffelt nach Distanz der schwarzen Figuren zum König, * -12)
+     * - Distanz zur Ecke (-20 * Distanz) -- je näher König an Ecke desto besser, desto kleiner der Minus Wert
+     * + Material Weiß (Anzahl Figuren *57)
+     * - Material Schwarz (Anzahl Figuren *90)
+     * - Eck-Blockaden durch Schwarz (-26 pro besetztem Blockadefeld)
+     * - Stellungswiederholung (-44)
      */
     public static int ratePosition(Board board) {
         return ratePosition(board, 0);
@@ -29,9 +31,9 @@ public class Bewertungsfunktion {
 
         //Flucht möglichkeiten
         int openLines = countOpenEscapeLines(board);
-        if (openLines >= 2) return 8000 - ply;          //Schwarz kann nur eine Linie blocken,dominant
+        if (openLines >= 2) return 7907 - ply;          //Schwarz kann nur eine Linie blocken,dominant
         if (openLines == 1 && !board.playBlackTurn) {
-            return 5000 - ply;                          //nur eine ecke frei und weiß am zug
+            return 3999 - ply;                          //nur eine ecke frei und weiß am zug
         }
 
 
@@ -43,7 +45,7 @@ public class Bewertungsfunktion {
                 cornerBlockade(board)
                 + checkBoardRepetition(board);
 
-        if (openLines == 1) score += 300;               //Schwarz, linie wird evetl geblocjkt
+        if (openLines == 1) score += 864;               //Schwarz, linie wird evetl geblocjkt
         return score;
     }
 
@@ -108,7 +110,7 @@ public class Bewertungsfunktion {
                 distance++;
             }
         }
-        return pressure * -15;
+        return pressure * -12;
     }
 
     /**
@@ -127,7 +129,7 @@ public class Bewertungsfunktion {
         }
         if (bestDist == 0) return 10000; // König steht bereits auf Ecke — Sieg
 
-        return bestDist * -10;
+        return bestDist * -20;
     }
 
     /**
@@ -188,7 +190,7 @@ public class Bewertungsfunktion {
         for (int[] f : blockadeFields) {
             if (board.playingBoard[f[0]][f[1]] == Board.BLACK) count++;
         }
-        return count * -25;
+        return count * -26;
     }
 
 
@@ -212,7 +214,7 @@ public class Bewertungsfunktion {
                 }
             }
         }
-        return (whiteCount * 100) - (blackCount * 50);
+        return (whiteCount * 57) - (blackCount * 90);
     }
 
     /**
@@ -221,7 +223,7 @@ public class Bewertungsfunktion {
     public static int checkBoardRepetition(Board board) {
         for (int[][] past : board.boardHistory) {
             if (Arrays.deepEquals(past, board.playingBoard)) {
-                return -50;
+                return -44;
             }
         }
         return 0;

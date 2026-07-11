@@ -245,10 +245,17 @@ public class SearchMoves {
         // Killer-Heuristik sortiert Züge nach Ply
         MoveOrder.sortMoves(board, moves, ply);
 
-        // TT-Zug hat höchste Priorität → nach Sortierung an erste Stelle setzen
+        // TT-Zug hat höchste Priorität → nach Sortierung an erste Stelle setzen.
+        // Wichtig: NICHT das Move-Objekt aus der TT einfügen (geteilter Undo-Zustand in
+        // capturedFigures — bei Stellungswiederholung in der Suchlinie würde dasselbe Objekt
+        // verschachtelt gemacht und das Board beim unmake korrumpiert). Stattdessen den
+        // gleichen Zug aus der frisch generierten Liste nach vorne holen; ist der TT-Zug
+        // hier nicht legal (Hash-Kollision), wird er ignoriert.
         if (entry != null && entry.move != null) {
-            moves.remove(entry.move);
-            moves.addFirst(entry.move);
+            int ttIndex = moves.indexOf(entry.move);
+            if (ttIndex > 0) {
+                moves.addFirst(moves.remove(ttIndex));
+            }
         }
 
         int alphaOrig = alpha;

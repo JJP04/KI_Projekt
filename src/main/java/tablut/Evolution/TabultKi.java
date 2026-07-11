@@ -9,7 +9,7 @@ public class TabultKi {
     private int losses;
     private int draws;
 
-   
+
  public TabultKi(BewertungsfunktionEvolution eval) {
         this.eval = eval;
     }

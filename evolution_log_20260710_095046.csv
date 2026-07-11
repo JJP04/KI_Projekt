@@ -1,0 +1,6 @@
+generation,rank,fitness,wins,draws,losses,twoOpenLinesScore,oneOpenLineWhiteTurnScore,oneOpenLineScore,escapeKingWeight,pressureWeight,distanceCornerWeight,cornerBlockadeWeight,materialWhiteWeight,materialBlackWeight,repetitionPenalty
+1,0,153,4,4,0,6163,4258,184,17,-21,-8,-49,89,88,-41
+1,1,110,2,5,1,9464,3906,994,5,-27,-4,-15,167,89,-127
+1,2,97,2,3,3,5092,5948,144,12,-3,-19,-41,195,82,-179
+1,3,92,2,3,3,8697,4007,860,8,-1,-28,-42,55,33,-112
+1,4,58,1,3,4,8707,4441,313,4,-3,-28,-6,190,48,-173
