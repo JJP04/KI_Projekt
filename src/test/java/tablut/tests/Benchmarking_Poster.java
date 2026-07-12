@@ -14,9 +14,10 @@ public class Benchmarking_Poster {
         String startstellung = "3rrr3/4r4/4R4/r3R3r/rrRRKRRrr/r3R3r/4R4/4r4/3rrr3 s 0 1";
         Board board = FenParser.parse(startstellung);
         board.printBoard();
-        depthInXTime(board, 120000);
+        //depthInXTime(board, 120000);
         //depthXinTime(board, 10000);
         //copyVsMakeUnmake(board, 10000);
+        copyVsMakeUnmakeTime(board, 5, 20000);
     }
 
     public static void depthInXTime(Board board, int time) {
@@ -93,13 +94,35 @@ public class Benchmarking_Poster {
 
     public static void copyVsMakeUnmake(Board board, int time) {
         System.out.println("\n Copy");
-        MainBenchmarkTestCopy.findBestMoveAlphaBeta(board, time, true, false, false, false, false, 0, 0);
+        MainBenchmarkTestCopy.findBestMoveAlphaBeta(board, time, false, true, true, true, true, 3, 3);
+        //System.out.println("Best Move:" + move0.fromX + "," + move0.fromY + "--> " + move0.toX + "," + move0.toY);
+        System.out.println("Depth: " + MainBenchmarkTestCopy.completedDepth);
+        System.out.println("Nodes: " + MainBenchmarkTestCopy.nodesAtCompletedDepth);
+
+        System.out.println("\n MakeUnmake");
+        MainBenchmarkTest.findBestMoveAlphaBeta(board, time, false, true, true, true, true, 3, 3);
         //System.out.println("Best Move:" + move0.fromX + "," + move0.fromY + "--> " + move0.toX + "," + move0.toY);
         System.out.println("Depth: " + MainBenchmarkTest.completedDepth);
         System.out.println("Nodes: " + MainBenchmarkTest.nodesAtCompletedDepth);
+    }
+
+    public static void copyVsMakeUnmakeTime(Board board, int depth, int time) {
+        MainBenchmarkTestCopy.maxDepth = depth;
+        MainBenchmarkTest.maxDepth = depth;
+        System.out.println("\n Copy");
+        long start = System.nanoTime();
+        MainBenchmarkTestCopy.findBestMoveAlphaBeta(board, time, false, true, true, true, true, 3, 3);
+        long end = System.nanoTime();
+        System.out.println("Zeit: " + (end - start) / 1_000_000.0 + " ms");
+        //System.out.println("Best Move:" + move0.fromX + "," + move0.fromY + "--> " + move0.toX + "," + move0.toY);
+        System.out.println("Depth: " + MainBenchmarkTestCopy.completedDepth);
+        System.out.println("Nodes: " + MainBenchmarkTestCopy.nodesAtCompletedDepth);
 
         System.out.println("\n MakeUnmake");
-        MainBenchmarkTest.findBestMoveAlphaBeta(board, time, true, false, false, false, false, 0, 0);
+        start = System.nanoTime();
+        MainBenchmarkTest.findBestMoveAlphaBeta(board, time, false, true, true, true, true, 3, 3);
+        end = System.nanoTime();
+        System.out.println("Zeit: " + (end - start) / 1_000_000.0 + " ms");
         //System.out.println("Best Move:" + move0.fromX + "," + move0.fromY + "--> " + move0.toX + "," + move0.toY);
         System.out.println("Depth: " + MainBenchmarkTest.completedDepth);
         System.out.println("Nodes: " + MainBenchmarkTest.nodesAtCompletedDepth);
