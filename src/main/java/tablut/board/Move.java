@@ -11,10 +11,9 @@ public class Move {
     public final int toX;
     public final int toY;
 
-    //Undo Data
+    //speichert geschlagene Figuren
     public final Capture[] capturedFigures = new Capture[4]; //Values: capturedX, capturedY, capturedFigure
     public int caputreCount = 0;
-
 
     public Move(int fromX, int fromY, int toX, int toY) {
         this.fromX = fromX;
@@ -24,7 +23,6 @@ public class Move {
     }
 
     public static void makeMove(Board board, Move move) {
-
         move.caputreCount = 0;
         Arrays.fill(move.capturedFigures, null);
         int x = move.toX;
@@ -57,7 +55,6 @@ public class Move {
     }
 
     public static void unmakeMove(Board board, Move move) {
-        //Board Update
         int figure = board.playingBoard[move.toX][move.toY];
 
         board.playingBoard[move.fromX][move.fromY] = figure;
@@ -71,37 +68,32 @@ public class Move {
         if (move.capturedFigures[0] != null) {
             board.playingBoard[move.capturedFigures[0].x][move.capturedFigures[0].y] = move.capturedFigures[0].figure;
 
-            //Hash geschlagene Figur zurück
             hashCapturedFigurBack(board, move, 0);
         }
         if (move.capturedFigures[1] != null) {
             board.playingBoard[move.capturedFigures[1].x][move.capturedFigures[1].y] = move.capturedFigures[1].figure;
 
-            //Hash geschlagene Figur zurück
             hashCapturedFigurBack(board, move, 1);
         }
 
         if (move.capturedFigures[2] != null) {
             board.playingBoard[move.capturedFigures[2].x][move.capturedFigures[2].y] = move.capturedFigures[2].figure;
 
-            //Hash geschlagene Figur zurücks
             hashCapturedFigurBack(board, move, 2);
         }
 
         if (move.capturedFigures[3] != null) {
             board.playingBoard[move.capturedFigures[3].x][move.capturedFigures[3].y] = move.capturedFigures[3].figure;
 
-            //Hash geschlagene Figur zurücks
             hashCapturedFigurBack(board, move, 3);
         }
-
 
         //Hash Update
         int pieceIndex = ZobristHashing.pieceToIndex(figure);
         int fromIndex = (move.fromX - 1) * 9 + (move.fromY - 1);
         int toIndex = (move.toX - 1) * 9 + (move.toY - 1);
 
-        // Hash zurück
+        //Hash zurück
         board.hash ^= ZobristHashing.zobristTable[pieceIndex][toIndex];
         board.hash ^= ZobristHashing.zobristTable[pieceIndex][fromIndex];
         board.hash ^= ZobristHashing.blackToMoveKey;
@@ -121,6 +113,7 @@ public class Move {
         if (!(o instanceof Move m)) return false;
         return fromX == m.fromX && fromY == m.fromY && toX == m.toX && toY == m.toY;
     }
+
     @Override
     public int hashCode() {
         return fromX * 1000 + fromY * 100 + toX * 10 + toY;
