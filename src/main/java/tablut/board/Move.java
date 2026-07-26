@@ -22,15 +22,17 @@ public class Move {
         this.toY = toY;
     }
 
+    /**
+     * Führt den Zug auf dem Board aus und aktualisiert den Hashwert
+     */
     public static void makeMove(Board board, Move move) {
         move.caputreCount = 0;
         Arrays.fill(move.capturedFigures, null);
-        int x = move.toX;
-        int y = move.toY;
 
-        // Board update
+        //Figurentyp bestimmen
         int figure = board.playingBoard[move.fromX][move.fromY];
 
+        //Board Update mit dem Zug
         board.playingBoard[move.toX][move.toY] = figure;
         board.playingBoard[move.fromX][move.fromY] = Board.EMPTY;
 
@@ -39,14 +41,14 @@ public class Move {
             board.kingPos[1] = move.toY;
         }
 
-        GameLogic.toCapture(board, move, x, y);
+        GameLogic.toCapture(board, move, move.toX, move.toY);
 
-        //Hash update
+        //Hash-Feld bestimmen
+        int figureIndex = ZobristHashing.pieceToIndex(figure);
         int fromIndex = (move.fromX - 1) * 9 + (move.fromY - 1);
         int toIndex = (move.toX - 1) * 9 + (move.toY - 1);
 
-        int figureIndex = ZobristHashing.pieceToIndex(figure);
-
+        //Hash Wert updaten
         board.hash ^= ZobristHashing.zobristTable[figureIndex][fromIndex];
         board.hash ^= ZobristHashing.zobristTable[figureIndex][toIndex];
         board.hash ^= ZobristHashing.blackToMoveKey;
@@ -88,12 +90,12 @@ public class Move {
             hashCapturedFigurBack(board, move, 3);
         }
 
-        //Hash Update
+        //Hash-Feld bestimmen
         int pieceIndex = ZobristHashing.pieceToIndex(figure);
         int fromIndex = (move.fromX - 1) * 9 + (move.fromY - 1);
         int toIndex = (move.toX - 1) * 9 + (move.toY - 1);
 
-        //Hash zurück
+        //Hash zurücksetzen
         board.hash ^= ZobristHashing.zobristTable[pieceIndex][toIndex];
         board.hash ^= ZobristHashing.zobristTable[pieceIndex][fromIndex];
         board.hash ^= ZobristHashing.blackToMoveKey;
