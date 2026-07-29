@@ -9,7 +9,7 @@ import java.util.List;
 
 public class Perft {
 
-    public static long deadline;
+    public static long deadline = Long.MAX_VALUE;
 
     public static long perft(Board b, int depth) {
         if (System.currentTimeMillis() >= deadline) return 0;

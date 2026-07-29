@@ -27,7 +27,7 @@ public class TestMain {
         //Suchtiefe manuell angeben:
         SearchMoves.maxDepth = 1;
 
-        Move move = SearchMoves.findBestMoveAlphaBeta(board, 10000000);
+        Move move = SearchMoves.findBestMove(board, 10000000);
         MoveFactory.moveFigure(bestBoard, move);
         int scoreBestmove = Bewertungsfunktion.ratePosition(bestBoard);
         System.out.println(

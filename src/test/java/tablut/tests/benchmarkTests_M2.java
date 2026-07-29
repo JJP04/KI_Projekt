@@ -48,7 +48,7 @@ public class benchmarkTests_M2 {
 
     public static void depthInOneSec(Board board) {
 
-        Move move = SearchMoves.findBestMoveAlphaBeta(board, 1000);
+        Move move = SearchMoves.findBestMove(board, 1000);
         System.out.println("Tiefe erreicht: " + SearchMoves.depth);
 
         System.out.println("Zustände ohne Cutoffs: ");
@@ -67,7 +67,7 @@ public class benchmarkTests_M2 {
 
         SearchMoves.maxDepth = 4;
         long start = System.nanoTime();
-        Move move = SearchMoves.findBestMoveAlphaBeta(board, 120000);
+        Move move = SearchMoves.findBestMove(board, 120000);
         long end = System.nanoTime();
         System.out.println("Zeit: " + (end - start) / 1_000_000.0 + " ms");
 
@@ -85,7 +85,7 @@ public class benchmarkTests_M2 {
     public static void depthXin2Minuits(Board board) {
 
         SearchMoves.maxDepth = 10;
-        Move move = SearchMoves.findBestMoveAlphaBeta(board, 120000);
+        Move move = SearchMoves.findBestMove(board, 120000);
         System.out.println(SearchMoves.depth);
 
         System.out.println("Zustände ohne Cutoffs: ");

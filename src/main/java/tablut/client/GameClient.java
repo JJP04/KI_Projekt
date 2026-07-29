@@ -18,9 +18,9 @@ public class GameClient {
     private BufferedReader receive;
     private PrintWriter write;
     private Board board;
-    private int colorGame = -1;   // 0 = ich spiele SCHWARZ, 1 = ich spiele WEISS
+    private int colorGame = -1;   // 0 = schwarz, 1 weiss
     private String lastRegisteredToken = null;
-    private boolean resultPrinted = false;   // verhindert doppelte Ergebnisausgabe
+    private boolean resultPrinted = false;
 
     public String getLastRegisteredToken() {
         return lastRegisteredToken;
@@ -132,8 +132,7 @@ public class GameClient {
             if (msg.startsWith("move")) {
                 handleOpponentMove(msg);
                 board.printBoard();
-                // Hat der Gegner mit diesem Zug das Spiel beendet (König geschlagen / Ecke erreicht),
-                // dann NICHT mehr selbst ziehen — das "over" vom Server beendet gleich die Schleife.
+
                 if (GameLogic.isGameOver(board)) {
                     continue;
                 }
@@ -163,11 +162,11 @@ public class GameClient {
             int toCol = Integer.parseInt(parts[4]) + 1;
             System.out.println("Gegner zieht: (" + fromRow + "," + fromCol + ") -> (" + toRow + "," + toCol + ")");
 
-            // Sicherstellen dass moveFigure mit richtigem Turn aufgerufen wird
+
             board.playBlackTurn = (colorGame == 1);
 
             Move move = new Move(fromRow, fromCol, toRow, toCol);
-            MoveFactory.moveFigure(board, move );
+            MoveFactory.moveFigure(board, move);
             board.playBlackTurn = (colorGame == 0);
 
         } catch (NumberFormatException e) {
@@ -176,7 +175,7 @@ public class GameClient {
     }
 
     public void kiMakeMove() throws IOException {
-        Move move = SearchMoves.findBestMoveAlphaBeta(board, 2000);
+        Move move = SearchMoves.findBestMove(board, 2000);
         if (move == null) {
             System.out.println("Kein Zug möglich!");
             return;
@@ -187,13 +186,13 @@ public class GameClient {
         int sendFromCol = move.fromY - 1;
         int sendToRow = move.toX - 1;
         int sendToCol = move.toY - 1;
-       sendMessage("move " + sendFromRow + "," + sendFromCol + "," + sendToRow + "," + sendToCol);
+        sendMessage("move " + sendFromRow + "," + sendFromCol + "," + sendToRow + "," + sendToCol);
 
-        // Auf Server  warten
+
         String response = receiveMessage();
 
         if (response.startsWith("time")) {
-            // jz Board aktualisieren
+
             MoveFactory.moveFigure(board, move);
             System.out.println("Zug akzeptiert, Zeit: " + response.split(" ")[1] + "s");
             System.out.println("Mein Zug: (" + move.fromX + "," + move.fromY + ") -> (" + move.toX + "," + move.toY + ")");
@@ -206,15 +205,6 @@ public class GameClient {
         }
     }
 
-    /**
-     * Gibt am Spielende aus, wer gewonnen bzw. verloren hat.
-     *
-     * Wichtig: Die "over"-Nachricht des Servers enthält KEINE Gewinnerinformation
-     * (siehe Gameserver message.py / game.py). Das Ergebnis wird deshalb aus dem
-     * finalen Brettzustand abgeleitet und mit der eigenen Farbe (colorGame) verglichen.
-     * Endet das Spiel ohne Brett-Entscheidung (Remis, Zeitüberschreitung oder
-     * Verbindungsabbruch), kann der Client den genauen Grund nicht kennen.
-     */
     private void printGameResult() {
         if (resultPrinted) return;   // nur einmal ausgeben
         resultPrinted = true;
@@ -226,14 +216,14 @@ public class GameClient {
         board.printBoard();
 
         if (GameLogic.whiteWin(board)) {
-            System.out.println("Ergebnis: WEISS gewinnt (König hat eine Ecke erreicht).");
+            System.out.println("Ergebnis: WEISS gewinnt.");
             System.out.println(colorGame == 1 ? ">>> ICH HABE GEWONNEN <<<" : ">>> ICH HABE VERLOREN <<<");
         } else if (GameLogic.blackWin(board)) {
-            System.out.println("Ergebnis: SCHWARZ gewinnt (König wurde geschlagen).");
+            System.out.println("Ergebnis: SCHWARZ gewinnt.");
             System.out.println(colorGame == 0 ? ">>> ICH HABE GEWONNEN <<<" : ">>> ICH HABE VERLOREN <<<");
         } else {
-            System.out.println("Ergebnis: Kein Sieg auf dem Brett erkennbar.");
-            System.out.println("(Remis, Zeitüberschreitung oder Verbindungsabbruch — der Server nennt den Grund nicht.)");
+            System.out.println("Ergebnis: Kein Sieg auf dem Brett erkannt.");
+            System.out.println("(Remis, Zeitüberschreitung oder Verbindungsabbruch — der Server nennt kein Grund)");
         }
         System.out.println("===================================================");
     }

@@ -93,7 +93,7 @@ public class MainBenchmarkTestCopy {
     }
 
     /**
-     * Bewertet ALLE Züge auf einer bestimmten Tiefe
+     * Bewertet alle Züge auf einer bestimmten Tiefe
      */
     public static boolean startSearchAlg(Board board, List<Move> moves, int depth, long deadline) {
         depthNodes++;
@@ -126,7 +126,7 @@ public class MainBenchmarkTestCopy {
             //System.out.printf("Zug: %d,%d --> %d,%d  Score: %d%n",
             //move.fromX, move.fromY, move.toX, move.toY, score);
 
-            //MAX --> höchster Score, MIN --> niedrigster Score
+            //max -> höchster Score, min -> niedrigster Score
             if (isMax) {
                 if (score > bestScore) {
                     bestScore = score;
@@ -152,8 +152,7 @@ public class MainBenchmarkTestCopy {
     }
 
     /**
-     * Führt die Alpha-Beta-Suche durch und bewertet die Positionen auf der angegebenen Tiefe
-     * Gibt den besten Score zurück
+     * Führt die Alpha-Beta durch
      */
     public static int alphaBeta(Board board, int depth, int alpha, int beta, long deadline, int ply) {
         depthNodes++;
@@ -243,11 +242,7 @@ public class MainBenchmarkTestCopy {
         }
 
         if (transpositionTable) {
-            // TT-Zug hat höchste Priorität → nach Sortierung an erste Stelle setzen
-            // Wichtig: das Objekt aus der eigenen Zugliste verwenden, nicht entry.move!
-            // entry.move ist ein geteiltes Objekt aus der TT — makeMove würde dessen
-            // Undo-Daten (capturedFigures) überschreiben. Außerdem wird so geprüft,
-            // dass der TT-Zug in dieser Stellung überhaupt legal ist (Hash-Kollision).
+
             if (entry != null && entry.move != null) {
                 int ttIndex = moves.indexOf(entry.move);
                 if (ttIndex > 0) {
@@ -321,11 +316,11 @@ public class MainBenchmarkTestCopy {
 
             int type;
             if (score <= alphaOrig) {
-                type = -1; // UPPERBOUND
+                type = -1;
             } else if (score >= betaOrig) {
-                type = 1; // LOWERBOUND
+                type = 1;
             } else {
-                type = 0; // EXACT
+                type = 0;
             }
             if (transpositionTable) {
                 tt.put(board.hash, new TranspositionTable.Entry(depth, score, type, bestMove));
@@ -384,11 +379,11 @@ public class MainBenchmarkTestCopy {
         }
         int type;
         if (score <= alphaOrig) {
-            type = -1; // UPPERBOUND
+            type = -1;
         } else if (score >= betaOrig) {
-            type = 1; // LOWERBOUND
+            type = 1;
         } else {
-            type = 0; // EXACT
+            type = 0;
         }
         if (transpositionTable) {
             tt.put(board.hash, new TranspositionTable.Entry(depth, score, type, bestMove));

@@ -23,18 +23,13 @@ public class SearchMovesEvolution {
     public static long nodes = 0;
 
 
-    // besten 5% der Züge nehmen und, sofern deren Bewertung eng beieinander liegt,
+    // besten 5% der Züge nehmen und, sofern deren Bewertung eng beieinander liegt
     public static int closeMargin = 25;
     private static final Random rootRandom = new Random();
 
-   // public static final TranspositionTable tt = new TranspositionTable();
+    // public static final TranspositionTable tt = new TranspositionTable();
 
 
-    
-
-    /**
-     * Findet den besten Zug für die aktuelle Spielsituation auf dem Board unter Verwendung von Alpha-Beta-Suche.
-     */
     public static Move findBestMoveAlphaBeta(Board board, long timeLimitMs, BewertungsfunktionEvolution eval) {
         //TODO Muss erstzet werden duch die "Sotierten" Züge
         TranspositionTable tt = new TranspositionTable();
@@ -44,9 +39,9 @@ public class SearchMovesEvolution {
         if (moves.isEmpty()) return null;
         long deadline = System.currentTimeMillis() + timeLimitMs - buffer;
 
-        //Zobrist initialisieren (Jede Figur auf jedem Feld bekommt einen zufälligen Wert zugeordnet)
+
         ZobristHashing.initializeZobristTable();
-        //Hash für die Startstellung berechnen
+
         board.hash = ZobristHashing.computeHash(board);
 
         bestMoveFound = moves.get(0);
@@ -55,23 +50,21 @@ public class SearchMovesEvolution {
         for (int currentDepth = 1; currentDepth <= maxDepth; currentDepth++) {
             if (System.currentTimeMillis() >= deadline) break;
 
-            boolean completed = startSearchAlg(board, moves, currentDepth, deadline, eval,tt);
-            //Wenn Zeitlimit erreicht
+            boolean completed = startSearchAlg(board, moves, currentDepth, deadline, eval, tt);
+
             if (!completed) break;
-            //Abbruch bei Gewinn oder Verlust
+
             if (bestScoreFound >= 9000 || bestScoreFound <= -9000) break;
             depth = currentDepth;
         }
         return bestMoveFound;
     }
 
-    /**
-     * Bewertet ALLE Züge auf einer bestimmten Tiefe
-     */
+
     public static boolean startSearchAlg(Board board, List<Move> moves, int depth, long deadline, BewertungsfunktionEvolution eval, TranspositionTable tt) {
         boolean isMax = !board.playBlackTurn;
 
-        //  alle Wurzelzüge mit vollem Fenster bewerten
+
         int[] scores = new int[moves.size()];
         int bestScore = isMax ? -infinity : infinity;
 
@@ -86,11 +79,11 @@ public class SearchMovesEvolution {
             if (isMax ? score > bestScore : score < bestScore) bestScore = score;
         }
 
-        // zug sortieren (bester zuerst)
+
         Integer[] order = new Integer[moves.size()];
         for (int i = 0; i < order.length; i++) order[i] = i;
         if (isMax) Arrays.sort(order, (a, b) -> Integer.compare(scores[b], scores[a]));
-        else       Arrays.sort(order, Comparator.comparingInt(a -> scores[a]));
+        else Arrays.sort(order, Comparator.comparingInt(a -> scores[a]));
 
         // Besten 5% der Züge nehmen
         int topCount = Math.max(1, (int) Math.ceil(moves.size() * 0.05));
@@ -101,7 +94,7 @@ public class SearchMovesEvolution {
             }
         }
 
-        // Auswahl: klaren Sieg/Verlust nie ignoerien
+
         boolean decisive = bestScore >= 9000 || bestScore <= -9000;
         Move chosen;
         if (!decisive && candidates.size() > 1) {
@@ -116,14 +109,11 @@ public class SearchMovesEvolution {
         return true;
     }
 
-    /**
-     * Führt die Alpha-Beta-Suche durch und bewertet die Positionen auf der angegebenen Tiefe
-     * Gibt den besten Score zurück
-     */
+
     public static int alphaBeta(Board board, int depth, int alpha, int beta, long deadline, int ply, BewertungsfunktionEvolution eval) {
         nodes++;
 
-        //Nur bei jedem 4. Knoten ZeitCheck => Rechnerzeitsparen
+
         if ((depth & 0x3) == 0 && System.currentTimeMillis() >= deadline) {
             return Integer.MIN_VALUE;
         }
@@ -136,7 +126,7 @@ public class SearchMovesEvolution {
         }
         boolean maxScore = !board.playBlackTurn;
 
-        //Kindknoten rekursiv bewerten
+
         int score;
         if (maxScore) {
             score = -infinity;
@@ -173,12 +163,10 @@ public class SearchMovesEvolution {
         return score;
     }
 
-    /**
-     * Standard Minimax-Suche ohne Cutoffs
-     */
+
     public static int miniMaxStanard(Board board, int depth, int alpha, int beta, long deadline, BewertungsfunktionEvolution eval) {
 
-        //Nur bei jedem 4. Knoten ZeitCheck => Rechnerzeitsparen
+
         if ((depth & 0x3) == 0 && System.currentTimeMillis() >= deadline) {
             return Integer.MIN_VALUE;
         }
@@ -203,7 +191,7 @@ public class SearchMovesEvolution {
                 MoveFactory.moveFigure(copy, move);
 
                 int childScore = miniMaxStanard(copy, depth - 1, alpha, beta, deadline, eval);
-                //Abbruch bei Zeit überschreitung
+
                 if (childScore == Integer.MIN_VALUE) return Integer.MIN_VALUE;
 
                 score = Math.max(score, childScore);
@@ -226,7 +214,7 @@ public class SearchMovesEvolution {
     public static int pvs(Board board, int depth, int alpha, int beta, long deadline, int ply, BewertungsfunktionEvolution eval, TranspositionTable tt) {
         nodes++;
 
-        //Überprüfung, ob Spielzustand bereits in Transposition Table gespeichert ist
+
         TranspositionTable.Entry entry = tt.get(board.hash);
         if (entry != null && entry.depth >= depth) {
             if (entry.type == 0) return entry.score;
@@ -247,15 +235,10 @@ public class SearchMovesEvolution {
             return 0;
         }
 
-        // Killer-Heuristik sortiert Züge nach Ply
+
         MoveOrder.sortMoves(board, moves, ply);
 
-        // TT-Zug hat höchste Priorität → nach Sortierung an erste Stelle setzen.
-        // Wichtig: NICHT das Move-Objekt aus der TT einfügen (geteilter Undo-Zustand in
-        // capturedFigures — bei Stellungswiederholung in der Suchlinie würde dasselbe Objekt
-        // verschachtelt gemacht und das Board beim unmake korrumpiert). Stattdessen den
-        // gleichen Zug aus der frisch generierten Liste nach vorne holen; ist der TT-Zug
-        // hier nicht legal (Hash-Kollision), wird er ignoriert.
+
         if (entry != null && entry.move != null) {
             int ttIndex = moves.indexOf(entry.move);
             if (ttIndex > 0) {
@@ -281,15 +264,15 @@ public class SearchMovesEvolution {
 
                 int childScore;
                 if (i == 0) {
-                    // Erster Zug: volles Fenster
-                    childScore = pvs(board, depth - 1, alpha, beta, deadline, ply + 1, eval,tt);
-                } else {
-                    // Alle anderen: Nullfenster
-                    childScore = pvs(board, depth - 1, alpha, alpha + 1, deadline, ply + 1, eval,tt);
 
-                    // Fail-high: Zug ist besser als alpha, genauen Wert holen
+                    childScore = pvs(board, depth - 1, alpha, beta, deadline, ply + 1, eval, tt);
+                } else {
+
+                    childScore = pvs(board, depth - 1, alpha, alpha + 1, deadline, ply + 1, eval, tt);
+
+
                     if (childScore > alpha && childScore < beta) {
-                        childScore = pvs(board, depth - 1, alpha, beta, deadline, ply + 1, eval,tt);
+                        childScore = pvs(board, depth - 1, alpha, beta, deadline, ply + 1, eval, tt);
                     }
                 }
 
@@ -312,9 +295,9 @@ public class SearchMovesEvolution {
 
             int type;
             if (score <= alphaOrig) {
-                type = -1; // UPPERBOUND
+                type = -1;
             } else if (score >= betaOrig) {
-                type = 1; // LOWERBOUND
+                type = 1;
             } else {
                 type = 0; // EXACT
             }
@@ -329,15 +312,15 @@ public class SearchMovesEvolution {
 
                 int childScore;
                 if (i == 0) {
-                    // Erster Zug: volles Fenster
-                    childScore = pvs(board, depth - 1, alpha, beta, deadline, ply + 1, eval,tt);
-                } else {
-                    // Alle anderen: Nullfenster
-                    childScore = pvs(board, depth - 1, beta - 1, beta, deadline, ply + 1, eval,tt);
 
-                    // Fail-low: Zug ist schlechter als beta, genauen Wert holen
+                    childScore = pvs(board, depth - 1, alpha, beta, deadline, ply + 1, eval, tt);
+                } else {
+
+                    childScore = pvs(board, depth - 1, beta - 1, beta, deadline, ply + 1, eval, tt);
+
+
                     if (childScore > alpha && childScore < beta) {
-                        childScore = pvs(board, depth - 1, alpha, beta, deadline, ply + 1, eval,tt);
+                        childScore = pvs(board, depth - 1, alpha, beta, deadline, ply + 1, eval, tt);
                     }
                 }
 
@@ -359,11 +342,11 @@ public class SearchMovesEvolution {
             }
             int type;
             if (score <= alphaOrig) {
-                type = -1; // UPPERBOUND
+                type = -1;
             } else if (score >= betaOrig) {
-                type = 1; // LOWERBOUND
+                type = 1;
             } else {
-                type = 0; // EXACT
+                type = 0;
             }
 
             tt.put(board.hash, new TranspositionTable.Entry(depth, score, type, bestMove));
@@ -371,17 +354,4 @@ public class SearchMovesEvolution {
         return score;
     }
 
-    /**
-     * Testet Anzahl der Knoten, die bei bestimmter Alpha-Beta-Suche bzw. Minimax-Suche auf einer bestimmten Tiefe besucht werden
-     */
-    public static void main(String[] args) {
-        Board board = new Board();
-        BewertungsfunktionEvolution eval = new BewertungsfunktionEvolution();
-
-        knotenZaehler = 0;
-        miniMaxStanard(board, 2, -infinity, infinity, Long.MAX_VALUE, eval);
-        System.out.println("Minimax Tiefe 2: " + knotenZaehler);
-
-        System.out.println("Perft   Tiefe 2: " + Perft.perft(board, 2));
-    }
 }

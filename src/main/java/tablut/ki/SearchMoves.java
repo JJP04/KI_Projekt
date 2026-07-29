@@ -22,9 +22,9 @@ public class SearchMoves {
     public static final TranspositionTable tt = new TranspositionTable();
 
     /**
-     * Findet den besten Zug für die aktuelle Spielsituation auf dem Board unter Verwendung von Alpha-Beta-Suche.
+     * Findet den besten Zug für die aktuelle Spielsituation auf dem Board.
      */
-    public static Move findBestMoveAlphaBeta(Board board, long timeLimitMs) {
+    public static Move findBestMove(Board board, long timeLimitMs) {
         //TODO Muss erstzet werden duch die "Sotierten" Züge
         List<Move> moves = MoveFactory.getAllMoves(board);
         MoveOrder.sortMoves(board, moves, 0);
@@ -32,7 +32,7 @@ public class SearchMoves {
         if (moves.isEmpty()) return null;
         long deadline = System.currentTimeMillis() + timeLimitMs - buffer;
 
-        //Zobrist initialisieren (Jede Figur auf jedem Feld bekommt einen zufälligen Wert zugeordnet)
+        //Zobrist initialisieren
         ZobristHashing.initializeZobristTable();
         //Hash für die Startstellung berechnen
         board.hash = ZobristHashing.computeHash(board);
@@ -54,7 +54,7 @@ public class SearchMoves {
     }
 
     /**
-     * Bewertet ALLE Züge auf einer bestimmten Tiefe
+     * Bewertet alle Züge auf einer bestimmten Tiefe
      */
     public static boolean startSearchAlg(Board board, List<Move> moves, int depth, long deadline) {
         boolean isMax = !board.playBlackTurn;
@@ -86,7 +86,7 @@ public class SearchMoves {
             //System.out.printf("Zug: %d,%d --> %d,%d  Score: %d%n",
             //move.fromX, move.fromY, move.toX, move.toY, score);
 
-            //MAX --> höchster Score, MIN --> niedrigster Score
+            //max -> höchster Score min -> niedrigster Score
             if (isMax) {
                 if (score > bestScore) {
                     bestScore = score;
@@ -112,13 +112,12 @@ public class SearchMoves {
     }
 
     /**
-     * Führt die Alpha-Beta-Suche durch und bewertet die Positionen auf der angegebenen Tiefe
-     * Gibt den besten Score zurück
+     * Führt AlphaBeta aus
      */
     public static int alphaBeta(Board board, int depth, int alpha, int beta, long deadline, int ply) {
         nodes++;
 
-        //Nur bei jedem 4. Knoten ZeitCheck => Rechnerzeitsparen
+        //Nur bei jedem 4 Knoten ZeitCheck -> Rechnerzeitsparen
         if ((depth & 0x3) == 0 && System.currentTimeMillis() >= deadline) {
             return Integer.MIN_VALUE;
         }
@@ -169,11 +168,11 @@ public class SearchMoves {
     }
 
     /**
-     * Standard Minimax-Suche ohne Cutoffs
+     * Minimax ohne Cutoffs
      */
     public static int miniMaxStanard(Board board, int depth, int alpha, int beta, long deadline) {
 
-        //Nur bei jedem 4. Knoten ZeitCheck => Rechnerzeitsparen
+        //Nur bei jedem 4. Knoten ZeitCheck -> Rechnerzeitsparen
         if ((depth & 0x3) == 0 && System.currentTimeMillis() >= deadline) {
             return Integer.MIN_VALUE;
         }
@@ -221,7 +220,7 @@ public class SearchMoves {
     public static int pvs(Board board, int depth, int alpha, int beta, long deadline, int ply) {
         nodes++;
 
-        //Überprüfung, ob Spielzustand bereits in Transposition Table gespeichert ist
+        //prüfen ob Spielzustand bereits in Transposition Table gespeichert ist
         TranspositionTable.Entry entry = tt.get(board.hash);
         if (entry != null && entry.depth >= depth) {
             if (entry.type == 0) return entry.score;
@@ -245,12 +244,7 @@ public class SearchMoves {
         // Killer-Heuristik sortiert Züge nach Ply
         MoveOrder.sortMoves(board, moves, ply);
 
-        // TT-Zug hat höchste Priorität → nach Sortierung an erste Stelle setzen.
-        // Wichtig: NICHT das Move-Objekt aus der TT einfügen (geteilter Undo-Zustand in
-        // capturedFigures — bei Stellungswiederholung in der Suchlinie würde dasselbe Objekt
-        // verschachtelt gemacht und das Board beim unmake korrumpiert). Stattdessen den
-        // gleichen Zug aus der frisch generierten Liste nach vorne holen; ist der TT-Zug
-        // hier nicht legal (Hash-Kollision), wird er ignoriert.
+
         if (entry != null && entry.move != null) {
             int ttIndex = moves.indexOf(entry.move);
             if (ttIndex > 0) {
@@ -287,7 +281,7 @@ public class SearchMoves {
 
                 int childScore;
                 if (i == 0) {
-                    // Erster Zug: volles Fenster
+                    // Erster Zug volles Fenster
                     childScore = pvs(board, depth - 1, alpha, beta, deadline, ply + 1);
                 } else {
                     // Alle anderen: Nullfenster (ohne LMR) für ersten i Züge, danach mit LMR
@@ -323,11 +317,11 @@ public class SearchMoves {
 
             int type;
             if (score <= alphaOrig) {
-                type = -1; // UPPERBOUND
+                type = -1;
             } else if (score >= betaOrig) {
-                type = 1; // LOWERBOUND
+                type = 1;
             } else {
-                type = 0; // EXACT
+                type = 0;
             }
 
             tt.put(board.hash, new TranspositionTable.Entry(depth, score, type, bestMove));
@@ -385,29 +379,16 @@ public class SearchMoves {
             }
             int type;
             if (score <= alphaOrig) {
-                type = -1; // UPPERBOUND
+                type = -1;
             } else if (score >= betaOrig) {
-                type = 1; // LOWERBOUND
+                type = 1;
             } else {
-                type = 0; // EXACT
+                type = 0;
             }
 
             tt.put(board.hash, new TranspositionTable.Entry(depth, score, type, bestMove));
         }
         return score;
-    }
-
-    /**
-     * Testet Anzahl der Knoten, die bei bestimmter Alpha-Beta-Suche bzw. Minimax-Suche auf einer bestimmten Tiefe besucht werden
-     */
-    public static void main(String[] args) {
-        Board board = new Board();
-
-        knotenZaehler = 0;
-        miniMaxStanard(board, 2, -infinity, infinity, Long.MAX_VALUE);
-        System.out.println("Minimax Tiefe 2: " + knotenZaehler);
-
-        System.out.println("Perft   Tiefe 2: " + Perft.perft(board, 2));
     }
 }
 

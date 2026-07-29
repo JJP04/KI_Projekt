@@ -51,7 +51,8 @@ public class Main {
         try (BufferedReader br = new BufferedReader(new FileReader(TOKEN_FILE))) {
             String t = br.readLine();
             if (t != null && !t.trim().isEmpty()) return t.trim();
-        } catch (IOException ignored) {}
+        } catch (IOException ignored) {
+        }
         return null;
     }
 
@@ -97,7 +98,7 @@ public class Main {
 
         while (!GameLogic.isGameOver(board)) {
 
-            Move move = SearchMoves.findBestMoveAlphaBeta(board, 2000);
+            Move move = SearchMoves.findBestMove(board, 2000);
 
             String farbe = board.playBlackTurn ? "Schwarz" : "Weiß";
             if (move == null) {
@@ -153,7 +154,7 @@ public class Main {
                 int toCol = scanner.nextInt();
 
                 Move move = new Move(fromRow, fromCol, toRow, toCol);
-                
+
                 MoveFactory.moveFigure(board, move);
             } else {
 

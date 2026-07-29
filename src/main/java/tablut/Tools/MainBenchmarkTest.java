@@ -245,11 +245,6 @@ public class MainBenchmarkTest {
         }
 
         if (transpositionTable) {
-            // TT-Zug hat höchste Priorität → nach Sortierung an erste Stelle setzen
-            // Wichtig: das Objekt aus der eigenen Zugliste verwenden, nicht entry.move!
-            // entry.move ist ein geteiltes Objekt aus der TT — makeMove würde dessen
-            // Undo-Daten (capturedFigures) überschreiben. Außerdem wird so geprüft,
-            // dass der TT-Zug in dieser Stellung überhaupt legal ist (Hash-Kollision).
             if (entry != null && entry.move != null) {
                 int ttIndex = moves.indexOf(entry.move);
                 if (ttIndex > 0) {
@@ -324,11 +319,11 @@ public class MainBenchmarkTest {
 
             int type;
             if (score <= alphaOrig) {
-                type = -1; // UPPERBOUND
+                type = -1;
             } else if (score >= betaOrig) {
-                type = 1; // LOWERBOUND
+                type = 1;
             } else {
-                type = 0; // EXACT
+                type = 0;
             }
             if (transpositionTable) {
                 tt.put(board.hash, new TranspositionTable.Entry(depth, score, type, bestMove));
@@ -388,11 +383,11 @@ public class MainBenchmarkTest {
         }
         int type;
         if (score <= alphaOrig) {
-            type = -1; // UPPERBOUND
+            type = -1;
         } else if (score >= betaOrig) {
-            type = 1; // LOWERBOUND
+            type = 1;
         } else {
-            type = 0; // EXACT
+            type = 0;
         }
         if (transpositionTable) {
             tt.put(board.hash, new TranspositionTable.Entry(depth, score, type, bestMove));

@@ -1,9 +1,0 @@
-
-========================================================
-  >>> AB HIER NEUER VERSUCH <<<
-  Start:  2026-07-10 10:12:59
-  POPULATION_SIZE=8  GENERATIONS=15  MOVE_TIME=100ms
-  mutationRate=0.2  mutationStrength=0.1  elitismus=0.1
-========================================================
-
-===== Generation 1 =====

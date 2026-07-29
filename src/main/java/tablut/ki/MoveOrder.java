@@ -13,7 +13,7 @@ public class MoveOrder {
     public static final int MAX_PLY = 64;
     public static final Move[][] killerMoves = new Move[MAX_PLY][2];
 
-    // History-Tabelle: historyTable[from][to] = Anzahl gewichteter Cutoffs
+    // History-Tabelle
     public static final int[][] historyTable = new int[82][82];
 
     public static void storeKiller(Move move, int ply) {
@@ -22,7 +22,7 @@ public class MoveOrder {
         killerMoves[ply][0] = move;
     }
 
-    // Wird bei jedem Beta-Cutoff aufgerufen; tiefe Cutoffs werden stärker gewichtet
+    // Wird bei jedem Beta-Cutoff aufgerufen,tiefe Cutoffs werden stärker gewichtet
     public static void addHistory(Move move, int depth) {
         int from = (move.fromX - 1) * 9 + (move.fromY - 1);
         int to = (move.toX - 1) * 9 + (move.toY - 1);
@@ -33,7 +33,7 @@ public class MoveOrder {
         int n = moves.size();
         if (n < 2) return;
 
-        // Score genau EINMAL pro Zug berechnen (statt O(n log n)-mal im Comparator)
+        // Score genau einmal pro Zug berechnen
         int[] scores = new int[n];
         Integer[] idx = new Integer[n];
         for (int i = 0; i < n; i++) {
@@ -41,10 +41,10 @@ public class MoveOrder {
             idx[i] = i;
         }
 
-        // Indizes nach den vorberechneten Scores absteigend sortieren
+
         Arrays.sort(idx, (a, b) -> Integer.compare(scores[b], scores[a]));
 
-        // Züge in die neue Reihenfolge bringen
+        // züge in die neue Reihenfolge bringen
         List<Move> sorted = new ArrayList<>(n);
         for (int i : idx) sorted.add(moves.get(i));
         moves.clear();
@@ -55,17 +55,15 @@ public class MoveOrder {
 
         int score = 0;
 
-        //1. Schlagzüge (schnelle Schätzung, ohne make/unmake):
-        int captures = GameLogic.countCaptures(board,move);
+        //Schlagzüge
+        int captures = GameLogic.countCaptures(board, move);
         score += captures * 10_000;
 
-        //2. Killer Moves:
-        if (move.equals(killerMoves[ply][0]))
-            score += 100_000;
-        if (move.equals(killerMoves[ply][1]))
-            score += 90_000;
+        //Killer Moves
+        if (move.equals(killerMoves[ply][0])) score += 100_000;
+        if (move.equals(killerMoves[ply][1])) score += 90_000;
 
-        //3. History:
+        //History
         int from = (move.fromX - 1) * 9 + (move.fromY - 1);
         int to = (move.toX - 1) * 9 + (move.toY - 1);
         score += historyTable[from][to];
