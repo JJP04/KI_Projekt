@@ -56,6 +56,10 @@ public class Move {
         board.playBlackTurn = !board.playBlackTurn;
     }
 
+    /**
+     * Macht den zug Rückgängig auf dem Board
+     */
+
     public static void unmakeMove(Board board, Move move) {
         int figure = board.playingBoard[move.toX][move.toY];
 

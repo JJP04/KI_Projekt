@@ -21,7 +21,7 @@ public class BewertungsfunktionTests {
     void whiteWins1() {
         Board board = FenParser.parse(whiteWins1);
         board.printBoard();
-        Move moveKI = SearchMoves.findBestMoveAlphaBeta(board, 120000);
+        Move moveKI = SearchMoves.findBestMove(board, 120000);
         System.out.println("KI Zug: " + moveKI.fromX + "," + moveKI.fromY + "--> " + moveKI.toX + "," + moveKI.toY);
         assertAll(
                 () -> assertEquals(7, moveKI.fromX),
@@ -34,12 +34,13 @@ public class BewertungsfunktionTests {
     void blackWins2() {
         Board board = FenParser.parse(blackWins2);
         board.printBoard();
-        Move moveKI = SearchMoves.findBestMoveAlphaBeta(board, 120000);
+        Move moveKI = SearchMoves.findBestMove(board, 120000);
         System.out.println("KI Zug: " + moveKI.fromX + "," + moveKI.fromY + "--> " + moveKI.toX + "," + moveKI.toY);
         assertAll(
                 () -> assertEquals(3, moveKI.fromX),
                 () -> assertEquals(4, moveKI.fromY),
                 () -> assertEquals(3, moveKI.toX),
+
                 () -> assertEquals(5, moveKI.toY)
         );
     }
@@ -48,7 +49,7 @@ public class BewertungsfunktionTests {
     void ratePositionWhiteWins() {
         Board board = FenParser.parse(whiteWins1);
         board.printBoard();
-        Move moveKI = SearchMoves.findBestMoveAlphaBeta(board, 120000);
+        Move moveKI = SearchMoves.findBestMove(board, 120000);
         int a = Bewertungsfunktion.ratePosition(board);
         System.out.println(a);
         System.out.println("KI Zug: " + moveKI.fromX + "," + moveKI.fromY + "--> " + moveKI.toX + "," + moveKI.toY );
@@ -60,23 +61,23 @@ public class BewertungsfunktionTests {
     void ratePositionBlackWins() {
         Board board = FenParser.parse(blackWins1);
         board.printBoard();
-        Move moveKI = SearchMoves.findBestMoveAlphaBeta(board, 120000);
+        Move moveKI = SearchMoves.findBestMove(board, 120000);
         int a = Bewertungsfunktion.ratePosition(board);
         System.out.println(a);
         System.out.println("KI Zug: " + moveKI.fromX + "," + moveKI.fromY + "--> " + moveKI.toX + "," + moveKI.toY );
-        assertEquals(-1102, a);
+        assertEquals(-647, a);
     }
     @Test
     void ratePositionBlackWins2() {
         Board board = FenParser.parse(blackWins2);
         board.printBoard();
-        Move moveKI = SearchMoves.findBestMoveAlphaBeta(board, 120000);
+        Move moveKI = SearchMoves.findBestMove(board, 120000);
         int a = Bewertungsfunktion.ratePosition(board);
         System.out.println(a);
         System.out.println("KI Zug: " + moveKI.fromX + "," + moveKI.fromY + "--> " + moveKI.toX + "," + moveKI.toY );
         assertAll(
                 () -> assertEquals(3, moveKI.fromX),
-                () -> assertEquals(4, moveKI.fromY),
+                () -> assertEquals(6, moveKI.fromY),
                 () -> assertEquals(3, moveKI.toX),
                 () -> assertEquals(5, moveKI.toY)
         );
@@ -85,57 +86,57 @@ public class BewertungsfunktionTests {
     void ratePositionStart() {
         Board board = FenParser.parse(start);
         board.printBoard();
-        Move moveKI = SearchMoves.findBestMoveAlphaBeta(board, 120000);
+        Move moveKI = SearchMoves.findBestMove(board, 120000);
         int a = Bewertungsfunktion.ratePosition(board);
         System.out.println(a);
         System.out.println("KI Zug: " + moveKI.fromX + "," + moveKI.fromY + "--> " + moveKI.toX + "," + moveKI.toY );
-        assertEquals(-808, a);
+        assertEquals(-997, a);
     }
     @Test
     void materialStart() {
         Board board = FenParser.parse(start);
         board.printBoard();
-        Move moveKI = SearchMoves.findBestMoveAlphaBeta(board, 120000);
+        Move moveKI = SearchMoves.findBestMove(board, 120000);
         int a = Bewertungsfunktion.material(board);
         System.out.println(a);
         System.out.println("KI Zug: " + moveKI.fromX + "," + moveKI.fromY + "--> " + moveKI.toX + "," + moveKI.toY );
-        assertEquals(-8, a);
+        assertEquals(-984, a);
     }
     @Test
     void materialWhiteWins1() {
         Board board = FenParser.parse(whiteWins1);
         board.printBoard();
-        Move moveKI = SearchMoves.findBestMoveAlphaBeta(board, 120000);
+        Move moveKI = SearchMoves.findBestMove(board, 120000);
         int a = Bewertungsfunktion.material(board);
         System.out.println(a);
         System.out.println("KI Zug: " + moveKI.fromX + "," + moveKI.fromY + "--> " + moveKI.toX + "," + moveKI.toY );
-        assertEquals(-17, a);
+        assertEquals(-975, a);
     }
     @Test
     void distanceCornerStart() {
         Board board = FenParser.parse(start);
         board.printBoard();
-        Move moveKI = SearchMoves.findBestMoveAlphaBeta(board, 120000);
+        Move moveKI = SearchMoves.findBestMove(board, 120000);
         int a = Bewertungsfunktion.distanceCorner(board);
         System.out.println(a);
         System.out.println("KI Zug: " + moveKI.fromX + "," + moveKI.fromY + "--> " + moveKI.toX + "," + moveKI.toY );
-        assertEquals(-800, a);
+        assertEquals(-160, a);
     }
     @Test
     void distanceCornerWhiteWins1() {
         Board board = FenParser.parse(whiteWins1);
         board.printBoard();
-        Move moveKI = SearchMoves.findBestMoveAlphaBeta(board, 120000);
+        Move moveKI = SearchMoves.findBestMove(board, 120000);
         int a = Bewertungsfunktion.distanceCorner(board);
         System.out.println(a);
         System.out.println("KI Zug: " + moveKI.fromX + "," + moveKI.fromY + "--> " + moveKI.toX + "," + moveKI.toY );
-        assertEquals(-500, a);
+        assertEquals(-100, a);
     }
     @Test
     void pressureKingStart() {
         Board board = FenParser.parse(start);
         board.printBoard();
-        Move moveKI = SearchMoves.findBestMoveAlphaBeta(board, 120000);
+        Move moveKI = SearchMoves.findBestMove(board, 120000);
         int a = Bewertungsfunktion.pressureKing(board);
         System.out.println(a);
         System.out.println("KI Zug: " + moveKI.fromX + "," + moveKI.fromY + "--> " + moveKI.toX + "," + moveKI.toY );
@@ -145,17 +146,17 @@ public class BewertungsfunktionTests {
     void pressureKingBlackWins1() {
         Board board = FenParser.parse(blackWins1);
         board.printBoard();
-        Move moveKI = SearchMoves.findBestMoveAlphaBeta(board, 120000);
+        Move moveKI = SearchMoves.findBestMove(board, 120000);
         int a = Bewertungsfunktion.pressureKing(board);
         System.out.println(a);
         System.out.println("KI Zug: " + moveKI.fromX + "," + moveKI.fromY + "--> " + moveKI.toX + "," + moveKI.toY );
-        assertEquals(-300, a);
+        assertEquals(-132, a);
     }
     @Test
     void escapeKingStart() {
         Board board = FenParser.parse(start);
         board.printBoard();
-        Move moveKI = SearchMoves.findBestMoveAlphaBeta(board, 120000);
+        Move moveKI = SearchMoves.findBestMove(board, 120000);
         int a = Bewertungsfunktion.escapeKing(board);
         System.out.println(a);
         System.out.println("KI Zug: " + moveKI.fromX + "," + moveKI.fromY + "--> " + moveKI.toX + "," + moveKI.toY );
@@ -165,21 +166,21 @@ public class BewertungsfunktionTests {
     void escapeKingBlackWins1() {
         Board board = FenParser.parse(blackWins1);
         board.printBoard();
-        Move moveKI = SearchMoves.findBestMoveAlphaBeta(board, 120000);
+        Move moveKI = SearchMoves.findBestMove(board, 120000);
         int a = Bewertungsfunktion.escapeKing(board);
         System.out.println(a);
         System.out.println("KI Zug: " + moveKI.fromX + "," + moveKI.fromY + "--> " + moveKI.toX + "," + moveKI.toY );
-        assertEquals(10, a);
+        assertEquals(5, a);
     }
     @Test
     void escapeKingWhiteWins1() {
         Board board = FenParser.parse(whiteWins1);
         board.printBoard();
-        Move moveKI = SearchMoves.findBestMoveAlphaBeta(board, 120000);
+        Move moveKI = SearchMoves.findBestMove(board, 120000);
         int a = Bewertungsfunktion.escapeKing(board);
         System.out.println(a);
         System.out.println("KI Zug: " + moveKI.fromX + "," + moveKI.fromY + "--> " + moveKI.toX + "," + moveKI.toY );
-        assertEquals(70, a);
+        assertEquals(35, a);
     }
 
 }

@@ -7,17 +7,7 @@ import tablut.game.MoveFactory;
 import java.util.Arrays;
 
 public class Bewertungsfunktion {
-    /**
-     * Bewertungsfunktion (weiß will max. und schwarz will min.)
-     * Gewinnstatus weiß (+/-(10000 - ply)) -- schnellere Siege werden bevorzugt
-     * + Offene Fluchtlinien des Königs zur Ecke (2 Linien: +8000, 1 Linie + Weiß am Zug: +5000, sonst +300)
-     * + Fluchtmöglichkeiten des Königs (mögliche Züge vom König * 5)
-     * - Druck auf König  (gestaffelt nach Distanz der schwarzen Figuren zum König)
-     * - Distanz zur Ecke (-10 * Distanz) -- je näher König an Ecke desto besser, desto kleiner der Minus Wert
-     * + Material Weiß (Anzahl Figuren *100)
-     * - Material Schwarz (Anzahl Figuren *50)
-     * - Eck-Blockaden durch Schwarz (-25 pro besetztem Blockadefeld)
-     */
+
     public static int ratePosition(Board board) {
         return ratePosition(board, 0);
     }
@@ -29,21 +19,15 @@ public class Bewertungsfunktion {
 
         //Flucht möglichkeiten
         int openLines = countOpenEscapeLines(board);
-        if (openLines >= 2) return 8000 - ply;          //Schwarz kann nur eine Linie blocken,dominant
+        if (openLines >= 2) return 7907 - ply;          //Schwarz kann nur eine Linie blocken,dominant
         if (openLines == 1 && !board.playBlackTurn) {
-            return 5000 - ply;                          //nur eine ecke frei und weiß am zug
+            return 3999 - ply;                          //nur eine ecke frei und weiß am zug
         }
 
 
+        int score = escapeKing(board) + pressureKing(board) + distanceCorner(board) + material(board) + cornerBlockade(board) + checkBoardRepetition(board);
 
-        int score = escapeKing(board) +
-                pressureKing(board) +
-                distanceCorner(board) +
-                material(board) +
-                cornerBlockade(board)
-                + checkBoardRepetition(board);
-
-        if (openLines == 1) score += 300;               //Schwarz, linie wird evetl geblocjkt
+        if (openLines == 1) score += 864;               //Schwarz, linie wird evtl geblockt
         return score;
     }
 
@@ -55,9 +39,8 @@ public class Bewertungsfunktion {
     }
 
     /**
-     * Fluchtmöglichkeiten des Königs (Anzahl * 5):
-     * Wenn König durch Zug mehr felder hat, die er betreten kann, dann besser.
-     * Vergleich der Anzahl an möglichen Felder des Königs vorher und nachher
+     * Fluchtmöglichkeiten des Königs (Anzahl * 5)
+     * Wenn König durch Zug mehr felder hat, die er betreten kann, dann besser
      */
     public static int escapeKing(Board board) {
         int kx = board.kingPos[0];
@@ -80,8 +63,8 @@ public class Bewertungsfunktion {
     }
 
     /**
-     * Druck auf König:
-     * Wenn durch Zug mehr schwarze Figuren um den König sind, dann schlechter für weiß.
+     * Druck auf König
+     * Wenn durch Zug mehr schwarze Figuren um den König sind, dann schlechter für weiß
      */
     public static int pressureKing(Board board) {
         int pressure = 0;
@@ -108,12 +91,12 @@ public class Bewertungsfunktion {
                 distance++;
             }
         }
-        return pressure * -15;
+        return pressure * -12;
     }
 
     /**
-     * Abstand zur Ecke (-10 * Distanz):
-     * Misst Entfernung zur nächsten Ecke, je näher König an Ecke desto besser, desto kleiner der Minus Wert
+     * Abstand zur Ecke (-10 * Distanz)
+     * Misst Entfernung zur nächsten Ecke je näher König an Ecke desto besser, desto kleiner der Minus Wert
      */
     public static int distanceCorner(Board board) {
         int kx = board.kingPos[0];
@@ -127,12 +110,11 @@ public class Bewertungsfunktion {
         }
         if (bestDist == 0) return 10000; // König steht bereits auf Ecke — Sieg
 
-        return bestDist * -10;
+        return bestDist * -20;
     }
 
     /**
-     * Zählt die Ecken, zu denen der König eine komplett freie Turm-Linie hat.
-     * Frei heißt: alle Felder zwischen König und Ecke sind leer (weiße UND schwarze Figuren blockieren).
+     * Zählt die Ecken, zu denen der König eine komplett freie Turm Linie hat
      */
     public static int countOpenEscapeLines(Board board) {
         int kx = board.kingPos[0];
@@ -156,7 +138,10 @@ public class Bewertungsfunktion {
         return open;
     }
 
-    //Prüft ob alle Felder zwischen König und Ecke auf einer Linie leer sind
+    /**
+     *
+     * Prüft ob alle Felder zwischen König und Ecke auf einer Linie leer sind
+     */
     private static boolean isLineFree(Board board, int kx, int ky, int target, boolean scanColumn) {
         if (scanColumn) {
             // gleiche Spalte (ky == cy)
@@ -174,10 +159,7 @@ public class Bewertungsfunktion {
         return true;
     }
 
-    //Bewertun Blockaden durch Schearfz:
-    //Schwarze Steine auf den Zugangsfeldern der Ecken riegeln die Fluchtwege dauerhaft ab (gut für Schwarz --> negativ)
-    private static final int[][] blockadeFields = {
-            {1, 3}, {3, 1}, {2, 2},   // Ecke (1,1)
+    private static final int[][] blockadeFields = {{1, 3}, {3, 1}, {2, 2},   // Ecke (1,1)
             {1, 7}, {3, 9}, {2, 8},   // Ecke (1,9)
             {9, 3}, {7, 1}, {8, 2},   // Ecke (9,1)
             {9, 7}, {7, 9}, {8, 8}    // Ecke (9,9)
@@ -188,15 +170,13 @@ public class Bewertungsfunktion {
         for (int[] f : blockadeFields) {
             if (board.playingBoard[f[0]][f[1]] == Board.BLACK) count++;
         }
-        return count * -25;
+        return count * -26;
     }
 
 
     /**
-     * Berechnet Anzahl der Figuren  gleichwertigkeit von weiß und schwarzer Figur:
-     * schwarz = 16x50 = 800 Punkte
-     * weiß = 8x100 = 800 Punkte
-     * Wenn eine Figur geschlagen werden würde, wäre eben + oder -
+     * Berechnet Anzahl der Figuren
+     *
      */
     public static int material(Board board) {
         int blackCount = 0;
@@ -212,7 +192,7 @@ public class Bewertungsfunktion {
                 }
             }
         }
-        return (whiteCount * 100) - (blackCount * 50);
+        return (whiteCount * 57) - (blackCount * 90);
     }
 
     /**
@@ -221,7 +201,7 @@ public class Bewertungsfunktion {
     public static int checkBoardRepetition(Board board) {
         for (int[][] past : board.boardHistory) {
             if (Arrays.deepEquals(past, board.playingBoard)) {
-                return -50;
+                return -44;
             }
         }
         return 0;

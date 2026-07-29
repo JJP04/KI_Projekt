@@ -18,7 +18,7 @@ import tablut.ki.SearchMoves;
 public class Main {
 
     private static final String host = "bore.pub";
-    private static final int port = 59744;
+    private static final int port = 33082;
     private static final String lobby = "F";
     private static final String TOKEN_FILE = "token.txt";
 
@@ -51,7 +51,8 @@ public class Main {
         try (BufferedReader br = new BufferedReader(new FileReader(TOKEN_FILE))) {
             String t = br.readLine();
             if (t != null && !t.trim().isEmpty()) return t.trim();
-        } catch (IOException ignored) {}
+        } catch (IOException ignored) {
+        }
         return null;
     }
 
@@ -97,7 +98,7 @@ public class Main {
 
         while (!GameLogic.isGameOver(board)) {
 
-            Move move = SearchMoves.findBestMoveAlphaBeta(board, 1000);
+            Move move = SearchMoves.findBestMove(board, 2000);
 
             String farbe = board.playBlackTurn ? "Schwarz" : "Weiß";
             if (move == null) {
@@ -153,7 +154,7 @@ public class Main {
                 int toCol = scanner.nextInt();
 
                 Move move = new Move(fromRow, fromCol, toRow, toCol);
-                
+
                 MoveFactory.moveFigure(board, move);
             } else {
 

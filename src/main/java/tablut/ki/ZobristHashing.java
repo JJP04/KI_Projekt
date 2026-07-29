@@ -55,8 +55,7 @@ public class ZobristHashing {
     }
 
     /**
-     * Aktualisiert den Zobrist-Hash, wenn eine Figur von einer Position zu einer anderen bewegt wird.
-     * Effizienter als jedes mal gesamte Board zu berechnen
+     * Aktualisiert den Zobrist-Hash, wenn eine Figur von einer Position zu einer anderen bewegt wird
      */
     public static long updateHash(long hash, int piece, int fromRow, int fromCol, int toRow, int toCol) {
         int pieceIndex = pieceToIndex(piece);

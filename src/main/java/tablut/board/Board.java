@@ -2,11 +2,11 @@ package tablut.board;
 
 import java.util.ArrayList;
 import java.util.List;
-//Erstellt Spielfeld mit Figuren
+
 
 public class Board {
 
-    //KONSTANTEN
+
     public static final int EMPTY = 0;
     public static final int BORDER = 99;
     public static final int BLACK = 1;
@@ -16,7 +16,7 @@ public class Board {
     public List<int[][]> boardHistory = new ArrayList<>();
     public boolean isSearchCopy = false;
 
-    //SPIELZUSTAND:
+
     public final int[][] playingBoard = new int[11][11];
 
     public final boolean[][] blackSoldersPos = new boolean[11][11];
@@ -34,14 +34,15 @@ public class Board {
     public boolean playBlackTurn = true;
     //Zähler Max 50 Züge
     public int countMoves = 0;
-    //Hash-Wert
+    //Hash Wert
     public long hash;
 
-    //SPIELFELD ERSTELLEN
+    //spielfeld erstellen
     public Board() {
         createBorder();
         setUpBoard();
     }
+
     public void createBorder() {
         for (int i = 0; i < 11; i++) {
             playingBoard[0][i] = BORDER;
@@ -50,6 +51,7 @@ public class Board {
             playingBoard[i][10] = BORDER;
         }
     }
+
     public void setUpBoard() {
         int[][] blackStart = {{1, 4}, {1, 5}, {1, 6}, {2, 5}, {9, 4}, {9, 5}, {9, 6}, {8, 5}, {4, 1}, {5, 1}, {6, 1}, {5, 2}, {4, 9}, {5, 9}, {6, 9}, {5, 8}};
         int[][] whiteStart = {{3, 5}, {5, 3}, {5, 7}, {7, 5}, {4, 5}, {5, 4}, {5, 6}, {6, 5}};
@@ -108,7 +110,7 @@ public class Board {
     }
 
     public Board copy() {
-        //Optimiere Unnötige neu Belgen des Bordes
+        //Optimiere Unnötige neu belegen des Bordes
         Board b = new Board();
 
         for (int r = 0; r < playingBoard.length; r++) {

@@ -120,7 +120,7 @@ public class FenParser {
             col++;
         }
 
-        // a = Angreifer (Schwarz) am Zug, d = Verteidiger (Weiß) am Zug
+        // a = Schwarz am Zug,  d = Weiß am Zug
         b.playBlackTurn = turnPart.equals("a");
 
         b.countMoves = Integer.parseInt(moveCount);

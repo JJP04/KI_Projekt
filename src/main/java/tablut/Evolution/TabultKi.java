@@ -3,14 +3,14 @@ package tablut.Evolution;
 public class TabultKi {
 
 
- private BewertungsfunktionEvolution eval;
+    private BewertungsfunktionEvolution eval;
 
     private int wins;
     private int losses;
     private int draws;
 
-   
- public TabultKi(BewertungsfunktionEvolution eval) {
+
+    public TabultKi(BewertungsfunktionEvolution eval) {
         this.eval = eval;
     }
 
@@ -39,13 +39,15 @@ public class TabultKi {
         wins = losses = draws = 0;
     }
 
-    public int getWins(){
-      return wins;
+    public int getWins() {
+        return wins;
     }
-    public int getLosses(){
-      return losses;
+
+    public int getLosses() {
+        return losses;
     }
-    public int getDraws(){
-      return draws;
+
+    public int getDraws() {
+        return draws;
     }
 }

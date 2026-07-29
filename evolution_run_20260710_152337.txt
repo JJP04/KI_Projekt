@@ -1,0 +1,547 @@
+
+========================================================
+  >>> AB HIER NEUER VERSUCH <<<
+  Start:  2026-07-10 15:23:37
+  POPULATION_SIZE=8  GENERATIONS=15  MOVE_TIME=500ms
+  mutationRate=0.2  mutationStrength=0.1  elitismus=0.1
+========================================================
+
+===== Generation 1 =====
+ 0: Fitness= 23  W= 6 D= 5 L= 3
+ 1: Fitness= 23  W= 7 D= 2 L= 5
+ 2: Fitness= 21  W= 6 D= 3 L= 5
+ 3: Fitness= 19  W= 4 D= 7 L= 3
+ 4: Fitness= 17  W= 5 D= 2 L= 7
+ 5: Fitness= 17  W= 4 D= 5 L= 5
+ 6: Fitness= 16  W= 3 D= 7 L= 4
+ 7: Fitness= 14  W= 3 D= 5 L= 6
+Generation 1
+Fitness: 23
+twoOpenLinesScore = 6795
+oneOpenLineWhiteTurnScore = 4404
+oneOpenLineScore = 926
+escapeKingWeight = 18
+pressureWeight = -15
+distanceCornerWeight = -20
+cornerBlockadeWeight = -24
+materialWhiteWeight = 192
+materialBlackWeight = 79
+repetitionPenalty = -174
+--------------------------------
+Generation 1
+Fitness: 14
+twoOpenLinesScore = 9895
+oneOpenLineWhiteTurnScore = 4161
+oneOpenLineScore = 829
+escapeKingWeight = 11
+pressureWeight = -4
+distanceCornerWeight = -21
+cornerBlockadeWeight = -33
+materialWhiteWeight = 129
+materialBlackWeight = 57
+repetitionPenalty = -121
+--------------------------------
+
+===== Generation 2 =====
+ 0: Fitness= 27  W= 8 D= 3 L= 3
+ 1: Fitness= 25  W= 7 D= 4 L= 3
+ 2: Fitness= 21  W= 6 D= 3 L= 5
+ 3: Fitness= 21  W= 6 D= 3 L= 5
+ 4: Fitness= 17  W= 4 D= 5 L= 5
+ 5: Fitness= 16  W= 4 D= 4 L= 6
+ 6: Fitness= 13  W= 3 D= 4 L= 7
+ 7: Fitness= 13  W= 3 D= 4 L= 7
+Generation 2
+Fitness: 27
+twoOpenLinesScore = 7769
+oneOpenLineWhiteTurnScore = 3837
+oneOpenLineScore = 926
+escapeKingWeight = 18
+pressureWeight = -10
+distanceCornerWeight = -18
+cornerBlockadeWeight = -24
+materialWhiteWeight = 58
+materialBlackWeight = 79
+repetitionPenalty = -57
+--------------------------------
+Generation 2
+Fitness: 13
+twoOpenLinesScore = 8676
+oneOpenLineWhiteTurnScore = 4404
+oneOpenLineScore = 816
+escapeKingWeight = 18
+pressureWeight = -15
+distanceCornerWeight = -10
+cornerBlockadeWeight = -25
+materialWhiteWeight = 192
+materialBlackWeight = 51
+repetitionPenalty = -151
+--------------------------------
+
+===== Generation 3 =====
+ 0: Fitness= 30  W= 9 D= 3 L= 2
+ 1: Fitness= 26  W= 8 D= 2 L= 4
+ 2: Fitness= 23  W= 7 D= 2 L= 5
+ 3: Fitness= 21  W= 6 D= 3 L= 5
+ 4: Fitness= 18  W= 4 D= 6 L= 4
+ 5: Fitness= 14  W= 3 D= 5 L= 6
+ 6: Fitness= 11  W= 2 D= 5 L= 7
+ 7: Fitness= 11  W= 3 D= 2 L= 9
+Generation 3
+Fitness: 30
+twoOpenLinesScore = 7769
+oneOpenLineWhiteTurnScore = 3837
+oneOpenLineScore = 904
+escapeKingWeight = 18
+pressureWeight = -10
+distanceCornerWeight = -18
+cornerBlockadeWeight = -22
+materialWhiteWeight = 58
+materialBlackWeight = 79
+repetitionPenalty = -62
+--------------------------------
+Generation 3
+Fitness: 11
+twoOpenLinesScore = 7871
+oneOpenLineWhiteTurnScore = 4404
+oneOpenLineScore = 685
+escapeKingWeight = 17
+pressureWeight = -15
+distanceCornerWeight = -20
+cornerBlockadeWeight = -24
+materialWhiteWeight = 158
+materialBlackWeight = 84
+repetitionPenalty = -174
+--------------------------------
+
+===== Generation 4 =====
+ 0: Fitness= 25  W= 7 D= 4 L= 3
+ 1: Fitness= 24  W= 8 D= 0 L= 6
+ 2: Fitness= 21  W= 5 D= 6 L= 3
+ 3: Fitness= 20  W= 5 D= 5 L= 4
+ 4: Fitness= 19  W= 4 D= 7 L= 3
+ 5: Fitness= 18  W= 5 D= 3 L= 6
+ 6: Fitness= 14  W= 3 D= 5 L= 6
+ 7: Fitness= 11  W= 3 D= 2 L= 9
+Generation 4
+Fitness: 25
+twoOpenLinesScore = 7769
+oneOpenLineWhiteTurnScore = 3643
+oneOpenLineScore = 926
+escapeKingWeight = 18
+pressureWeight = -10
+distanceCornerWeight = -18
+cornerBlockadeWeight = -20
+materialWhiteWeight = 58
+materialBlackWeight = 84
+repetitionPenalty = -57
+--------------------------------
+Generation 4
+Fitness: 11
+twoOpenLinesScore = 7769
+oneOpenLineWhiteTurnScore = 3668
+oneOpenLineScore = 926
+escapeKingWeight = 18
+pressureWeight = -10
+distanceCornerWeight = -18
+cornerBlockadeWeight = -24
+materialWhiteWeight = 58
+materialBlackWeight = 79
+repetitionPenalty = -57
+--------------------------------
+
+===== Generation 5 =====
+ 0: Fitness= 32  W=10 D= 2 L= 2
+ 1: Fitness= 25  W= 8 D= 1 L= 5
+ 2: Fitness= 24  W= 8 D= 0 L= 6
+ 3: Fitness= 21  W= 7 D= 0 L= 7
+ 4: Fitness= 20  W= 6 D= 2 L= 6
+ 5: Fitness= 18  W= 6 D= 0 L= 8
+ 6: Fitness= 16  W= 5 D= 1 L= 8
+ 7: Fitness=  7  W= 1 D= 4 L= 9
+Generation 5
+Fitness: 32
+twoOpenLinesScore = 7769
+oneOpenLineWhiteTurnScore = 3643
+oneOpenLineScore = 926
+escapeKingWeight = 18
+pressureWeight = -10
+distanceCornerWeight = -18
+cornerBlockadeWeight = -20
+materialWhiteWeight = 58
+materialBlackWeight = 84
+repetitionPenalty = -57
+--------------------------------
+Generation 5
+Fitness: 7
+twoOpenLinesScore = 7100
+oneOpenLineWhiteTurnScore = 3643
+oneOpenLineScore = 1005
+escapeKingWeight = 18
+pressureWeight = -11
+distanceCornerWeight = -24
+cornerBlockadeWeight = -20
+materialWhiteWeight = 181
+materialBlackWeight = 84
+repetitionPenalty = -41
+--------------------------------
+
+===== Generation 6 =====
+ 0: Fitness= 30  W= 9 D= 3 L= 2
+ 1: Fitness= 25  W= 7 D= 4 L= 3
+ 2: Fitness= 22  W= 6 D= 4 L= 4
+ 3: Fitness= 18  W= 5 D= 3 L= 6
+ 4: Fitness= 17  W= 5 D= 2 L= 7
+ 5: Fitness= 16  W= 5 D= 1 L= 8
+ 6: Fitness= 16  W= 5 D= 1 L= 8
+ 7: Fitness= 14  W= 4 D= 2 L= 8
+Generation 6
+Fitness: 30
+twoOpenLinesScore = 7769
+oneOpenLineWhiteTurnScore = 3643
+oneOpenLineScore = 926
+escapeKingWeight = 5
+pressureWeight = -10
+distanceCornerWeight = -18
+cornerBlockadeWeight = -26
+materialWhiteWeight = 58
+materialBlackWeight = 84
+repetitionPenalty = -41
+--------------------------------
+Generation 6
+Fitness: 14
+twoOpenLinesScore = 7769
+oneOpenLineWhiteTurnScore = 3643
+oneOpenLineScore = 1013
+escapeKingWeight = 17
+pressureWeight = -10
+distanceCornerWeight = -18
+cornerBlockadeWeight = -24
+materialWhiteWeight = 62
+materialBlackWeight = 84
+repetitionPenalty = -53
+--------------------------------
+
+===== Generation 7 =====
+ 0: Fitness= 30  W= 9 D= 3 L= 2
+ 1: Fitness= 23  W= 7 D= 2 L= 5
+ 2: Fitness= 22  W= 6 D= 4 L= 4
+ 3: Fitness= 20  W= 5 D= 5 L= 4
+ 4: Fitness= 19  W= 6 D= 1 L= 7
+ 5: Fitness= 16  W= 4 D= 4 L= 6
+ 6: Fitness= 15  W= 4 D= 3 L= 7
+ 7: Fitness= 11  W= 3 D= 2 L= 9
+Generation 7
+Fitness: 30
+twoOpenLinesScore = 7769
+oneOpenLineWhiteTurnScore = 3643
+oneOpenLineScore = 857
+escapeKingWeight = 5
+pressureWeight = -11
+distanceCornerWeight = -18
+cornerBlockadeWeight = -26
+materialWhiteWeight = 58
+materialBlackWeight = 84
+repetitionPenalty = -41
+--------------------------------
+Generation 7
+Fitness: 11
+twoOpenLinesScore = 7769
+oneOpenLineWhiteTurnScore = 3643
+oneOpenLineScore = 926
+escapeKingWeight = 5
+pressureWeight = -10
+distanceCornerWeight = -17
+cornerBlockadeWeight = -26
+materialWhiteWeight = 58
+materialBlackWeight = 84
+repetitionPenalty = -41
+--------------------------------
+
+===== Generation 8 =====
+ 0: Fitness= 29  W= 8 D= 5 L= 1
+ 1: Fitness= 23  W= 6 D= 5 L= 3
+ 2: Fitness= 21  W= 6 D= 3 L= 5
+ 3: Fitness= 19  W= 5 D= 4 L= 5
+ 4: Fitness= 18  W= 5 D= 3 L= 6
+ 5: Fitness= 16  W= 4 D= 4 L= 6
+ 6: Fitness= 14  W= 4 D= 2 L= 8
+ 7: Fitness= 14  W= 4 D= 2 L= 8
+Generation 8
+Fitness: 29
+twoOpenLinesScore = 7769
+oneOpenLineWhiteTurnScore = 3643
+oneOpenLineScore = 857
+escapeKingWeight = 5
+pressureWeight = -11
+distanceCornerWeight = -18
+cornerBlockadeWeight = -26
+materialWhiteWeight = 58
+materialBlackWeight = 84
+repetitionPenalty = -41
+--------------------------------
+Generation 8
+Fitness: 14
+twoOpenLinesScore = 7623
+oneOpenLineWhiteTurnScore = 3883
+oneOpenLineScore = 926
+escapeKingWeight = 18
+pressureWeight = -10
+distanceCornerWeight = -18
+cornerBlockadeWeight = -20
+materialWhiteWeight = 58
+materialBlackWeight = 84
+repetitionPenalty = -61
+--------------------------------
+
+===== Generation 9 =====
+ 0: Fitness= 29  W= 9 D= 2 L= 3
+ 1: Fitness= 28  W= 8 D= 4 L= 2
+ 2: Fitness= 26  W= 8 D= 2 L= 4
+ 3: Fitness= 18  W= 5 D= 3 L= 6
+ 4: Fitness= 17  W= 5 D= 2 L= 7
+ 5: Fitness= 15  W= 4 D= 3 L= 7
+ 6: Fitness= 13  W= 3 D= 4 L= 7
+ 7: Fitness= 11  W= 3 D= 2 L= 9
+Generation 9
+Fitness: 29
+twoOpenLinesScore = 7769
+oneOpenLineWhiteTurnScore = 3666
+oneOpenLineScore = 857
+escapeKingWeight = 5
+pressureWeight = -11
+distanceCornerWeight = -18
+cornerBlockadeWeight = -25
+materialWhiteWeight = 58
+materialBlackWeight = 84
+repetitionPenalty = -44
+--------------------------------
+Generation 9
+Fitness: 11
+twoOpenLinesScore = 7769
+oneOpenLineWhiteTurnScore = 5017
+oneOpenLineScore = 857
+escapeKingWeight = 5
+pressureWeight = -11
+distanceCornerWeight = -18
+cornerBlockadeWeight = -21
+materialWhiteWeight = 59
+materialBlackWeight = 84
+repetitionPenalty = -54
+--------------------------------
+
+===== Generation 10 =====
+ 0: Fitness= 24  W= 7 D= 3 L= 4
+ 1: Fitness= 22  W= 6 D= 4 L= 4
+ 2: Fitness= 22  W= 7 D= 1 L= 6
+ 3: Fitness= 20  W= 6 D= 2 L= 6
+ 4: Fitness= 19  W= 5 D= 4 L= 5
+ 5: Fitness= 18  W= 5 D= 3 L= 6
+ 6: Fitness= 17  W= 5 D= 2 L= 7
+ 7: Fitness= 15  W= 4 D= 3 L= 7
+Generation 10
+Fitness: 24
+twoOpenLinesScore = 7036
+oneOpenLineWhiteTurnScore = 3643
+oneOpenLineScore = 857
+escapeKingWeight = 5
+pressureWeight = -12
+distanceCornerWeight = -18
+cornerBlockadeWeight = -26
+materialWhiteWeight = 58
+materialBlackWeight = 90
+repetitionPenalty = -43
+--------------------------------
+Generation 10
+Fitness: 15
+twoOpenLinesScore = 7769
+oneOpenLineWhiteTurnScore = 3643
+oneOpenLineScore = 857
+escapeKingWeight = 5
+pressureWeight = -11
+distanceCornerWeight = -19
+cornerBlockadeWeight = -26
+materialWhiteWeight = 58
+materialBlackWeight = 84
+repetitionPenalty = -43
+--------------------------------
+
+===== Generation 11 =====
+ 0: Fitness= 23  W= 6 D= 5 L= 3
+ 1: Fitness= 21  W= 6 D= 3 L= 5
+ 2: Fitness= 21  W= 5 D= 6 L= 3
+ 3: Fitness= 21  W= 4 D= 9 L= 1
+ 4: Fitness= 18  W= 5 D= 3 L= 6
+ 5: Fitness= 16  W= 3 D= 7 L= 4
+ 6: Fitness= 15  W= 4 D= 3 L= 7
+ 7: Fitness= 14  W= 4 D= 2 L= 8
+Generation 11
+Fitness: 23
+twoOpenLinesScore = 7036
+oneOpenLineWhiteTurnScore = 3999
+oneOpenLineScore = 857
+escapeKingWeight = 5
+pressureWeight = -12
+distanceCornerWeight = -18
+cornerBlockadeWeight = -26
+materialWhiteWeight = 58
+materialBlackWeight = 90
+repetitionPenalty = -42
+--------------------------------
+Generation 11
+Fitness: 14
+twoOpenLinesScore = 8491
+oneOpenLineWhiteTurnScore = 3773
+oneOpenLineScore = 849
+escapeKingWeight = 5
+pressureWeight = -11
+distanceCornerWeight = -20
+cornerBlockadeWeight = -25
+materialWhiteWeight = 58
+materialBlackWeight = 84
+repetitionPenalty = -44
+--------------------------------
+
+===== Generation 12 =====
+ 0: Fitness= 28  W= 9 D= 1 L= 4
+ 1: Fitness= 24  W= 7 D= 3 L= 4
+ 2: Fitness= 23  W= 6 D= 5 L= 3
+ 3: Fitness= 19  W= 6 D= 1 L= 7
+ 4: Fitness= 18  W= 5 D= 3 L= 6
+ 5: Fitness= 16  W= 4 D= 4 L= 6
+ 6: Fitness= 15  W= 4 D= 3 L= 7
+ 7: Fitness= 14  W= 4 D= 2 L= 8
+Generation 12
+Fitness: 28
+twoOpenLinesScore = 6638
+oneOpenLineWhiteTurnScore = 3643
+oneOpenLineScore = 857
+escapeKingWeight = 5
+pressureWeight = -13
+distanceCornerWeight = -19
+cornerBlockadeWeight = -26
+materialWhiteWeight = 51
+materialBlackWeight = 97
+repetitionPenalty = -43
+--------------------------------
+Generation 12
+Fitness: 14
+twoOpenLinesScore = 7036
+oneOpenLineWhiteTurnScore = 3999
+oneOpenLineScore = 857
+escapeKingWeight = 5
+pressureWeight = -12
+distanceCornerWeight = -18
+cornerBlockadeWeight = -26
+materialWhiteWeight = 58
+materialBlackWeight = 90
+repetitionPenalty = -42
+--------------------------------
+
+===== Generation 13 =====
+ 0: Fitness= 26  W= 7 D= 5 L= 2
+ 1: Fitness= 26  W= 8 D= 2 L= 4
+ 2: Fitness= 26  W= 8 D= 2 L= 4
+ 3: Fitness= 20  W= 6 D= 2 L= 6
+ 4: Fitness= 19  W= 5 D= 4 L= 5
+ 5: Fitness= 17  W= 4 D= 5 L= 5
+ 6: Fitness= 14  W= 3 D= 5 L= 6
+ 7: Fitness=  7  W= 2 D= 1 L=11
+Generation 13
+Fitness: 26
+twoOpenLinesScore = 7907
+oneOpenLineWhiteTurnScore = 3643
+oneOpenLineScore = 857
+escapeKingWeight = 5
+pressureWeight = -12
+distanceCornerWeight = -20
+cornerBlockadeWeight = -26
+materialWhiteWeight = 58
+materialBlackWeight = 90
+repetitionPenalty = -44
+--------------------------------
+Generation 13
+Fitness: 7
+twoOpenLinesScore = 7036
+oneOpenLineWhiteTurnScore = 4254
+oneOpenLineScore = 914
+escapeKingWeight = 6
+pressureWeight = -12
+distanceCornerWeight = -19
+cornerBlockadeWeight = -26
+materialWhiteWeight = 51
+materialBlackWeight = 90
+repetitionPenalty = -43
+--------------------------------
+
+===== Generation 14 =====
+ 0: Fitness= 26  W= 7 D= 5 L= 2
+ 1: Fitness= 25  W= 8 D= 1 L= 5
+ 2: Fitness= 25  W= 7 D= 4 L= 3
+ 3: Fitness= 24  W= 7 D= 3 L= 4
+ 4: Fitness= 21  W= 6 D= 3 L= 5
+ 5: Fitness= 15  W= 4 D= 3 L= 7
+ 6: Fitness= 11  W= 2 D= 5 L= 7
+ 7: Fitness=  8  W= 2 D= 2 L=10
+Generation 14
+Fitness: 26
+twoOpenLinesScore = 5977
+oneOpenLineWhiteTurnScore = 3999
+oneOpenLineScore = 823
+escapeKingWeight = 5
+pressureWeight = -11
+distanceCornerWeight = -19
+cornerBlockadeWeight = -26
+materialWhiteWeight = 58
+materialBlackWeight = 97
+repetitionPenalty = -42
+--------------------------------
+Generation 14
+Fitness: 8
+twoOpenLinesScore = 5977
+oneOpenLineWhiteTurnScore = 3999
+oneOpenLineScore = 823
+escapeKingWeight = 5
+pressureWeight = -11
+distanceCornerWeight = -20
+cornerBlockadeWeight = -26
+materialWhiteWeight = 61
+materialBlackWeight = 97
+repetitionPenalty = -42
+--------------------------------
+
+===== Generation 15 =====
+ 0: Fitness= 22  W= 7 D= 1 L= 6
+ 1: Fitness= 22  W= 6 D= 4 L= 4
+ 2: Fitness= 22  W= 6 D= 4 L= 4
+ 3: Fitness= 20  W= 5 D= 5 L= 4
+ 4: Fitness= 20  W= 5 D= 5 L= 4
+ 5: Fitness= 19  W= 4 D= 7 L= 3
+ 6: Fitness= 17  W= 5 D= 2 L= 7
+ 7: Fitness= 10  W= 2 D= 4 L= 8
+Generation 15
+Fitness: 22
+twoOpenLinesScore = 7907
+oneOpenLineWhiteTurnScore = 3999
+oneOpenLineScore = 864
+escapeKingWeight = 5
+pressureWeight = -12
+distanceCornerWeight = -20
+cornerBlockadeWeight = -26
+materialWhiteWeight = 57
+materialBlackWeight = 90
+repetitionPenalty = -44
+--------------------------------
+Generation 15
+Fitness: 10
+twoOpenLinesScore = 7907
+oneOpenLineWhiteTurnScore = 3999
+oneOpenLineScore = 857
+escapeKingWeight = 4
+pressureWeight = -12
+distanceCornerWeight = -19
+cornerBlockadeWeight = -26
+materialWhiteWeight = 58
+materialBlackWeight = 88
+repetitionPenalty = -44
+--------------------------------

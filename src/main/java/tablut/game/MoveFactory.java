@@ -37,7 +37,7 @@ public class MoveFactory {
         }
 
         board.countMoves++;
-        if (!board.isSearchCopy) {  // ← nur speichern wenn echtes Spiel
+        if (!board.isSearchCopy) {
             GameLogic.savePosition(board);
         }
 
@@ -51,7 +51,7 @@ public class MoveFactory {
         board.playBlackTurn = !board.playBlackTurn;
     }
 
-    //Liste mit allen Zügen, für jede Figur
+    //Liste mit allen Zügen für jede Figur
     public static List<Move> getAllMoves(Board board) {
         List<Move> moves = new ArrayList<>();
         for (int x = 1; x < 10; x++) {
@@ -85,7 +85,7 @@ public class MoveFactory {
         return figureMoves;
     }
 
-    //Überprüfung ob die Figur zum Spieler gehört, der am Zug ist
+    //Überprüfung ob die Figur zum Spieler gehört der am Zug ist
     private static boolean isOwnFigure(Board board, int x, int y) {
         //weiße Figur oder König
         if (board.playingBoard[x][y] == 1 && board.playBlackTurn) {
@@ -94,9 +94,9 @@ public class MoveFactory {
             return (board.playingBoard[x][y] == -1 || board.playingBoard[x][y] == Board.KING) && !board.playBlackTurn; //weißer Zug
     }
 
-    //Zum Testen: Zufälligen Zug generieren
+    //Zum Testen, zufälligen Zug generieren
     public static Move makeRandomMove(Board b) {
-        //Optimieren als Array Später
+
         List<Move> moves = getAllMoves(b);
         if (moves.isEmpty()) return null;
         Random rand = new Random();
