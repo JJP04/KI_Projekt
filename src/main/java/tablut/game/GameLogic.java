@@ -115,10 +115,10 @@ public class GameLogic {
                 }
             }
             if (surrounded) {
-                board.hash = ZobristHashing.captureHash(board.hash, Board.KING, 5, 5);
-                move.capturedFigures[move.caputreCount] = new Capture(5, 5, Board.KING);
+                board.hash = ZobristHashing.captureHash(board.hash, Board.KING, board.kingPos[0], board.kingPos[1]);
+                move.capturedFigures[move.caputreCount] = new Capture( board.kingPos[0], board.kingPos[1], Board.KING);
                 move.caputreCount++;
-                board.playingBoard[5][5] = Board.EMPTY;
+                board.playingBoard[ board.kingPos[0]][board.kingPos[1]] = Board.EMPTY;
             }
         }
         //2. König auf einem Thron angrenzendem Feld, dann reicht 3 schwarze besetzt

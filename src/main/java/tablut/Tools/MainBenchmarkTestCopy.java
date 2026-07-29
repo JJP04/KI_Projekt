@@ -1,34 +1,57 @@
-package tablut.ki;
+package tablut.Tools;
 
 import tablut.board.Board;
 import tablut.board.Move;
 import tablut.game.GameLogic;
 import tablut.game.MoveFactory;
-import tablut.Tools.Perft;
+import tablut.ki.Bewertungsfunktion;
+import tablut.ki.MoveOrder;
+import tablut.ki.TranspositionTable;
+import tablut.ki.ZobristHashing;
 
 import java.util.List;
 
-public class SearchMoves {
+public class MainBenchmarkTestCopy {
 
     public static int maxDepth = 10;
-    public static int depth = 1;
+    public static int depth = 0;
     private static final int infinity = Integer.MAX_VALUE / 2;
     private static final long buffer = 50;
     private static Move bestMoveFound = null;
     private static int bestScoreFound = 0;
-    public static int knotenZaehler = 0;
-    public static long nodes = 0;
+    public static long totalNodes;
+    public static long completedDepth;
+    public static long nodesAtCompletedDepth;
+    public static long depthNodes;
+    public static long timeLimitMs;
+
+    public static boolean alphaBeta = false;
+    public static boolean pvs = false;
+    public static boolean transpositionTable = false;
+    public static boolean killerHeuristik = false;
+    public static boolean lateMoveReductions = false;
+    public static int lmrDepth;
+    public static int lmrMoves;
+
 
     public static final TranspositionTable tt = new TranspositionTable();
 
-    /**
-     * Findet den besten Zug für die aktuelle Spielsituation auf dem Board unter Verwendung von Alpha-Beta-Suche.
-     */
-    public static Move findBestMoveAlphaBeta(Board board, long timeLimitMs) {
-        //TODO Muss erstzet werden duch die "Sotierten" Züge
+    public static Move findBestMoveAlphaBeta(Board board, long timeLimitMs, boolean alphaBeta, boolean pvs, boolean transpositionTable, boolean killerHeuristik, boolean LateMoveReductions, int lmrDepth, int lmrMoves) {
+
+        MainBenchmarkTestCopy.timeLimitMs = timeLimitMs;
+        MainBenchmarkTestCopy.alphaBeta = alphaBeta;
+        MainBenchmarkTestCopy.pvs = pvs;
+        MainBenchmarkTestCopy.transpositionTable = transpositionTable;
+        MainBenchmarkTestCopy.killerHeuristik = killerHeuristik;
+        MainBenchmarkTestCopy.lateMoveReductions = LateMoveReductions;
+        MainBenchmarkTestCopy.lmrDepth = lmrDepth;
+        MainBenchmarkTestCopy.lmrMoves = lmrMoves;
+
         List<Move> moves = MoveFactory.getAllMoves(board);
         MoveOrder.sortMoves(board, moves, 0);
-        nodes = 0;
+        totalNodes = 0;
+        //TT leeren, damit jeder Benchmark unabhängig misst
+        tt.clear();
         if (moves.isEmpty()) return null;
         long deadline = System.currentTimeMillis() + timeLimitMs - buffer;
 
@@ -43,13 +66,29 @@ public class SearchMoves {
         for (int currentDepth = 1; currentDepth <= maxDepth; currentDepth++) {
             if (System.currentTimeMillis() >= deadline) break;
 
+            depthNodes = 0;
+
             boolean completed = startSearchAlg(board, moves, currentDepth, deadline);
-            //Wenn Zeitlimit erreicht
-            if (!completed) break;
+
+            //Wenn Zeitlimit erreicht;
+            if (!completed) {
+                break;
+            }
+            // Nur vollständig abgeschlossene Tiefe speichern
+            completedDepth = currentDepth;
+
+            totalNodes += depthNodes;
+            nodesAtCompletedDepth = totalNodes;
+
+
+            depth = currentDepth;
             //Abbruch bei Gewinn oder Verlust
             if (bestScoreFound >= 9000 || bestScoreFound <= -9000) break;
+
             depth = currentDepth;
         }
+        System.out.println("Total Nodes (mit Cutoffs): " + totalNodes);
+
         return bestMoveFound;
     }
 
@@ -57,7 +96,10 @@ public class SearchMoves {
      * Bewertet ALLE Züge auf einer bestimmten Tiefe
      */
     public static boolean startSearchAlg(Board board, List<Move> moves, int depth, long deadline) {
+        depthNodes++;
+
         boolean isMax = !board.playBlackTurn;
+        int score = 0;
 
         int bestScore = isMax ? -infinity : infinity;
         Move bestMove = null;
@@ -66,19 +108,17 @@ public class SearchMoves {
 
         for (Move move : moves) {
             if (System.currentTimeMillis() >= deadline) return false;
-            //MakeMove
-            Move.makeMove(board, move);
 
-            //Minimax:
-            //int score = miniMaxStanard(copy, depth - 1, alpha, beta, deadline);
+            Board copy = board.copy();
+            MoveFactory.moveFigure(copy, move);
 
-            //Alpha Beta:
-            //int score = alphaBeta(board, depth - 1, alpha, beta, deadline, 1);
-
+            if (alphaBeta) {
+                score = alphaBeta(copy, depth - 1, alpha, beta, deadline, 1);
+            }
             //PVS:
-            int score = pvs(board, depth - 1, alpha, beta, deadline, 1);
-
-            Move.unmakeMove(board, move);
+            if (pvs) {
+                score = pvs(copy, depth - 1, alpha, beta, deadline, 1);
+            }
 
             if (score == Integer.MIN_VALUE) return false;
 
@@ -116,14 +156,14 @@ public class SearchMoves {
      * Gibt den besten Score zurück
      */
     public static int alphaBeta(Board board, int depth, int alpha, int beta, long deadline, int ply) {
-        nodes++;
+        depthNodes++;
 
         //Nur bei jedem 4. Knoten ZeitCheck => Rechnerzeitsparen
         if ((depth & 0x3) == 0 && System.currentTimeMillis() >= deadline) {
             return Integer.MIN_VALUE;
         }
         if (depth == 0 || GameLogic.isGameOver(board)) {
-            return Bewertungsfunktion.ratePosition(board, ply);
+            return Bewertungsfunktion.ratePosition(board);
         }
         List<Move> moves = MoveFactory.getAllMoves(board);
         if (moves.isEmpty()) {
@@ -168,18 +208,27 @@ public class SearchMoves {
         return score;
     }
 
-    /**
-     * Standard Minimax-Suche ohne Cutoffs
-     */
-    public static int miniMaxStanard(Board board, int depth, int alpha, int beta, long deadline) {
+    public static int pvs(Board board, int depth, int alpha, int beta, long deadline, int ply) {
+        depthNodes++;
 
-        //Nur bei jedem 4. Knoten ZeitCheck => Rechnerzeitsparen
+        //Überprüfung, ob Spielzustand bereits in Transposition Table gespeichert ist
+
+        TranspositionTable.Entry entry = new TranspositionTable.Entry(depth, 0, 0, null);
+
+        if (transpositionTable) {
+            entry = tt.get(board.hash);
+            if (entry != null && entry.depth >= depth) {
+                if (entry.type == 0) return entry.score;
+                if (entry.type == -1 && entry.score <= alpha) return entry.score;
+                if (entry.type == 1 && entry.score >= beta) return entry.score;
+            }
+        }
+
         if ((depth & 0x3) == 0 && System.currentTimeMillis() >= deadline) {
             return Integer.MIN_VALUE;
         }
 
         if (depth == 0 || GameLogic.isGameOver(board)) {
-            knotenZaehler++;
             return Bewertungsfunktion.ratePosition(board);
         }
 
@@ -188,73 +237,22 @@ public class SearchMoves {
             return 0;
         }
 
-        boolean maxScore = !board.playBlackTurn;
-
-        int score;
-        if (maxScore) {
-            score = -infinity;
-            for (Move move : moves) {
-                Board copy = board.copy();
-                MoveFactory.moveFigure(copy, move);
-
-                int childScore = miniMaxStanard(copy, depth - 1, alpha, beta, deadline);
-                //Abbruch bei Zeit überschreitung
-                if (childScore == Integer.MIN_VALUE) return Integer.MIN_VALUE;
-
-                score = Math.max(score, childScore);
-            }
-        } else {
-            score = infinity;
-            for (Move move : moves) {
-                Board copy = board.copy();
-                MoveFactory.moveFigure(copy, move);
-
-                int childScore = miniMaxStanard(copy, depth - 1, alpha, beta, deadline);
-                if (childScore == Integer.MIN_VALUE) return Integer.MIN_VALUE;
-
-                score = Math.min(score, childScore);
-            }
-        }
-        return score;
-    }
-
-    public static int pvs(Board board, int depth, int alpha, int beta, long deadline, int ply) {
-        nodes++;
-
-        //Überprüfung, ob Spielzustand bereits in Transposition Table gespeichert ist
-        TranspositionTable.Entry entry = tt.get(board.hash);
-        if (entry != null && entry.depth >= depth) {
-            if (entry.type == 0) return entry.score;
-            if (entry.type == -1 && entry.score <= alpha) return entry.score;
-            if (entry.type == 1 && entry.score >= beta) return entry.score;
+        if (killerHeuristik) {
+            // Killer-Heuristik sortiert Züge nach Ply
+            MoveOrder.sortMoves(board, moves, ply);
         }
 
-        if ((depth & 0x3) == 0 && System.currentTimeMillis() >= deadline) {
-            return Integer.MIN_VALUE;
-        }
-
-        if (depth == 0 || GameLogic.isGameOver(board)) {
-            return Bewertungsfunktion.ratePosition(board, ply);
-        }
-
-        List<Move> moves = MoveFactory.getAllMoves(board);
-        if (moves.isEmpty()) {
-            return 0;
-        }
-
-        // Killer-Heuristik sortiert Züge nach Ply
-        MoveOrder.sortMoves(board, moves, ply);
-
-        // TT-Zug hat höchste Priorität → nach Sortierung an erste Stelle setzen.
-        // Wichtig: NICHT das Move-Objekt aus der TT einfügen (geteilter Undo-Zustand in
-        // capturedFigures — bei Stellungswiederholung in der Suchlinie würde dasselbe Objekt
-        // verschachtelt gemacht und das Board beim unmake korrumpiert). Stattdessen den
-        // gleichen Zug aus der frisch generierten Liste nach vorne holen; ist der TT-Zug
-        // hier nicht legal (Hash-Kollision), wird er ignoriert.
-        if (entry != null && entry.move != null) {
-            int ttIndex = moves.indexOf(entry.move);
-            if (ttIndex > 0) {
-                moves.addFirst(moves.remove(ttIndex));
+        if (transpositionTable) {
+            // TT-Zug hat höchste Priorität → nach Sortierung an erste Stelle setzen
+            // Wichtig: das Objekt aus der eigenen Zugliste verwenden, nicht entry.move!
+            // entry.move ist ein geteiltes Objekt aus der TT — makeMove würde dessen
+            // Undo-Daten (capturedFigures) überschreiben. Außerdem wird so geprüft,
+            // dass der TT-Zug in dieser Stellung überhaupt legal ist (Hash-Kollision).
+            if (entry != null && entry.move != null) {
+                int ttIndex = moves.indexOf(entry.move);
+                if (ttIndex > 0) {
+                    moves.addFirst(moves.remove(ttIndex));
+                }
             }
         }
 
@@ -277,34 +275,32 @@ public class SearchMoves {
 
                 boolean reduce = false;
 
-                if (depth >= 3 && i >= 3) {
+                if (lateMoveReductions && depth >= lmrDepth && i > lmrMoves) {
                     reduce = true; // Reduziere Tiefe für tiefe Knoten und viele Züge
                 }
-
                 int reducedDepth = reduce ? searchDepth - 1 : searchDepth;
 
-                Move.makeMove(board, move);
+                Board copy = board.copy();
+                MoveFactory.moveFigure(copy, move);
 
                 int childScore;
                 if (i == 0) {
                     // Erster Zug: volles Fenster
-                    childScore = pvs(board, depth - 1, alpha, beta, deadline, ply + 1);
+                    childScore = pvs(copy, depth - 1, alpha, beta, deadline, ply + 1);
                 } else {
                     // Alle anderen: Nullfenster (ohne LMR) für ersten i Züge, danach mit LMR
-                    childScore = pvs(board, reducedDepth, alpha, alpha + 1, deadline, ply + 1);
+                    childScore = pvs(copy, reducedDepth, alpha, alpha + 1, deadline, ply + 1);
 
                     //LMR-Re-Search (Falls Zug besser als alpha, dann volle Tiefe suchen)
                     if (reduce && childScore > alpha) {
-                        childScore = pvs(board, depth - 1, alpha, alpha + 1, deadline, ply + 1);
+                        childScore = pvs(copy, depth - 1, alpha, alpha + 1, deadline, ply + 1);
                     }
 
                     //PVS-Re-Search (Falls Zug besser als alpha, dann volle Tiefe suchen)
                     if (childScore > alpha && childScore < beta) {
-                        childScore = pvs(board, depth - 1, alpha, beta, deadline, ply + 1);
+                        childScore = pvs(copy, depth - 1, alpha, beta, deadline, ply + 1);
                     }
                 }
-
-                Move.unmakeMove(board, move);
 
                 if (childScore == Integer.MIN_VALUE) return Integer.MIN_VALUE;
 
@@ -315,8 +311,10 @@ public class SearchMoves {
                 score = Math.max(score, childScore);
                 alpha = Math.max(alpha, score);
                 if (alpha >= beta) {
-                    MoveOrder.storeKiller(move, ply);
-                    MoveOrder.addHistory(move, depth);
+                    if (killerHeuristik) {
+                        MoveOrder.storeKiller(move, ply);
+                        MoveOrder.addHistory(move, depth);
+                    }
                     break;
                 }
             }
@@ -329,9 +327,9 @@ public class SearchMoves {
             } else {
                 type = 0; // EXACT
             }
-
-            tt.put(board.hash, new TranspositionTable.Entry(depth, score, type, bestMove));
-
+            if (transpositionTable) {
+                tt.put(board.hash, new TranspositionTable.Entry(depth, score, type, bestMove));
+            }
         } else {
             score = infinity;
             for (int i = 0; i < moves.size(); i++) {
@@ -341,33 +339,31 @@ public class SearchMoves {
 
                 boolean reduce = false;
 
-                if (depth >= 3 && i >= 3) {
+                if (lateMoveReductions && depth >= lmrDepth && i > lmrMoves) {
                     reduce = true; // Reduziere Tiefe für tiefe Knoten und viele Züge
                 }
-
                 int reducedDepth = reduce ? searchDepth - 1 : searchDepth;
 
-                Move.makeMove(board, move);
+                Board copy = board.copy();
+                MoveFactory.moveFigure(copy, move);
 
                 int childScore;
                 if (i == 0) {
                     // Erster Zug: volles Fenster
-                    childScore = pvs(board, depth - 1, alpha, beta, deadline, ply + 1);
+                    childScore = pvs(copy, depth - 1, alpha, beta, deadline, ply + 1);
                 } else {
                     // Alle anderen: Nullfenster (ohne LMR) für ersten i Züge, danach mit LMR
-                    childScore = pvs(board, reducedDepth, beta - 1, beta, deadline, ply + 1);
+                    childScore = pvs(copy, reducedDepth, beta - 1, beta, deadline, ply + 1);
 
                     //LMR-Re-Search (Falls Zug besser als alpha, dann volle Tiefe suchen)
                     if (reduce && childScore < beta) {
-                        childScore = pvs(board, depth - 1, beta - 1, beta, deadline, ply + 1);
+                        childScore = pvs(copy, depth - 1, beta - 1, beta, deadline, ply + 1);
                     }
                     //PVS-Re-Search (Falls Zug besser als alpha, dann volle Tiefe suchen)
                     if (childScore > alpha && childScore < beta) {
-                        childScore = pvs(board, depth - 1, alpha, beta, deadline, ply + 1);
+                        childScore = pvs(copy, depth - 1, alpha, beta, deadline, ply + 1);
                     }
                 }
-
-                Move.unmakeMove(board, move);
 
                 if (childScore == Integer.MIN_VALUE) return Integer.MIN_VALUE;
 
@@ -378,38 +374,25 @@ public class SearchMoves {
                 score = Math.min(score, childScore);
                 beta = Math.min(beta, score);
                 if (alpha >= beta) {
-                    MoveOrder.storeKiller(move, ply);
-                    MoveOrder.addHistory(move, depth);
+                    if (killerHeuristik) {
+                        MoveOrder.storeKiller(move, ply);
+                        MoveOrder.addHistory(move, depth);
+                    }
                     break;
                 }
             }
-            int type;
-            if (score <= alphaOrig) {
-                type = -1; // UPPERBOUND
-            } else if (score >= betaOrig) {
-                type = 1; // LOWERBOUND
-            } else {
-                type = 0; // EXACT
-            }
-
+        }
+        int type;
+        if (score <= alphaOrig) {
+            type = -1; // UPPERBOUND
+        } else if (score >= betaOrig) {
+            type = 1; // LOWERBOUND
+        } else {
+            type = 0; // EXACT
+        }
+        if (transpositionTable) {
             tt.put(board.hash, new TranspositionTable.Entry(depth, score, type, bestMove));
         }
         return score;
     }
-
-    /**
-     * Testet Anzahl der Knoten, die bei bestimmter Alpha-Beta-Suche bzw. Minimax-Suche auf einer bestimmten Tiefe besucht werden
-     */
-    public static void main(String[] args) {
-        Board board = new Board();
-
-        knotenZaehler = 0;
-        miniMaxStanard(board, 2, -infinity, infinity, Long.MAX_VALUE);
-        System.out.println("Minimax Tiefe 2: " + knotenZaehler);
-
-        System.out.println("Perft   Tiefe 2: " + Perft.perft(board, 2));
-    }
 }
-
-
-
