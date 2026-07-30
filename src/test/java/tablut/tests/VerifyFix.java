@@ -30,7 +30,7 @@ public class VerifyFix {
         Board reference = FenParser.parse(fen);
         MainBenchmarkTest.maxDepth = 15;
 
-        Move move = MainBenchmarkTest.findBestMoveAlphaBeta(board, timeMs, false, true, true, true, false,0,0);
+        Move move = MainBenchmarkTest.findBestMoveAlphaBeta(board, timeMs,false, false, true, true, true, false,0,0);
         System.out.println("Tiefe erreicht: " + MainBenchmarkTest.depth);
         System.out.println("Bester Zug: " + move.fromX + "," + move.fromY + " --> " + move.toX + "," + move.toY);
 

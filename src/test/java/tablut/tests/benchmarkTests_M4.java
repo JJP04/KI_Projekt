@@ -57,7 +57,7 @@ public class benchmarkTests_M4 {
 
     public static void depthInOneSec(Board board) {
 
-        Move move = MainBenchmarkTest.findBestMoveAlphaBeta(board, 10000, false, true, true, true, false, 0, 0);
+        Move move = MainBenchmarkTest.findBestMoveAlphaBeta(board, 10000,false, false, true, true, true, false, 0, 0);
         System.out.println("Tiefe erreicht: " + MainBenchmarkTest.depth);
 
         System.out.println("Bester Zug: ");
@@ -67,7 +67,7 @@ public class benchmarkTests_M4 {
     public static void depth4in2Minuits(Board board) {
         MainBenchmarkTest.maxDepth = 4;
         long start = System.nanoTime();
-        Move move = MainBenchmarkTest.findBestMoveAlphaBeta(board, 120_000, false, true, true, true, true, 3, 3);
+        Move move = MainBenchmarkTest.findBestMoveAlphaBeta(board, 120_000,false, false, true, true, true, true, 3, 3);
         long end = System.nanoTime();
         System.out.println("Zeit: " + (end - start) / 1_000_000.0 + " ms");
 
@@ -77,7 +77,7 @@ public class benchmarkTests_M4 {
 
     public static void depthXin2Minuits(Board board) {
         MainBenchmarkTest.maxDepth = 15;
-        Move move = MainBenchmarkTest.findBestMoveAlphaBeta(board, 120_000, false, true, true, true, false, 0, 0);
+        Move move = MainBenchmarkTest.findBestMoveAlphaBeta(board, 120_000,false, false, true, true, true, false, 0, 0);
 
         System.out.println("Bester Zug: ");
         System.out.println(move.fromX + "," + move.fromY + "--> " + move.toX + "," + move.toY);
@@ -106,11 +106,11 @@ public class benchmarkTests_M4 {
 //        System.out.println("Best Move:" + move4.fromX + "," + move4.fromY + "--> " + move4.toX + "," + move4.toY);
 
         System.out.println("\n PSV + TT + KH + LMR");
-        Move move5 = MainBenchmarkTest.findBestMoveAlphaBeta(board, 120_000, false, true, true, true, true, 4, 4);
+        Move move5 = MainBenchmarkTest.findBestMoveAlphaBeta(board, 120_000,false, false, true, true, true, true, 4, 4);
         System.out.println("Best Move:" + move5.fromX + "," + move5.fromY + "--> " + move5.toX + "," + move5.toY);
 
         System.out.println("\n PSV + TT + KH + LMR");
-        Move move6 = MainBenchmarkTest.findBestMoveAlphaBeta(board, 120_000, false, true, true, true, true, 3, 3);
+        Move move6 = MainBenchmarkTest.findBestMoveAlphaBeta(board, 120_000,false, false, true, true, true, true, 3, 3);
         System.out.println("Best Move:" + move6.fromX + "," + move6.fromY + "--> " + move6.toX + "," + move6.toY);
     }
 }

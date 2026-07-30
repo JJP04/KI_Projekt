@@ -25,6 +25,7 @@ public class MainBenchmarkTest {
     public static long depthNodes;
     public static long timeLimitMs;
 
+    public static boolean minMax = false;
     public static boolean alphaBeta = false;
     public static boolean pvs = false;
     public static boolean transpositionTable = false;
@@ -36,8 +37,9 @@ public class MainBenchmarkTest {
 
     public static final TranspositionTable tt = new TranspositionTable();
 
-    public static Move findBestMoveAlphaBeta(Board board, long timeLimitMs, boolean alphaBeta, boolean pvs, boolean transpositionTable, boolean killerHeuristik, boolean LateMoveReductions, int lmrDepth, int lmrMoves) {
+    public static Move findBestMoveAlphaBeta(Board board, long timeLimitMs, boolean minMax, boolean alphaBeta, boolean pvs, boolean transpositionTable, boolean killerHeuristik, boolean LateMoveReductions, int lmrDepth, int lmrMoves) {
 
+        MainBenchmarkTest.minMax = minMax;
         MainBenchmarkTest.timeLimitMs = timeLimitMs;
         MainBenchmarkTest.alphaBeta = alphaBeta;
         MainBenchmarkTest.pvs = pvs;
@@ -111,6 +113,9 @@ public class MainBenchmarkTest {
 
             Move.makeMove(board, move);
 
+            if(minMax){
+                score = miniMaxStanard(board, depth - 1, alpha, beta, deadline);
+            }
             if (alphaBeta) {
                 score = alphaBeta(board, depth - 1, alpha, beta, deadline, 1);
             }
@@ -151,6 +156,54 @@ public class MainBenchmarkTest {
             //        + "  Score: " + bestScoreFound);
         }
         return true;
+    }
+
+    public static int miniMaxStanard(Board board, int depth, int alpha, int beta, long deadline) {
+
+        depthNodes++;
+
+        //Nur bei jedem 4. Knoten ZeitCheck -> Rechnerzeitsparen
+        if ((depth & 0x3) == 0 && System.currentTimeMillis() >= deadline) {
+            return Integer.MIN_VALUE;
+        }
+
+        if (depth == 0 || GameLogic.isGameOver(board)) {
+            return Bewertungsfunktion.ratePosition(board);
+        }
+
+        List<Move> moves = MoveFactory.getAllMoves(board);
+        if (moves.isEmpty()) {
+            return 0;
+        }
+
+        boolean maxScore = !board.playBlackTurn;
+
+        int score;
+        if (maxScore) {
+            score = -infinity;
+            for (Move move : moves) {
+                Board copy = board.copy();
+                MoveFactory.moveFigure(copy, move);
+
+                int childScore = miniMaxStanard(copy, depth - 1, alpha, beta, deadline);
+                //Abbruch bei Zeit überschreitung
+                if (childScore == Integer.MIN_VALUE) return Integer.MIN_VALUE;
+
+                score = Math.max(score, childScore);
+            }
+        } else {
+            score = infinity;
+            for (Move move : moves) {
+                Board copy = board.copy();
+                MoveFactory.moveFigure(copy, move);
+
+                int childScore = miniMaxStanard(copy, depth - 1, alpha, beta, deadline);
+                if (childScore == Integer.MIN_VALUE) return Integer.MIN_VALUE;
+
+                score = Math.min(score, childScore);
+            }
+        }
+        return score;
     }
 
     /**
