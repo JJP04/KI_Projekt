@@ -14,7 +14,7 @@ public class Benchmarking_Poster {
         String startstellung = "3rrr3/4r4/4R4/r3R3r/rrRRKRRrr/r3R3r/4R4/4r4/3rrr3 s 0 1";
         Board board = FenParser.parse(startstellung);
         board.printBoard();
-        depth5inTimeSA(board, 5, 20000);
+        depth5inTimeSA(board, 3,2000000000);
         //copyVsMakeUnmakeTime(board, 5, 20000);
     }
 
@@ -52,7 +52,7 @@ public class Benchmarking_Poster {
 
     public static void depth5inTimeSA(Board board, int depth, int time) {
 
-        int runs = 20;
+        int runs = 10;
         MainBenchmarkTest.maxDepth = depth;
 
         long totalNodesMinimax = 0;

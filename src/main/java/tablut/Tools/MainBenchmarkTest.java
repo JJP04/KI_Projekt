@@ -126,7 +126,6 @@ public class MainBenchmarkTest {
 
             Move.unmakeMove(board, move);
 
-
             if (score == Integer.MIN_VALUE) return false;
 
             //Zug + Score ausgeben:
